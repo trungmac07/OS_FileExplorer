@@ -67,7 +67,6 @@ namespace FileExplorer
         {
             InitializeComponent();
             getDirectoryTree();
-            //readFileAttribute();
             ChartData = new SeriesCollection
             {
                 new PieSeries
@@ -76,6 +75,7 @@ namespace FileExplorer
                     Values = new ChartValues<ObservableValue>{new ObservableValue(73) },
                     DataLabels = false,
                     StrokeThickness = 0,
+                    Stroke = null,
                     Fill = new SolidColorBrush(Color.FromRgb(0,173,181)),
 
                 },
@@ -85,10 +85,11 @@ namespace FileExplorer
                     Values = new ChartValues<ObservableValue>{new ObservableValue(27) },
                     DataLabels = false,
                     StrokeThickness = 0,
+                    Stroke = null,
                     Fill = new SolidColorBrush(Color.FromRgb(238,238,238)),
                 }
-            }
-                ;
+            };
+                
             DataContext = this;
         }
 
@@ -103,6 +104,14 @@ namespace FileExplorer
             MessageBox.Show("myFile filepath: " + oFileInfo.DirectoryName);
             MessageBox.Show("My File's Full Name: \"" + oFileInfo.FullName + "\"");
 
+        }
+
+        public void showFileInfo(FileInfo fileinfo)
+        {
+            FileName.Text = fileinfo.Name;
+            FileSize.Text = fileinfo.Length.ToString();
+            DateCreated.Text = fileinfo.CreationTime.ToString();
+            TimeCreated.Text = fileinfo.CreationTime.ToString();
         }
 
         public SeriesCollection ChartData { get; set; }

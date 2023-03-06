@@ -263,7 +263,7 @@
             <StackPanel>
                 <DockPanel Background="#222831">
 
-                    <lvc:PieChart Width="270" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="70">
+                    <lvc:PieChart Width="270" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="70" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
                    
                         <lvc:PieChart.ChartLegend>
                             <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="12" TextBlock.Foreground="#EEEEEE">
@@ -300,19 +300,19 @@
                         </StackPanel>
                     </ScrollViewer>
                     <StackPanel Margin="0 30 0 0">
-                        <StackPanel>
+                        <StackPanel Name="FileInfoArea">
                             <DockPanel>
-                                <Image Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
-                                <TextBlock Margin="20 0 0 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
+                                <Image Name ="FileImage" Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
+                                <TextBlock Name="FileName" Margin="20 0 0 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
                             </DockPanel>
                             <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
-                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
-                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
-                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
+                            <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
+                            <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
+                            <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
                             <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
                             <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Attributes</TextBlock>
-                            <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
-                            <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
+                            <CheckBox Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
+                            <CheckBox Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
                         </StackPanel>
                     </StackPanel>
                 </DockPanel>
