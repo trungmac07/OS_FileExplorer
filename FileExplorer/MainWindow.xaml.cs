@@ -13,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
 
 namespace FileExplorer
 {
@@ -64,7 +67,47 @@ namespace FileExplorer
         {
             InitializeComponent();
             getDirectoryTree();
+            //readFileAttribute();
+            ChartData = new SeriesCollection
+            {
+                new PieSeries
+                {
+                    Title = "Used",
+                    Values = new ChartValues<ObservableValue>{new ObservableValue(73) },
+                    DataLabels = false,
+                    StrokeThickness = 0,
+                    Fill = new SolidColorBrush(Color.FromRgb(0,173,181)),
+
+                },
+                new PieSeries
+                {
+                    Title = "Free",
+                    Values = new ChartValues<ObservableValue>{new ObservableValue(27) },
+                    DataLabels = false,
+                    StrokeThickness = 0,
+                    Fill = new SolidColorBrush(Color.FromRgb(238,238,238)),
+                }
+            }
+                ;
+            DataContext = this;
         }
+
+        public void readFileAttribute()
+        {
+            FileInfo oFileInfo = new FileInfo(@"E:\Download\file.png");
+            MessageBox.Show("My File's Name: \"" + oFileInfo.Name + "\"");
+            DateTime dtCreationTime = oFileInfo.CreationTime;
+            MessageBox.Show("Date and Time File Created: " + dtCreationTime.ToString());
+            MessageBox.Show("myFile Extension: " + oFileInfo.Extension);
+            MessageBox.Show("myFile total Size: " + oFileInfo.Length.ToString());
+            MessageBox.Show("myFile filepath: " + oFileInfo.DirectoryName);
+            MessageBox.Show("My File's Full Name: \"" + oFileInfo.FullName + "\"");
+
+        }
+
+        public SeriesCollection ChartData { get; set; }
+
+
     }
 
 }
