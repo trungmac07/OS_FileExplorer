@@ -1,0 +1,32 @@
+﻿<Window x:Class="FileExplorer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileExplorer"
+        mc:Ignorable="d"
+        Title="FILE EXPLORER" Height="720" Width="1280">
+    <DockPanel Background="#393E46">
+        <StackPanel Name ="DiskArea"  Width="290" HorizontalAlignment="Left" Background="#222831">
+            <TextBlock Height="100" FontSize="35" Foreground="#EEEEEE">storage</TextBlock>
+            <Button Height="80" Background="#222831" Foreground="#EEEEEE" BorderThickness="0 0 0 0">O DIA C</Button>
+            <Button Height="80" Background="#222831" Foreground="#EEEEEE" BorderThickness="0 0 0 0">O DIA C</Button>
+            <Button Height="80" Background="#222831" Foreground="#EEEEEE" BorderThickness="0 0 0 0">O DIA C</Button>
+            <Button Height="80" Background="#222831" Foreground="#EEEEEE" BorderThickness="0 0 0 0">O DIA C</Button>
+        </StackPanel>
+        <StackPanel Height="245" VerticalAlignment="Top">
+            <DockPanel Background="#222831">
+                <Button Width="300" FontSize="50" Background="#00ADB5">CHART</Button>
+                <StackPanel Margin="30 0 0 0">
+                    <TextBlock Height="100" FontSize="50" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
+                    <TextBlock Height="95" FontSize="50" Foreground="#EEEEEE">512/1024</TextBlock>
+
+                </StackPanel>
+            </DockPanel>
+            <DockPanel Height="475">
+                <Grid Width="600" HorizontalAlignment="Left"></Grid>
+                <StackPanel></StackPanel>
+            </DockPanel>
+        </StackPanel>
+    </DockPanel>
+</Window>
