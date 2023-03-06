@@ -46,7 +46,7 @@ namespace FileExplorer
 
                 BitmapImage myBitmapImage = new BitmapImage();
                 myBitmapImage.BeginInit();
-                myBitmapImage.UriSource = new Uri("C:/Users/NC/source/repos/OS_FileExplorer/FileExplorer/resources/folder.png", UriKind.RelativeOrAbsolute);
+                myBitmapImage.UriSource = new Uri("resources/folder.png", UriKind.RelativeOrAbsolute);
                 myBitmapImage.DecodePixelWidth = 2048;
                 myBitmapImage.EndInit();
                 Image image = new Image();

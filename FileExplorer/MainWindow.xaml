@@ -198,7 +198,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!--Style of some buttons-->
         <Style x:Key="MenuButton" TargetType="Button">
             <Setter Property="Background" Value="#222831"/>
@@ -220,7 +220,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="TreeExpandButton" TargetType="Button">
             <Setter Property="Width" Value="17"/>
             <Setter Property="Height" Value="17"/>
@@ -256,155 +256,197 @@
                     <TextBlock Margin="50 0 0 0" Width="160" FontSize="30">O DIA C</TextBlock>
                 </DockPanel>
             </Button>
-
         </StackPanel>
-        <StackPanel Height="700">
-            <DockPanel Background="#222831">
-                <Button Width="300" FontSize="50" Background="#00ADB5">CHART</Button>
-                <StackPanel Margin="30 0 0 0">
-                    <TextBlock Height="100" FontSize="50" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
-                    <TextBlock Height="95" FontSize="50" Foreground="#EEEEEE">512/1024</TextBlock>
-                </StackPanel>
-            </DockPanel>
-            <DockPanel Margin="30 30 0 0" Height="420">
-                <ScrollViewer Width="650">
-                    <StackPanel>
-                        <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="60 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="60 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
-                        <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                            <DockPanel HorizontalAlignment="Left" Width="240">
-                                <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                            </DockPanel>
-                        </Button>
+
+        <StackPanel Width="auto" Height="auto">
+            <StackPanel>
+                <DockPanel Background="#222831">
+                    <Button Width="300" FontSize="50" Background="#00ADB5">CHART</Button>
+                    <StackPanel Margin="30 0 0 0">
+                        <TextBlock Height="100" FontSize="50" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
+                        <TextBlock Height="95" FontSize="50" Foreground="#EEEEEE">512/1024</TextBlock>
                     </StackPanel>
-                </ScrollViewer>
-                <StackPanel>
-                    <DockPanel>
-                        <Image Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
-                        <TextBlock Margin="20 0 0 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
-                    </DockPanel>
-                    <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
-                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
-                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
-                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
-                    <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
-                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Attributes</TextBlock>
-                    <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
-                    <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
-                </StackPanel>
-            </DockPanel>
+                </DockPanel>
+                <DockPanel Height="450">
+                    <ScrollViewer Margin="30 10 0 0" Width="650">
+                        <StackPanel Name="DirectoryTreeContain">
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel Margin="0 30 0 0">
+                        <StackPanel>
+                            <DockPanel>
+                                <Image Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
+                                <TextBlock Margin="20 0 0 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
+                            </DockPanel>
+                            <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
+                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
+                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
+                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
+                            <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
+                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Attributes</TextBlock>
+                            <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
+                            <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </StackPanel>
         </StackPanel>
     </DockPanel>
 </Window>
+
+
+<!--
+    <DockPanel Margin="30 30 0 0" Height="420">
+                    <ScrollViewer Width="650">
+                        <StackPanel>
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="60 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="60 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                <DockPanel HorizontalAlignment="Left" Width="240">
+                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel>
+                        <DockPanel>
+                            <Image Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
+                            <TextBlock Margin="20 0 0 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
+                        </DockPanel>
+                        <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
+                        <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
+                        <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
+                        <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
+                        <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
+                        <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Attributes</TextBlock>
+                        <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
+                        <CheckBox Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
+                    </StackPanel>
+                </DockPanel>
+    -->
