@@ -62,18 +62,23 @@
             </Button>
 
         </StackPanel>
-        <StackPanel Height="245" VerticalAlignment="Top">
-            <DockPanel Background="#222831">
-                <Button Width="300" FontSize="50" Background="#00ADB5">CHART</Button>
-                <StackPanel Margin="30 0 0 0">
-                    <TextBlock Height="100" FontSize="50" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
-                    <TextBlock Height="95" FontSize="50" Foreground="#EEEEEE">512/1024</TextBlock>
-                </StackPanel>
-            </DockPanel>
-            <DockPanel Height="475">
-                <Grid Width="600" HorizontalAlignment="Left"></Grid>
-                <StackPanel></StackPanel>
-            </DockPanel>
+        <StackPanel Width="auto" Height="auto">
+            <StackPanel Height="245" VerticalAlignment="Top">
+                <DockPanel Background="#222831">
+                    <Button Width="300" FontSize="50" Background="#00ADB5">CHART</Button>
+                    <StackPanel Margin="30 0 0 0">
+                        <TextBlock Height="100" FontSize="50" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
+                        <TextBlock Height="95" FontSize="50" Foreground="#EEEEEE">512/1024</TextBlock>
+                    </StackPanel>
+                </DockPanel>
+                <DockPanel Height="475">
+                    <Grid Width="600" HorizontalAlignment="Left"></Grid>
+                    <StackPanel></StackPanel>
+                </DockPanel>
+            </StackPanel>
+            <StackPanel Width="auto" Height="auto" Name="DirectoryTreeContain"  >
+            </StackPanel>
         </StackPanel>
+        
     </DockPanel>
 </Window>
