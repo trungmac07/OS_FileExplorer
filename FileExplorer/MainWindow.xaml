@@ -6,9 +6,8 @@
         xmlns:local="clr-namespace:FileExplorer"
         mc:Ignorable="d"
         Title="FILE EXPLORER" Height="720" Width="1280">
+
     <Window.Resources>
-
-
         <Style x:Key="MenuButton" TargetType="Button">
             <Setter Property="Background" Value="#222831"/>
             <Setter Property="Height" Value="80"/>
@@ -29,38 +28,20 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
     </Window.Resources>
+    
+    
     <DockPanel Background="#393E46">
         <StackPanel Name ="DiskArea"  Width="290" HorizontalAlignment="Left" Background="#222831">
             <TextBlock Height="100" FontSize="35" Foreground="#EEEEEE">storage</TextBlock>
-
-
-            <Button Style="{StaticResource MenuButton}" >
-                <DockPanel>
-                    <Image Height="50" Width="50" Source="resources/hdd.png" Stretch="Fill" />
-                    <TextBlock Margin="50 0 0 0" FontSize="30" Width="160">O DIA C</TextBlock>
-                </DockPanel>
-            </Button>
-            <Button Style="{StaticResource MenuButton}" >
-                <DockPanel>
-                    <Image Height="50" Width="50" Source="resources/hdd.png" Stretch="Fill" />
-                    <TextBlock Margin="50 0 0 0" Width="160" FontSize="30">O DIA C</TextBlock>
-                </DockPanel>
-            </Button>
-            <Button Style="{StaticResource MenuButton}" >
-                <DockPanel>
-                    <Image Height="50" Width="50" Source="resources/hdd.png" Stretch="Fill" />
-                    <TextBlock Margin="50 0 0 0" Width="160" FontSize="30">O DIA C</TextBlock>
-                </DockPanel>
-            </Button>
-            <Button Style="{StaticResource MenuButton}" >
+            
+            <!--<Button Style="{StaticResource MenuButton}">
                 <DockPanel>
                     <Image Height="50" Width="50" Source="resources/usb.png" Stretch="Fill" />
                     <TextBlock Margin="50 0 0 0" Width="160" FontSize="30">O DIA C</TextBlock>
                 </DockPanel>
-            </Button>
-
+            </Button>-->
+     
         </StackPanel>
         <StackPanel Height="245" VerticalAlignment="Top">
             <DockPanel Background="#222831">
