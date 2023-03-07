@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FileExplorer"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
-        Title="FILE EXPLORER" Height="720" Width="1280">
+        Title="FILE EXPLORER" Height="720" Width="1280" ResizeMode="NoResize">
     <Window.Resources>
         <SolidColorBrush x:Key="StandardBorderBrush" Color="#888" />
         <SolidColorBrush x:Key="StandardBackgroundBrush" Color="Black" />
@@ -108,20 +108,20 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Thumb}">
-                        <Border CornerRadius="5" Background="#c8c8c8" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Width="8" Margin="0,4,0,4"/>
+                        <Border CornerRadius="5" Background="#222831" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Width="5" Margin="0,3,0,4"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
         <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
-            <Grid>
+            <Grid Margin="-7,0,4,0">
                 <Grid.RowDefinitions>
                     <RowDefinition MaxHeight="0"/>
                     <RowDefinition Height="0.00001*"/>
                     <RowDefinition MaxHeight="0"/>
                 </Grid.RowDefinitions>
-                <Border Grid.RowSpan="3" CornerRadius="10" Background="#dafafa" Width="12"/>
+                <Border Grid.RowSpan="3" CornerRadius="10" Background="#EEEEEE" Width="7"/>
                 <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineUpCommand" Content="M 0 4 L 8 4 L 4 0 Z" />
                 <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
                     <Track.DecreaseRepeatButton>
@@ -144,7 +144,7 @@
                     <ColumnDefinition Width="0.00001*"/>
                     <ColumnDefinition Width="4"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.ColumnSpan="3" CornerRadius="10" Background="#dafafa"/>
+                <Border Grid.ColumnSpan="3" CornerRadius="10" Background="#EEEEEE"/>
                 <RepeatButton Grid.Column="0"  Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineLeftCommand" Content="M 4 0 L 4 8 L 0 4 Z" />
                 <Track Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
                     <Track.DecreaseRepeatButton>
@@ -170,7 +170,7 @@
                     <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
                 </Trigger>
                 <Trigger Property="Orientation" Value="Vertical">
-                    <Setter Property="Width" Value="18"/>
+                    <Setter Property="Width" Value="7"/>
                     <Setter Property="Height" Value="Auto" />
                     <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
                 </Trigger>
@@ -231,66 +231,85 @@
     </Window.Resources>
 
     <DockPanel Background="#393E46">
-        <StackPanel Name ="DiskArea"  Width="290" HorizontalAlignment="Left" Background="#222831">
-            <TextBlock Height="100" FontSize="35" Foreground="#EEEEEE">storage</TextBlock>
-           
-        </StackPanel>
-
-        <StackPanel Width="auto" Height="auto">
+        <Border Background="#222831" Margin="25 25 0 25" CornerRadius="15" Width="230">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="7" Opacity="0.4" BlurRadius="6"  />
+            </Border.Effect>
             <StackPanel>
-                <DockPanel Background="#222831">
+                <TextBlock Margin="20 0 0 0" Height="100" FontSize="35" Foreground="#00ADB5">STORAGE</TextBlock>
+                <StackPanel Name ="DiskArea"  Width="250" Background="#393E46">
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <StackPanel Width="auto" Height="auto">
+            <StackPanel Margin="20 0 10 0">
+                <Border Background="#222831" Margin="15 30 15 15" CornerRadius="15" Height="195">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="7" Opacity="0.4" BlurRadius="6"  />
+                    </Border.Effect>
+                    <DockPanel  Height="185">
+                        <lvc:PieChart Margin="35 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
 
-                    <lvc:PieChart Width="270" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="70" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
-                   
-                        <lvc:PieChart.ChartLegend>
-                            <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="12" TextBlock.Foreground="#EEEEEE">
-                            </lvc:DefaultLegend>
-                        </lvc:PieChart.ChartLegend>
-                        <lvc:PieChart.DataTooltip>
-                            <lvc:DefaultTooltip BulletSize="20">
-                            </lvc:DefaultTooltip>
-                        </lvc:PieChart.DataTooltip>
-                    </lvc:PieChart>
+                            <lvc:PieChart.ChartLegend>
+                                <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="11" TextBlock.Foreground="#EEEEEE">
+                                </lvc:DefaultLegend>
+                            </lvc:PieChart.ChartLegend>
+                            <lvc:PieChart.DataTooltip>
+                                <lvc:DefaultTooltip BulletSize="20">
+                                </lvc:DefaultTooltip>
+                            </lvc:PieChart.DataTooltip>
+                        </lvc:PieChart>
 
-                    <StackPanel Margin="30 0 0 0">
-                        <TextBlock Height="100" FontSize="50" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
-                        <TextBlock Height="95" FontSize="50" Foreground="#EEEEEE">512/1024</TextBlock>
-                    </StackPanel>
-                </DockPanel>
-                <DockPanel Height="450">
-                    <ScrollViewer Margin="30 10 0 0" Width="650">
-                        <StackPanel Name="DirectoryTreeContain">
-                            <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                                <DockPanel HorizontalAlignment="Left" Width="240">
-                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                                </DockPanel>
-                            </Button>
-                            <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                                <DockPanel HorizontalAlignment="Left" Width="240">
-                                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                                </DockPanel>
-                            </Button>
+                        <StackPanel Margin="30 0 0 0">
+                            <TextBlock Height="100" FontSize="35" Foreground="#EEEEEE" Margin="0 30 0 0">NTFS/FAT</TextBlock>
+                            <TextBlock Height="95" FontSize="35" Foreground="#EEEEEE">512/1024</TextBlock>
                         </StackPanel>
-                    </ScrollViewer>
-                    <StackPanel Margin="0 30 0 0">
-                        <StackPanel Name="FileInfoArea">
-                            <DockPanel>
-                                <Image Name ="FileImage" Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
-                                <TextBlock Name="FileName" Margin="20 0 0 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
-                            </DockPanel>
-                            <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
-                            <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
-                            <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
-                            <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
-                            <Border Margin="0 30 15 30" BorderThickness="1" BorderBrush="#222831" CornerRadius="3"></Border>
-                            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Attributes</TextBlock>
-                            <CheckBox Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
-                            <CheckBox Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
-                        </StackPanel>
+                    </DockPanel>
+                </Border>
+                <DockPanel Margin="0 10 0 20" Height="490">
+                    <Border VerticalAlignment="Top" Background="#222831" Margin="15 5 15 40" CornerRadius="15" Height="400">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="7" Opacity="0.4" BlurRadius="6" />
+                        </Border.Effect>
+                        <ScrollViewer Margin="0 10 0 10" Width="610" >
+                            <StackPanel Margin="20 0 0 0" Name="DirectoryTreeContain">
+                                <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                    <DockPanel HorizontalAlignment="Left" Width="240">
+                                        <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                        <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                        <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                    </DockPanel>
+                                </Button>
+                                <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                                    <DockPanel HorizontalAlignment="Left" Width="240">
+                                        <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                                        <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                                        <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                                    </DockPanel>
+                                </Button>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                    <StackPanel Width="440">
+                        <Border HorizontalAlignment="Left" Background="#222831" Margin="15 5 50 60" CornerRadius="15" Height="400" Width="300">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="7" Opacity="0.4" BlurRadius="6"  />
+                            </Border.Effect>
+                            <StackPanel Name="FileInfoArea">
+                                <DockPanel Margin="0 10 0 0">
+                                    <Image Name ="FileImage" Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
+                                    <TextBlock Name="FileName" Margin="20 0 20 10" FontSize="17" TextWrapping="Wrap" Foreground="#EEEEEE">This file has very long name to test what does the application appear.dmm</TextBlock>
+                                </DockPanel>
+                                <Border Margin="15 30 15 20" BorderThickness="1" BorderBrush="#393E46" CornerRadius="3"></Border>
+                                <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Size: 1234.567 KB</TextBlock>
+                                <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Date created: 30/04/1975</TextBlock>
+                                <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Time created: 11:45:00</TextBlock>
+                                <Border Margin="15 20 15 20" BorderThickness="1" BorderBrush="#393E46" CornerRadius="3"></Border>
+                                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE">Attributes</TextBlock>
+                                <CheckBox Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Hidden</CheckBox>
+                                <CheckBox Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="#EEEEEE" VerticalContentAlignment="Center">Read only</CheckBox>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </DockPanel>
             </StackPanel>

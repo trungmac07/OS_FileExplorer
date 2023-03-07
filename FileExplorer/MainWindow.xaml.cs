@@ -68,7 +68,7 @@ namespace FileExplorer
         public MainWindow()
         {
             InitializeComponent();
-            getDirectoryTree();
+            //getDirectoryTree();
             getDrive();
             chart();
         }
