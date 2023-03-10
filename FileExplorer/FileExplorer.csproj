@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="resources\close-01-01.png" />
+    <None Remove="resources\close.png" />
     <None Remove="resources\file.png" />
     <None Remove="resources\folder.png" />
     <None Remove="resources\hdd.png" />
@@ -21,6 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="resources\close.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="resources\file.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

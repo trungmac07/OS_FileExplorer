@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -36,8 +37,8 @@ namespace FileExplorer
                 //<Button Height="80" Background="#222831" Foreground="#EEEEEE" BorderThickness="0 0 0 0">O DIA C</Button>
                 Button button = new Button();
                 button.Height = 50;
-                button.Background = new SolidColorBrush(Color.FromRgb(57, 62, 70));
-                button.Foreground = new SolidColorBrush(Color.FromRgb(238, 238, 238));
+                button.Background = new SolidColorBrush(Colors.White);
+                //button.Foreground = new SolidColorBrush(Color.FromRgb(238, 238, 238));
                 button.BorderThickness = new Thickness(0, 0, 0, 0);
                 button.Content = directory.Name;
                 button.HorizontalContentAlignment = HorizontalAlignment.Left;
@@ -47,6 +48,7 @@ namespace FileExplorer
                 TextBlock textBlock = new TextBlock();
                 textBlock.Text = directory.Name;
                 textBlock.Margin = new Thickness(10, 5, 0, 0);
+                textBlock.Foreground = new SolidColorBrush(Colors.Black);
 
                 BitmapImage myBitmapImage = new BitmapImage();
                 myBitmapImage.BeginInit();
@@ -68,9 +70,32 @@ namespace FileExplorer
         public MainWindow()
         {
             InitializeComponent();
-            //getDirectoryTree();
+            getDirectoryTree();
             getDrive();
             chart();
+            /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
+
+            using (FileStream fs = new FileStream(diskPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                byte[] mbr = new byte[512];
+                int bytesRead = 0;
+
+                bytesRead = fs.Read(mbr, 0, mbr.Length);
+
+                // Process the MBR data here
+                // The contents of the 'mbr' array represent the bytes read from the MBR sector
+
+                for (int i = 0; i < mbr.Length; i++)
+                {
+                    byte b = mbr[i];
+                    // Do something with the byte here
+                    if(b == 128)
+                        Console.WriteLine("HERE:" + i);
+                    Console.WriteLine(b);
+                }
+                Console.WriteLine(mbr[446]);
+            }*/
+
         }
         public void chart()
         {
@@ -83,7 +108,7 @@ namespace FileExplorer
                     DataLabels = false,
                     StrokeThickness = 0,
                     Stroke = null,
-                    Fill = new SolidColorBrush(Color.FromRgb(0,173,181)),
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2EC4B6")),
 
                 },
                 new PieSeries
@@ -93,7 +118,7 @@ namespace FileExplorer
                     DataLabels = false,
                     StrokeThickness = 0,
                     Stroke = null,
-                    Fill = new SolidColorBrush(Color.FromRgb(238,238,238)),
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9CD8D0")),
                 }
             };
             DataContext = this;
@@ -131,6 +156,7 @@ namespace FileExplorer
         }
         public void createButton(string s,int kind)
         {
+            s += "abcdef name";
             Button DiskButton1 = new Button();
 
             DockPanel dcPanel1 = new DockPanel();
@@ -138,8 +164,8 @@ namespace FileExplorer
             TextBlock txt = new TextBlock();
             Image img = new Image();
 
-            img.Height = 50;
-            img.Width = 50;
+            img.Height = 40;
+            img.Width = 40;
             if(kind == 0)
                 img.Source = new BitmapImage(new Uri("/resources/hdd.png",UriKind.RelativeOrAbsolute));
             else if(kind == 1)
@@ -148,18 +174,47 @@ namespace FileExplorer
             img.Stretch = Stretch.Fill;
         
 
-            txt.Margin = new Thickness(50, 0, 0, 0);
-            txt.Width = 160;
-            txt.FontSize = 30;
+            txt.Margin = new Thickness(20, 0, 0, 0);
+            txt.Width = 150;    
             txt.Text = s;
+            txt.Padding = new Thickness(0, 7, 0, 0);
 
             dcPanel1.Children.Add(img);
             dcPanel1.Children.Add(txt);
             
-            DiskButton1.Height = 80;
+            DiskButton1.Height = 70;
             DiskButton1.Content = dcPanel1;
             DiskButton1.Style = (Style)this.FindResource("MenuButton");
             DiskArea.Children.Add(DiskButton1);
+
+            
+        }
+
+        public void menuButtonClick(object sender, EventArgs e)
+        {
+            foreach(var child in DiskArea.Children)
+            {
+                if(child is Button)
+                {
+                    (child as Button).Style = (Style)this.FindResource("MenuButton");
+                }   
+            }
+            
+            Storyboard storyBoard = (Storyboard) this.FindResource("MenuButtonClick");
+            Storyboard.SetTarget(storyBoard, sender as Button);
+            storyBoard.Begin();
+            (sender as Button).Style = (Style)this.FindResource("SelectedMenuButton");
+        }
+
+        public void closeApp(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void dragWindow(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
         }
 
         public SeriesCollection ChartData { get; set; }
