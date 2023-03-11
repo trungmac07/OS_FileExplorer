@@ -67,6 +67,8 @@ namespace FileExplorer
             }
         }
         DriveInfo[] allDrives = DriveInfo.GetDrives();
+        public SeriesCollection ChartData { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -95,6 +97,9 @@ namespace FileExplorer
                 }
                 Console.WriteLine(mbr[446]);
             }*/
+            Console.WriteLine(5);
+            NTFS test = new NTFS();
+            
 
         }
         public void chart()
@@ -217,7 +222,7 @@ namespace FileExplorer
                 this.DragMove();
         }
 
-        public SeriesCollection ChartData { get; set; }
+       
 
 
     }
