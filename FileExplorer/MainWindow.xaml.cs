@@ -97,7 +97,7 @@ namespace FileExplorer
                 }
                 Console.WriteLine(mbr[446]);
             }*/
-            Console.WriteLine(5);
+            
             NTFS test = new NTFS();
             
 
