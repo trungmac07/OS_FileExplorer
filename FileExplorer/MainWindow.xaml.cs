@@ -75,6 +75,12 @@ namespace FileExplorer
             getDirectoryTree();
             getDrive();
             chart();
+            MBR mBR = new MBR();
+            mBR.readMBR(0);
+            mBR.printMBRTable();
+            mBR.printPartitionInfo(1);
+            Console.WriteLine(mBR.getPartitionStatus(0));
+            Console.WriteLine(mBR.getPartitionStatus(1));
             /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
 
             using (FileStream fs = new FileStream(diskPath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -97,7 +103,7 @@ namespace FileExplorer
                 }
                 Console.WriteLine(mbr[446]);
             }*/
-            
+
             NTFS test = new NTFS();
             
         }
