@@ -280,7 +280,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!--Storyboard-->
         <Storyboard x:Key="MenuButtonClick">
             <ColorAnimation  From="#00ADB5" To="#222831" 
@@ -295,7 +295,7 @@
     <Border CornerRadius="10" Background="{StaticResource BackgroundColor}">
         <DockPanel >
             <Border CornerRadius="15 0 0 15" Background="{StaticResource MenuColor}">
-                
+
                 <StackPanel Margin="0 45 0 0" Background="Transparent" Width="240">
                     <TextBlock Foreground="#2EC4B6" Padding="30 30 0 0" Height="100" FontWeight="Bold" FontSize="35">STORAGE</TextBlock>
                     <StackPanel Name ="DiskArea" Margin="0 20 0 0" Width="250" Background="#393E46">
@@ -304,35 +304,57 @@
             </Border>
             <StackPanel Width="auto" Height="auto">
                 <DockPanel>
-                <Border Style="{StaticResource CloseButtonBorder}">
-                    <Button Style="{StaticResource CloseButton}" Background="Transparent" FontSize="15" BorderThickness="0" Click="closeApp">
-                        <Image HorizontalAlignment="Left" Width="17" Height="17" Source="resources/close.png" Stretch="Fill"></Image>
-                    </Button>
-                </Border>
+                    <Border Style="{StaticResource CloseButtonBorder}">
+                        <Button Style="{StaticResource CloseButton}" Background="Transparent" FontSize="15" BorderThickness="0" Click="closeApp">
+                            <Image HorizontalAlignment="Left" Width="17" Height="17" Source="resources/close.png" Stretch="Fill"></Image>
+                        </Button>
+                    </Border>
                 </DockPanel>
                 <StackPanel Margin="20 -15 10 0" Width="969">
-                    <Border Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
-                        </Border.Effect>
-                        <DockPanel  Height="185">
-                            <lvc:PieChart Margin="35 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
-                                <lvc:PieChart.ChartLegend>
-                                    <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="11" TextBlock.Foreground="Black">
-                                    </lvc:DefaultLegend>
-                                </lvc:PieChart.ChartLegend>
-                                <lvc:PieChart.DataTooltip>
-                                    <lvc:DefaultTooltip BulletSize="20">
-                                    </lvc:DefaultTooltip>
-                                </lvc:PieChart.DataTooltip>
-                            </lvc:PieChart>
+                    <DockPanel>
+                        
+                        <Border Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195" Width="373">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
+                            </Border.Effect>
+                            <ScrollViewer Margin="0 10 -2 10">
+                                <StackPanel Name ="PartitionArea">
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 1</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 2</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 3</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 4</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 5</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 5</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 5</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 5</TextBlock>
+                                    <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 5</TextBlock>
 
-                            <StackPanel Margin="30 0 0 0">
-                                <TextBlock Height="68" FontSize="30" Foreground="Black" Margin="0 30 0 0">NTFS/FAT</TextBlock>
-                                <TextBlock Height="95" FontSize="30" Foreground="Black">512/1024</TextBlock>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                        <Border HorizontalAlignment="Right" Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195" Width="535">
+                            <Border.Effect>
+                                <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
+                            </Border.Effect>
+                            <DockPanel  Height="185">
+                                <lvc:PieChart Margin="35 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
+                                    <lvc:PieChart.ChartLegend>
+                                        <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="11" TextBlock.Foreground="Black">
+                                        </lvc:DefaultLegend>
+                                    </lvc:PieChart.ChartLegend>
+                                    <lvc:PieChart.DataTooltip>
+                                        <lvc:DefaultTooltip BulletSize="20">
+                                        </lvc:DefaultTooltip>
+                                    </lvc:PieChart.DataTooltip>
+                                </lvc:PieChart>
+
+                                <StackPanel Margin="30 0 0 0">
+                                    <TextBlock Height="68" FontSize="30" Foreground="Black" Margin="0 30 0 0">NTFS/FAT</TextBlock>
+                                    <TextBlock Height="95" FontSize="30" Foreground="Black">512/1024</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </DockPanel>
                     <DockPanel Margin="0 10 0 20" Height="485">
                         <Border VerticalAlignment="Top" Background="#FFFFFF" Margin="15 5 15 40" CornerRadius="15" Height="400">
                             <Border.Effect>
@@ -367,14 +389,17 @@
                                         <Image Name ="FileImage" Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
                                         <TextBlock Name="FileName" Margin="20 0 20 10" FontSize="17" TextWrapping="Wrap" Foreground="Black">This file has very long name to test what does the application appear.dmm</TextBlock>
                                     </DockPanel>
-                                    <Border Margin="15 30 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
+                                    <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
                                     <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black">Size: 1234.567 KB</TextBlock>
                                     <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black">Date created: 30/04/1975</TextBlock>
                                     <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black">Time created: 11:45:00</TextBlock>
-                                    <Border Margin="15 20 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
+                                    <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
                                     <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black">Attributes</TextBlock>
                                     <CheckBox Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
                                     <CheckBox Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
+                                    <Border Height="35" Width="100" Background="#2EC4B6" CornerRadius="10" HorizontalAlignment="Right" Margin="0 0 15 0">
+                                        <Button FontSize="15" Background="Transparent" BorderThickness="0">MORE INFO</Button>
+                                    </Border>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
