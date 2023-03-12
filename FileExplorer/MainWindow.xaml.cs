@@ -18,9 +18,9 @@ using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 
+
 namespace FileExplorer
 {
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -100,7 +100,6 @@ namespace FileExplorer
             
             NTFS test = new NTFS();
             
-
         }
         public void chart()
         {
@@ -226,5 +225,19 @@ namespace FileExplorer
 
 
     }
+    public class Function
+    {
+        static public long littleEndian(byte[] src, int offset, int length)
+        {
+            long res = 0;
+            for (int i = length - 1; i >= 0; --i)
+            {
+                res <<= 8;
+                res += (int)src[offset + i];
+            }
+            return res;
+        }
 
+        
+    }
 }
