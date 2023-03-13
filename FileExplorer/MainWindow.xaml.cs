@@ -71,16 +71,18 @@ namespace FileExplorer
 
         public MainWindow()
         {
+            // Khoi's codes
             InitializeComponent();
             getDirectoryTree();
             getDrive();
             chart();
             MBR mBR = new MBR();
-            mBR.readMBR(0);
+            mBR.readMBR(1);
             mBR.printMBRTable();
-            mBR.printPartitionInfo(1);
-            Console.WriteLine(mBR.getPartitionStatus(0));
-            Console.WriteLine(mBR.getPartitionStatus(1));
+            mBR.printPartitionInfo(0);
+
+
+            ////////
             /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
 
             using (FileStream fs = new FileStream(diskPath, FileMode.Open, FileAccess.Read, FileShare.Read))
