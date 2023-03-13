@@ -78,9 +78,9 @@ namespace FileExplorer
             chart();
             MBR mBR = new MBR();
             mBR.readMBR(1);
-            mBR.printMBRTable();
-            mBR.printPartitionInfo(0);
+            //mBR.printMBRTable();
             mBR.printPartitionInfo(1);
+
 
             ////////
             /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
