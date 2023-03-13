@@ -89,11 +89,7 @@ namespace FileExplorer
 
             public byte readAttributesHeader()
             {
-                enum Offset
-                {
-                    HAHA,
-                    HIHI,
-                }
+               
                 byte[] attributeHeader = new byte[512];
                 int[] offset = { 0x00, 0x04, 0x08};
                 int[] length = { 4, 4, 1 };
