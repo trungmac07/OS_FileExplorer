@@ -12,6 +12,30 @@ namespace FileExplorer
 
     internal partial class NTFS
     {
+        public enum OffsetVBR
+        {
+            BYTES_PER_SECTOR = 0x0b,
+            SECTORS_PER_CLUSTER = 0x0d,
+            SECTORS_PER_TRACK = 0x18,
+            NUMBER_OF_HEADS = 0x1a,
+            NUMBER_OF_SECTORS = 0x28,
+            BEGIN_CLUSTER_1 = 0x30,
+            BEGIN_CLUSTER_2 = 0x38,
+            BYTES_PER_ENTRY = 0x40,
+        }
+
+        public enum LengthVBR
+        {
+            BYTES_PER_SECTOR = 2,
+            SECTORS_PER_CLUSTER = 1,
+            SECTORS_PER_TRACK = 2,
+            NUMBER_OF_HEADS = 2,
+            NUMBER_OF_SECTORS = 8,
+            BEGIN_CLUSTER_1 = 8,
+            BEGIN_CLUSTER_2 = 8,
+            BYTES_PER_ENTRY = 1,
+        }
+
         private long BytesPerSector { get; set; }
         private long SectorsPerCluster { get; set; }
         private long SectorsPerTrack { get; set; }
@@ -22,28 +46,23 @@ namespace FileExplorer
         private long BytesPerEntry { get; set; }
         SortedSet<MFTEntry> MFTEntries; 
 
+
+
         public NTFS()
         {
-            int[] offset = { 0x0b, 0x0d, 0x18, 0x1a, 0x28, 0x30, 0x38, 0x40 };
-            int[] length = { 2, 1, 2, 2, 8, 8, 8, 1 };
-
+         
             byte[] vbr = new byte[512];
 
-            //TEST
-            for (int i = 0; i < 512; i++)
-                vbr[i] = (byte)i;
-            vbr[offset[7]] = 0xF6;
-            //
 
-            BytesPerSector = Function.littleEndian(vbr, offset[0], length[0]);
-            SectorsPerCluster = Function.littleEndian(vbr, offset[1], length[1]);
-            SectorsPerTrack = Function.littleEndian(vbr, offset[2], length[2]);
-            NumberOfHeads = Function.littleEndian(vbr, offset[3], length[3]);
-            NumberOfSectors = Function.littleEndian(vbr, offset[4], length[4]);
-            BeginCluster1 = Function.littleEndian(vbr, offset[5], length[5]);
-            BeginCluster2 = Function.littleEndian(vbr, offset[6], length[6]);
+            BytesPerSector      =   Function.littleEndian(vbr,  (int)OffsetVBR.BYTES_PER_SECTOR,     (int)LengthVBR.BYTES_PER_SECTOR);
+            SectorsPerCluster   =   Function.littleEndian(vbr,  (int)OffsetVBR.SECTORS_PER_CLUSTER,  (int)LengthVBR.SECTORS_PER_CLUSTER);
+            SectorsPerTrack     =   Function.littleEndian(vbr,  (int)OffsetVBR.SECTORS_PER_TRACK,    (int)LengthVBR.SECTORS_PER_TRACK);
+            NumberOfHeads       =   Function.littleEndian(vbr,  (int)OffsetVBR.NUMBER_OF_HEADS,      (int)LengthVBR.NUMBER_OF_HEADS);
+            NumberOfSectors     =   Function.littleEndian(vbr,  (int)OffsetVBR.NUMBER_OF_SECTORS,    (int)LengthVBR.NUMBER_OF_SECTORS);
+            BeginCluster1       =   Function.littleEndian(vbr,  (int)OffsetVBR.BEGIN_CLUSTER_1,      (int)LengthVBR.BEGIN_CLUSTER_1);
+            BeginCluster2       =   Function.littleEndian(vbr,  (int)OffsetVBR.BEGIN_CLUSTER_2,      (int)LengthVBR.BEGIN_CLUSTER_2);
             //2's complement 
-            int rawValue = vbr[offset[7]];
+            int rawValue = vbr[(int)OffsetVBR.BYTES_PER_ENTRY];
             int negativeMask = 0x00000080;
             int invertMask = ~0x000000ff;
 
