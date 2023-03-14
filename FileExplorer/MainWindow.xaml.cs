@@ -68,8 +68,8 @@ namespace FileExplorer
         }
         DriveInfo[] allDrives = DriveInfo.GetDrives();
         public SeriesCollection ChartData { get; set; }
-        int currentDisk = 1;
-        int currentPartition = 1;
+        public int currentDisk = 1;
+        public int currentPartition = 1;
         public MainWindow()
         {
             // Khoi's codes
@@ -77,9 +77,20 @@ namespace FileExplorer
             getDirectoryTree();
             getDrive();
             chart();
+
+            string drivePath = @"\\.\PhysicalDrive" + currentDisk;
+            Function.stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
+
+
+
             MBR mBR = new MBR();
             mBR.readMBR(currentDisk);
+
             //mBR.printMBRTable();
+
+           
+
+
             mBR.printPartitionInfo(currentPartition);
             if(mBR.getPartitionType(currentPartition) == "NTFS")
             {
@@ -238,6 +249,7 @@ namespace FileExplorer
     }
     public class Function
     {
+        public static FileStream stream = null;
         static public long littleEndian(byte[] src, int offset, int length)
         {
             long res = 0;

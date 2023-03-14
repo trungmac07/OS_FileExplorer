@@ -99,11 +99,11 @@ namespace FileExplorer
             // Open the drive for reading
             try
             {
-                FileStream stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
+                
                 // Read the MBR (first sector of the drive)
-                stream.Read(byteArr, 0, byteArr.Length);
+                Function.stream.Read(byteArr, 0, byteArr.Length);
                 byteString = BitConverter.ToString(byteArr).Replace("-", "");
-                stream.Close();
+            
             }
             catch (FileNotFoundException) { };
             

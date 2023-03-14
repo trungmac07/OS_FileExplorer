@@ -61,15 +61,15 @@ namespace FileExplorer
             long length = totalSector * 512;
             byte[] vbr = new byte[512];
             
-            string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
+            //string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
 
             // Open the drive for reading
             try
             {
-                stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                //stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 // Read the VBR
-                stream.Seek(FirstByte, SeekOrigin.Begin);
-                stream.Read(vbr, 0, 512);
+                Function.stream.Seek(FirstByte, SeekOrigin.Begin);
+                Function.stream.Read(vbr, 0, 512);
                
             }
             catch (FileNotFoundException) { };

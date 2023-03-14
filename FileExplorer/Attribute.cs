@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-
+using System.Threading;
 namespace FileExplorer
 {
 
@@ -21,12 +21,10 @@ namespace FileExplorer
                 this.Size = size;
                 this.Resident = resident;
                 this.CurrentDisk = currentDisk;
-                string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
-                stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+          
             }
 
             abstract public void Export(MFTEntry x);
-
 
         }
 
@@ -48,8 +46,8 @@ namespace FileExplorer
             {
                 byte[] attribute = new byte[size];
 
-                stream.Seek(firstByte, SeekOrigin.Begin);
-                stream.Read(attribute, 0, (int)size);
+                Function.stream.Seek(firstByte, SeekOrigin.Begin);
+                Function.stream.Read(attribute, 0, (int)size);
 
                 createdTime = Function.littleEndian(attribute, (int)OffsetTime.CREATEDTIME, (int)LengthTime.CREATEDTIME);
                 modifiedTime = Function.littleEndian(attribute, (int)OffsetTime.MODIFIEDTIME, (int)LengthTime.MODIFIEDTIME);
@@ -86,9 +84,9 @@ namespace FileExplorer
             public FileNameAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
             {
                 byte[] attribute = new byte[size];
-
-                stream.Seek(firstByte, SeekOrigin.Begin);
-                stream.Read(attribute, 0, (int)size);
+     
+                Function.stream.Seek(firstByte, SeekOrigin.Begin);
+                Function.stream.Read(attribute, 0, (int)size);
            
                 int[] offset = { 0x00, 0x38, 0x40, 0x42 };
                 int[] length = { 6, 4, 1 };
@@ -108,11 +106,14 @@ namespace FileExplorer
                     IsDirectory = true;
 
                 long nameLength = Function.littleEndian(attribute, offset[2], length[2]);
-                for (long i = nameLength - 1; i >= 0; --i)
+           
+                for (long i = 0;i<2*nameLength;++i)
                 {
-                    fileName += attribute[offset[3] + i];
+                    
+                    fileName += (char)attribute[offset[3] + i];
+                    
                 }
-
+                Console.WriteLine("LEN:" + nameLength.ToString() + " - " + fileName);
             }
 
             public override void Export(MFTEntry x)

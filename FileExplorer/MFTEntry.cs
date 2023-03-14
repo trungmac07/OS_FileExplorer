@@ -76,12 +76,8 @@ namespace FileExplorer
                 byte[] entryHeader = new byte[bytesPerEntry];
                 try
                 {
-                    string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
-                    
-                    stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    // Read the VBR
-                    stream.Seek(FirstByte, SeekOrigin.Begin);
-                    stream.Read(entryHeader, 0, (int)bytesPerEntry);
+                    Function.stream.Seek(FirstByte, SeekOrigin.Begin);
+                    Function.stream.Read(entryHeader, 0, (int)bytesPerEntry);
        
                 }
                 catch (FileNotFoundException) { };
@@ -95,6 +91,7 @@ namespace FileExplorer
                 BytesUsed           =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.BYTES_USED,            (int) LengthMFTEntryHeader.BYTES_USED);
                 NumberOfBytes       =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.NUMBER_OF_BYTES,       (int) LengthMFTEntryHeader.NUMBER_OF_BYTES);
                 ID                  =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.ID,                    (int) LengthMFTEntryHeader.ID);
+                
                 readAttributes();
             }
 
@@ -102,20 +99,20 @@ namespace FileExplorer
             {
                 long firstByte = BeginFirstAttribute;
                 Attribute tmp = null;
-                while ((tmp = readAttributeHeader(firstByte)) != null)
+                while ((tmp = readAttributeHeader(ref firstByte)) != null)
                 {
-                    firstByte += tmp.Size;
                     tmp.Export(this);
                 }
                 
             }
-            public Attribute readAttributeHeader(long firstByte)
+            public Attribute readAttributeHeader(ref long firstByte)
             {
+                
                 Attribute res = null;
-                byte[] attributeHeader = new byte[512];
-       
-                stream.Seek(firstByte, SeekOrigin.Begin);
-                stream.Read(attributeHeader, 0, 512);
+                byte[] attributeHeader = new byte[32];
+                Console.WriteLine("FB:" + firstByte);
+                Function.stream.Seek(firstByte, SeekOrigin.Begin);
+                Function.stream.Read(attributeHeader, 0, 32);
 
                 int[] offset = { 0x00, 0x04, 0x08, 0x10, 0x14};
                 int[] length = { 4, 4, 1, 4, 2 };
@@ -124,18 +121,20 @@ namespace FileExplorer
                 //Console.WriteLine("byte: " + attributeHeader[0] + " " + attributeHeader[1] + " " + attributeHeader[2] + " " + attributeHeader[3] + " " + attributeHeader[4] + " " + attributeHeader[5] + " " + attributeHeader[6]);
                 long sizeOfAttribute = Function.littleEndian(attributeHeader, offset[1], length[1]);
                 long resident = Function.littleEndian(attributeHeader, offset[2], length[2]);
-                long offsetByte = BeginFirstAttribute;
                 long sizeOfContent = Function.littleEndian(attributeHeader, offset[3], length[3]);
-                long positionOfContent = Function.littleEndian(attributeHeader,offset[4], length[4]); 
+                long positionOfContent = Function.littleEndian(attributeHeader,offset[4], length[4]) + firstByte;
 
 
+                Console.WriteLine(firstByte);
+                Console.WriteLine(sizeOfContent  + "  " + sizeOfAttribute);
+                firstByte += sizeOfAttribute;
 
                 if (attributeType == 0x10)
-                    res = new StandardInfoAttribute(positionOfContent, sizeOfContent, resident, CurrentDisk);
+                    res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else if (attributeType == 0x30)
-                    res = new FileNameAttribute(positionOfContent, sizeOfContent, resident, CurrentDisk);
+                    res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else if (attributeType == 0x80)
-                    res = new DataAttribute(positionOfContent, sizeOfContent, resident, CurrentDisk);
+                    res = new DataAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else res = null;
 
                 return res;
@@ -154,7 +153,9 @@ namespace FileExplorer
             public void printInfo()
             {
                 Console.WriteLine("Sign: " + Sign);
-                Console.WriteLine("FileName:" + FileName);
+                Console.WriteLine("FileName: " + FileName);
+                Console.WriteLine("IDparent: " + IDParentFolder);
+                //Console.WriteLine("Size: " + BytesUsed + "/" + NumberOfBytes);
             }
 
 
@@ -167,33 +168,6 @@ namespace FileExplorer
             {
                
             }
-
-            public AttributeType readAttributes(byte type, long sizeOfAttribute, int attributeFirstByte)
-            {
-                if(type == (int)AttributeType.STANDARD_INFOMATION)
-                {
-                    readStandardInfo();
-                    return AttributeType.STANDARD_INFOMATION;
-                }
-                else if (type == (int)AttributeType.FILE_NAME)
-                {
-                    readFileName();
-                    return AttributeType.FILE_NAME;
-                }
-                else if(type == (int)AttributeType.DATA)
-                {
-                    return AttributeType.DATA;
-                }
-                else if (type == (int)AttributeType.END)
-                {
-                    return AttributeType.END;
-                }
-                else
-                {
-                    return AttributeType.NULL;
-                }
-            }
-
 
             public int CompareTo(MFTEntry other)
             {
