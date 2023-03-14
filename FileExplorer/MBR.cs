@@ -103,7 +103,7 @@ namespace FileExplorer
                 // Read the MBR (first sector of the drive)
                 stream.Read(byteArr, 0, byteArr.Length);
                 byteString = BitConverter.ToString(byteArr).Replace("-", "");
-
+                stream.Close();
             }
             catch (FileNotFoundException) { };
             
@@ -159,6 +159,7 @@ namespace FileExplorer
             LBAstring = convertHexStringToBinString(LBAstring);
             return converBinStringToInt(LBAstring);
         }
+     
         public long getSectorInPartition(int index)
         {
             string s = readLittleEndian((int)Offset.sectorInPartition + (16 * index), 4);

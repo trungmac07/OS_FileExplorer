@@ -68,7 +68,8 @@ namespace FileExplorer
         }
         DriveInfo[] allDrives = DriveInfo.GetDrives();
         public SeriesCollection ChartData { get; set; }
-
+        int currentDisk = 1;
+        int currentPartition = 1;
         public MainWindow()
         {
             // Khoi's codes
@@ -77,10 +78,16 @@ namespace FileExplorer
             getDrive();
             chart();
             MBR mBR = new MBR();
-            mBR.readMBR(1);
+            mBR.readMBR(currentDisk);
             //mBR.printMBRTable();
-            mBR.printPartitionInfo(1);
-
+            mBR.printPartitionInfo(currentPartition);
+            if(mBR.getPartitionType(currentPartition) == "NTFS")
+            {
+                NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition),currentDisk);
+                ntfs.printVBRInfo();
+                ntfs.readAttribute();
+                ntfs.showTree();
+            }
 
             ////////
             /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
@@ -106,7 +113,7 @@ namespace FileExplorer
                 Console.WriteLine(mbr[446]);
             }*/
 
-            NTFS test = new NTFS();
+          
             
         }
         public void chart()
@@ -211,10 +218,6 @@ namespace FileExplorer
                     (child as Button).Style = (Style)this.FindResource("MenuButton");
                 }   
             }
-            
-            Storyboard storyBoard = (Storyboard) this.FindResource("MenuButtonClick");
-            Storyboard.SetTarget(storyBoard, sender as Button);
-            storyBoard.Begin();
             (sender as Button).Style = (Style)this.FindResource("SelectedMenuButton");
         }
 
@@ -245,7 +248,7 @@ namespace FileExplorer
             }
             return res;
         }
+       
 
-        
     }
 }

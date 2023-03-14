@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
+using System.Windows.Media;
 
 
 namespace FileExplorer
@@ -12,6 +14,7 @@ namespace FileExplorer
 
     internal partial class NTFS
     {
+
         public enum OffsetVBR
         {
             BYTES_PER_SECTOR = 0x0b,
@@ -36,6 +39,8 @@ namespace FileExplorer
             BYTES_PER_ENTRY = 1,
         }
 
+        private long CurrentDisk { get; set; }
+
         private long BytesPerSector { get; set; }
         private long SectorsPerCluster { get; set; }
         private long SectorsPerTrack { get; set; }
@@ -44,24 +49,41 @@ namespace FileExplorer
         private long BeginCluster1 { get; set; }
         private long BeginCluster2 { get; set; }
         private long BytesPerEntry { get; set; }
-        SortedSet<MFTEntry> MFTEntries; 
+        SortedSet<MFTEntry> MFTEntries;
 
+        FileStream stream = null;
 
-
-        public NTFS()
+        private long FirstByte { get; set; }
+        public NTFS(long firstSector, long totalSector, int currentDisk)
         {
-         
+            CurrentDisk = currentDisk;
+            FirstByte = firstSector * 512;
+            long length = totalSector * 512;
             byte[] vbr = new byte[512];
+            
+            string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
 
+            // Open the drive for reading
+            try
+            {
+                stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                // Read the VBR
+                stream.Seek(FirstByte, SeekOrigin.Begin);
+                stream.Read(vbr, 0, 512);
+               
+            }
+            catch (FileNotFoundException) { };
 
             BytesPerSector      =   Function.littleEndian(vbr,  (int)OffsetVBR.BYTES_PER_SECTOR,     (int)LengthVBR.BYTES_PER_SECTOR);
             SectorsPerCluster   =   Function.littleEndian(vbr,  (int)OffsetVBR.SECTORS_PER_CLUSTER,  (int)LengthVBR.SECTORS_PER_CLUSTER);
             SectorsPerTrack     =   Function.littleEndian(vbr,  (int)OffsetVBR.SECTORS_PER_TRACK,    (int)LengthVBR.SECTORS_PER_TRACK);
             NumberOfHeads       =   Function.littleEndian(vbr,  (int)OffsetVBR.NUMBER_OF_HEADS,      (int)LengthVBR.NUMBER_OF_HEADS);
             NumberOfSectors     =   Function.littleEndian(vbr,  (int)OffsetVBR.NUMBER_OF_SECTORS,    (int)LengthVBR.NUMBER_OF_SECTORS);
+           
             BeginCluster1       =   Function.littleEndian(vbr,  (int)OffsetVBR.BEGIN_CLUSTER_1,      (int)LengthVBR.BEGIN_CLUSTER_1);
             BeginCluster2       =   Function.littleEndian(vbr,  (int)OffsetVBR.BEGIN_CLUSTER_2,      (int)LengthVBR.BEGIN_CLUSTER_2);
             //2's complement 
+
             int rawValue = vbr[(int)OffsetVBR.BYTES_PER_ENTRY];
             int negativeMask = 0x00000080;
             int invertMask = ~0x000000ff;
@@ -73,12 +95,14 @@ namespace FileExplorer
             }
             BytesPerEntry = (long)Math.Pow(2, rawValue); //2^
             MFTEntries = new SortedSet<MFTEntry>();
+
         }
        
         public void readAttribute()
         {
-            long beginByte = BeginCluster1 * SectorsPerCluster * BytesPerSector;
-            MFTEntry mFTEntry = new MFTEntry(); //pass in Begin
+            long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
+            //pass in Begin
+
             /*
              * Add the file to sorted set 
              * Check if the file has parent or not
@@ -86,19 +110,37 @@ namespace FileExplorer
              * 
              * 
              */
+
+            for(long i=beginByte; i < beginByte + 125*BytesPerEntry; i+=BytesPerEntry)
+            {
+                MFTEntry mFTEntry = new MFTEntry(i, CurrentDisk, BytesPerEntry);
+                mFTEntry.print();
+                if(mFTEntry.Sign == "FILE")
+                {
+                    MFTEntries.Add(mFTEntry);
+                }
+            }
+
+        }
+
+        public void showTree()
+        {
+            Console.WriteLine("___________________________________");
+            foreach (MFTEntry mFTEntry in MFTEntries)
+                mFTEntry.printInfo();
         }
 
 
         public void printVBRInfo()
         {
-            Console.WriteLine(BytesPerSector);
-            Console.WriteLine(SectorsPerCluster);
-            Console.WriteLine(SectorsPerTrack);
-            Console.WriteLine(NumberOfHeads);
-            Console.WriteLine(NumberOfSectors);
-            Console.WriteLine(BeginCluster1);
-            Console.WriteLine(BeginCluster2);
-            Console.WriteLine(BytesPerEntry);
+            Console.WriteLine("Bytes per sector: " + BytesPerSector);
+            Console.WriteLine("Sector per cluster: " + SectorsPerCluster);
+            Console.WriteLine("Sector per track " + SectorsPerTrack);
+            Console.WriteLine("Number of heads: " + NumberOfHeads);
+            Console.WriteLine("Number of sectors: " + NumberOfSectors);
+            Console.WriteLine("Begin cluster 1: " + BeginCluster1);
+            Console.WriteLine("Begin cluster 2: " + BeginCluster2);
+            Console.WriteLine("Bytes per entry: " + BytesPerEntry);
         }
 
 
