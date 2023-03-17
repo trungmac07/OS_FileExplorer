@@ -63,7 +63,8 @@ namespace FileExplorer
                 dockPanel.Children.Add(image);
                 dockPanel.Children.Add(textBlock);
                 button.Content = dockPanel;
-                DirectoryTreeContain.Children.Add(button);
+
+                FolderTreeContain.Children.Add(button);
             }
         }
         DriveInfo[] allDrives = DriveInfo.GetDrives();
@@ -74,7 +75,7 @@ namespace FileExplorer
         {
             // Khoi's codes
             InitializeComponent();
-            getDirectoryTree();
+            //getDirectoryTree();
             getDrive();
             chart();
 
@@ -88,17 +89,19 @@ namespace FileExplorer
 
             //mBR.printMBRTable();
 
-           
+
 
 
             mBR.printPartitionInfo(currentPartition);
-            if(mBR.getPartitionType(currentPartition) == "NTFS")
+            if (mBR.getPartitionType(currentPartition) == "NTFS")
             {
-                NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition),currentDisk);
+                NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                 ntfs.printVBRInfo();
                 ntfs.readAttribute();
                 ntfs.showTree();
+                renderRoots(ntfs);
             }
+
 
             ////////
             /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
@@ -124,8 +127,8 @@ namespace FileExplorer
                 Console.WriteLine(mbr[446]);
             }*/
 
-          
-            
+
+
         }
         public void chart()
         {
@@ -157,8 +160,8 @@ namespace FileExplorer
         {
             FileInfo oFileInfo = new FileInfo(@"E:\Download\file.png");
             MessageBox.Show("My File's Name: \"" + oFileInfo.Name + "\"");
-            DateTime dtCreationTime = oFileInfo.CreationTime;
-            MessageBox.Show("Date and Time File Created: " + dtCreationTime.ToString());
+            //DateTime dtCreationTime = oFileInfo.CreationTime;
+            //MessageBox.Show("Date and Time File Created: " + dtCreationTime.ToString());
             MessageBox.Show("myFile Extension: " + oFileInfo.Extension);
             MessageBox.Show("myFile total Size: " + oFileInfo.Length.ToString());
             MessageBox.Show("myFile filepath: " + oFileInfo.DirectoryName);
@@ -180,11 +183,11 @@ namespace FileExplorer
             {
                 if (d.DriveType == DriveType.Fixed)
                     createButton(d.Name, 0);
-                else if(d.DriveType == DriveType.Removable)
+                else if (d.DriveType == DriveType.Removable)
                     createButton(d.Name, 1);
             }
         }
-        public void createButton(string s,int kind)
+        public void createButton(string s, int kind)
         {
             s += "abcdef name";
             Button DiskButton1 = new Button();
@@ -196,38 +199,38 @@ namespace FileExplorer
 
             img.Height = 40;
             img.Width = 40;
-            if(kind == 0)
-                img.Source = new BitmapImage(new Uri("/resources/hdd.png",UriKind.RelativeOrAbsolute));
-            else if(kind == 1)
+            if (kind == 0)
+                img.Source = new BitmapImage(new Uri("/resources/hdd.png", UriKind.RelativeOrAbsolute));
+            else if (kind == 1)
                 img.Source = new BitmapImage(new Uri("/resources/usb.png", UriKind.RelativeOrAbsolute));
 
             img.Stretch = Stretch.Fill;
-        
+
 
             txt.Margin = new Thickness(20, 0, 0, 0);
-            txt.Width = 150;    
+            txt.Width = 150;
             txt.Text = s;
             txt.Padding = new Thickness(0, 7, 0, 0);
 
             dcPanel1.Children.Add(img);
             dcPanel1.Children.Add(txt);
-            
+
             DiskButton1.Height = 70;
             DiskButton1.Content = dcPanel1;
             DiskButton1.Style = (Style)this.FindResource("MenuButton");
             DiskArea.Children.Add(DiskButton1);
 
-            
+
         }
 
         public void menuButtonClick(object sender, EventArgs e)
         {
-            foreach(var child in DiskArea.Children)
+            foreach (var child in DiskArea.Children)
             {
-                if(child is Button)
+                if (child is Button)
                 {
                     (child as Button).Style = (Style)this.FindResource("MenuButton");
-                }   
+                }
             }
             (sender as Button).Style = (Style)this.FindResource("SelectedMenuButton");
         }
@@ -243,8 +246,130 @@ namespace FileExplorer
                 this.DragMove();
         }
 
-       
+        private void renderAllNode(NTFS ntfsPartition, FolderTreeNode node)
+        {
+            Button button = new Button();
+            button.Background = Brushes.Transparent;
+            button.Width = 600;
+            button.Height = 35;
+            button.HorizontalAlignment = HorizontalAlignment.Left;
+            button.BorderThickness = new Thickness(0);
+            button.Margin = new Thickness(30 * node.Level, 0, 0, 0);
 
+            DockPanel dockPanel = new DockPanel();
+            dockPanel.Width = 600;
+            dockPanel.HorizontalAlignment = HorizontalAlignment.Left;
+
+            Button expand = new Button();
+            expand.Content = "v";
+            expand.Style = (Style)this.FindResource("TreeExpandButton");
+
+            Image image = new Image();
+            if (node.Info.Type <= 1)
+                image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+            else
+                image.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
+            image.Width = 25;
+            image.Margin = new Thickness(10, 0, 0, 0);
+
+
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = node.Info.FileName;
+            textBlock.Margin = new Thickness(10, 0, 0, 0);
+            textBlock.Foreground = Brushes.Black;
+            textBlock.VerticalAlignment = VerticalAlignment.Center;
+
+            dockPanel.Children.Add(expand);
+            dockPanel.Children.Add(image);
+            dockPanel.Children.Add(textBlock);
+
+            button.Content = dockPanel;
+            FolderTreeContain.Children.Add(button);
+            foreach (var child in node.Children)
+            {
+                renderAllNode(ntfsPartition, ntfsPartition.ListOfFiles[child]);
+            }
+        }
+        private void renderANode(NTFS ntfsPartition, FolderTreeNode node)
+        {
+            Button button = new Button();
+            button.Background = Brushes.Transparent;
+            button.Width = 600;
+            button.Height = 42;
+            button.HorizontalAlignment = HorizontalAlignment.Left;
+            button.BorderThickness = new Thickness(0);
+            button.Margin = new Thickness(30 * node.Level, 0, 0, 0);
+
+            DockPanel dockPanel = new DockPanel();
+            dockPanel.Width = 600;
+            dockPanel.HorizontalAlignment = HorizontalAlignment.Left;
+
+            Button expand = new Button();
+            
+            expand.Style = (Style)this.FindResource("TreeExpandButton");
+
+            Image image = new Image();
+            image.Width = 32;
+            image.Margin = new Thickness(12, 0, 0, 0);
+
+
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = node.Info.FileName;
+            textBlock.Margin = new Thickness(15, 0, 0, 0);
+            textBlock.Foreground = Brushes.Black;
+            textBlock.VerticalAlignment = VerticalAlignment.Center;
+            textBlock.FontSize = 15;
+
+            if (node.Info.Type <= 1)
+            {
+                image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+                expand.Content = "";
+                expand.Background = Brushes.Transparent;
+                expand.BorderThickness = new Thickness(0);
+            }
+            else
+            {
+                image.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
+                expand.Content = ">";
+
+            }
+
+
+            dockPanel.Children.Add(expand);
+            dockPanel.Children.Add(image);
+            dockPanel.Children.Add(textBlock);
+
+            button.Content = dockPanel;
+            FolderTreeContain.Children.Add(button);
+
+        }
+
+
+        private void renderAllFolderTree(NTFS ntfsPartition)
+        {
+
+            /*<Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
+                <DockPanel HorizontalAlignment="Left" Width="240">
+                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
+                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
+                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
+                </DockPanel>
+            </Button>*/
+
+            //////////////////////////////////////////////
+            foreach (var root in ntfsPartition.ListOfRoots)
+            {
+                renderAllNode(ntfsPartition, root.Value);
+            }
+        }
+
+        private void renderRoots(NTFS ntfsPartition)
+        {
+            foreach (var root in ntfsPartition.ListOfRoots)
+            {
+                renderANode(ntfsPartition, root.Value);
+            }
+        }
 
     }
     public class Function
@@ -260,7 +385,7 @@ namespace FileExplorer
             }
             return res;
         }
-       
+
 
     }
 }

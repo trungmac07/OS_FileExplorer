@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Runtime;
 namespace FileExplorer
 {
     internal partial class NTFS
@@ -55,19 +55,9 @@ namespace FileExplorer
             public long NumberOfBytes { get; }
             public long ID { get; }
 
-            //In attributes
-            public long CreatedTime { get; set; }
-            public long ModifiedTime { get; set; }
-            public long IDParentFolder { get; set; } = 0;
-            public string FileName { get; set; } = "";
+            //Attribute 
+            List<Attribute> ListOfAttributes { get; } = new List<Attribute>();
 
-            public bool IsReadOnly { get; set; } = false;
-            public bool IsHidden { get; set; } = false;
-            public bool IsSystem { get; set; } = false;
-            public bool IsArchive { get; set; } = false;
-            public bool IsDirectory { get; set; } = false;
-
-            FileStream stream = null;
 
             public MFTEntry(long firstByte, long currentDisk, long bytesPerEntry) 
             {
@@ -99,9 +89,9 @@ namespace FileExplorer
             {
                 long firstByte = BeginFirstAttribute;
                 Attribute tmp = null;
-                while ((tmp = readAttributeHeader(ref firstByte)) != null)
+                while((tmp = readAttributeHeader(ref firstByte)) != null)
                 {
-                    tmp.Export(this);
+                    ListOfAttributes.Add(tmp);
                 }
                 
             }
@@ -110,7 +100,7 @@ namespace FileExplorer
                 
                 Attribute res = null;
                 byte[] attributeHeader = new byte[32];
-                Console.WriteLine("FB:" + firstByte);
+          
                 Function.stream.Seek(firstByte, SeekOrigin.Begin);
                 Function.stream.Read(attributeHeader, 0, 32);
 
@@ -118,25 +108,28 @@ namespace FileExplorer
                 int[] length = { 4, 4, 1, 4, 2 };
 
                 byte attributeType = attributeHeader[0];
-                //Console.WriteLine("byte: " + attributeHeader[0] + " " + attributeHeader[1] + " " + attributeHeader[2] + " " + attributeHeader[3] + " " + attributeHeader[4] + " " + attributeHeader[5] + " " + attributeHeader[6]);
+                byte tmp = attributeHeader[1];
                 long sizeOfAttribute = Function.littleEndian(attributeHeader, offset[1], length[1]);
                 long resident = Function.littleEndian(attributeHeader, offset[2], length[2]);
                 long sizeOfContent = Function.littleEndian(attributeHeader, offset[3], length[3]);
                 long positionOfContent = Function.littleEndian(attributeHeader,offset[4], length[4]) + firstByte;
 
 
-                Console.WriteLine(firstByte);
-                Console.WriteLine(sizeOfContent  + "  " + sizeOfAttribute);
-                firstByte += sizeOfAttribute;
-
                 if (attributeType == 0x10)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else if (attributeType == 0x30)
                     res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else if (attributeType == 0x80)
-                    res = new DataAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
-                else res = null;
+                {
+                    Console.WriteLine(sizeOfAttribute);
+                    res = new DataAttribute(firstByte, sizeOfAttribute, resident, CurrentDisk);
+                }
+                else if (attributeType == 0xFF || attributeType == 0x00)
+                    res = null;
+                else 
+                    res = new OtherAttribute(0,0,0,0);
 
+                firstByte += sizeOfAttribute;
                 return res;
 
             }
@@ -152,21 +145,24 @@ namespace FileExplorer
 
             public void printInfo()
             {
-                Console.WriteLine("Sign: " + Sign);
-                Console.WriteLine("FileName: " + FileName);
-                Console.WriteLine("IDparent: " + IDParentFolder);
+                Console.WriteLine("ID: " + ID);
+                foreach(Attribute a in ListOfAttributes)
+                    a.showInfo();
+                Console.WriteLine();
                 //Console.WriteLine("Size: " + BytesUsed + "/" + NumberOfBytes);
             }
 
-
-            public void readStandardInfo()
+            public string showType()
             {
-                
-            }
-            
-            public void readFileName()
-            {
-               
+                if (Type == 0) 
+                    return "Deleted File";
+                if (Type == 1)
+                    return "File";
+                if (Type == 2)
+                    return "Deleted Folder";
+                if (Type == 3)
+                    return "Folder";
+                return "";
             }
 
             public int CompareTo(MFTEntry other)
@@ -174,6 +170,15 @@ namespace FileExplorer
                 return this.ID.CompareTo(other.ID);
             }
 
+            public void export(FileInfomation x)
+            {
+                x.Type = (int)Type;
+                x.ID = ID;
+                foreach(Attribute a in ListOfAttributes)
+                    a.export(x);
+            }
+            
         }
     }
 }
+

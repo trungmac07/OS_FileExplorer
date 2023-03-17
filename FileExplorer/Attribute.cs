@@ -21,10 +21,11 @@ namespace FileExplorer
                 this.Size = size;
                 this.Resident = resident;
                 this.CurrentDisk = currentDisk;
-          
-            }
 
-            abstract public void Export(MFTEntry x);
+            }
+            abstract public void showInfo();
+
+            abstract public void export(FileInfomation x);
 
         }
 
@@ -32,6 +33,7 @@ namespace FileExplorer
         {
             private long createdTime;
             private long modifiedTime;
+            private static DateTime baseTime = new DateTime(1601, 1, 1);
             public enum OffsetTime
             {
                 CREATEDTIME = 0x00,
@@ -53,12 +55,34 @@ namespace FileExplorer
                 modifiedTime = Function.littleEndian(attribute, (int)OffsetTime.MODIFIEDTIME, (int)LengthTime.MODIFIEDTIME);
             }
 
-            public override void Export(MFTEntry x)
+            public DateTime CreateTime()
             {
-                x.CreatedTime = createdTime;
-                x.ModifiedTime = modifiedTime;
+                DateTime time = new DateTime(createdTime + baseTime.Ticks);
+                return time;
             }
 
+            public DateTime ModifiedTime()
+            {
+                DateTime time = new DateTime(modifiedTime + baseTime.Ticks);
+                return time;
+                /* String test = time.ToLocalTime().ToString("dd/MM/yyyy - HH:mm:ss");
+                 return test;*/
+            }
+
+            public override void export(FileInfomation x)
+            {
+                x.CreatedTime = CreateTime();
+                x.LastModifiedTime = ModifiedTime();
+            }
+
+            public override void showInfo()
+            {
+                String create = CreateTime().ToLocalTime().ToString("dd/MM/yyyy - HH:mm:ss");
+                String modify = ModifiedTime().ToLocalTime().ToString("dd/MM/yyyy - HH:mm:ss");
+
+                Console.WriteLine("Created: " + create);
+                Console.WriteLine("Modified: " + modify);
+            }
         }
 
 
@@ -84,10 +108,10 @@ namespace FileExplorer
             public FileNameAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
             {
                 byte[] attribute = new byte[size];
-     
+
                 Function.stream.Seek(firstByte, SeekOrigin.Begin);
                 Function.stream.Read(attribute, 0, (int)size);
-           
+
                 int[] offset = { 0x00, 0x38, 0x40, 0x42 };
                 int[] length = { 6, 4, 1 };
 
@@ -106,17 +130,20 @@ namespace FileExplorer
                     IsDirectory = true;
 
                 long nameLength = Function.littleEndian(attribute, offset[2], length[2]);
-           
-                for (long i = 0;i<2*nameLength;++i)
+
+
+                byte[] name = new byte[nameLength * 2];
+                for (int i = 0; i < nameLength * 2; ++i)
                 {
-                    
-                    fileName += (char)attribute[offset[3] + i];
-                    
+                    name[i] = attribute[offset[3] + i];
                 }
-                Console.WriteLine("LEN:" + nameLength.ToString() + " - " + fileName);
+
+                fileName = Encoding.Unicode.GetString(name);
+
+
             }
 
-            public override void Export(MFTEntry x)
+            public override void export(FileInfomation x)
             {
                 x.FileName = fileName;
                 x.IDParentFolder = IDParentFolder;
@@ -126,18 +153,62 @@ namespace FileExplorer
                 x.IsArchive = IsArchive;
                 x.IsDirectory = IsDirectory;
             }
+
+            public override void showInfo()
+            {
+                Console.WriteLine("Filename: " + fileName);
+                Console.WriteLine("IDParent: " + IDParentFolder);
+            }
+
         }
         public class DataAttribute : Attribute
         {
+            private long dataSize = 0;
             public DataAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
             {
+                if (resident == 0 && dataSize != 0)
+                    dataSize = size;
+                else
+                {
+                    byte[] attribute = new byte[8];
+                    //Console.WriteLine(firstByte + 48);
+                    Function.stream.Seek(firstByte + 48, SeekOrigin.Begin);
+                    Function.stream.Read(attribute, 0, 8);
+                    dataSize = Function.littleEndian(attribute, 0, 8);
+
+                    //Console.WriteLine("SAI:" + dataSize);
+                }
             }
 
-            public override void Export(MFTEntry x)
+            public override void export(FileInfomation x)
+            {
+                x.Size = dataSize;
+                x.SizeOnDisk = dataSize;
+            }
+
+            public override void showInfo()
+            {
+                Console.WriteLine("Size: " + dataSize);
+            }
+        }
+
+        public class OtherAttribute : Attribute
+        {
+            public OtherAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
+            {
+
+            }
+
+            public override void export(FileInfomation x)
+            {
+               
+            }
+            public override void showInfo()
             {
 
             }
         }
+
     }
 
 }

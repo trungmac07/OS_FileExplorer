@@ -51,6 +51,10 @@ namespace FileExplorer
         private long BytesPerEntry { get; set; }
         SortedSet<MFTEntry> MFTEntries;
 
+        public Dictionary<long, FolderTreeNode> ListOfRoots { get; set; }
+        public Dictionary<long,FolderTreeNode> ListOfFiles { get; set; }
+
+
         FileStream stream = null;
 
         private long FirstByte { get; set; }
@@ -95,31 +99,64 @@ namespace FileExplorer
             }
             BytesPerEntry = (long)Math.Pow(2, rawValue); //2^
             MFTEntries = new SortedSet<MFTEntry>();
+            ListOfRoots = new Dictionary<long, FolderTreeNode> ();
+            ListOfFiles = new Dictionary<long, FolderTreeNode> ();
 
         }
        
         public void readAttribute()
         {
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
-            //pass in Begin
-
-            /*
-             * Add the file to sorted set 
-             * Check if the file has parent or not
-             * If yes -> find the parent by ID in set and add a child
-             * 
-             * 
-             */
-
-            for(long i=beginByte; i < beginByte + 125*BytesPerEntry; i+=BytesPerEntry)
+            int j = 0;
+            for(long i=beginByte; ;i+=BytesPerEntry)
             {
+                ++j;
                 MFTEntry mFTEntry = new MFTEntry(i, CurrentDisk, BytesPerEntry);
                 mFTEntry.print();
                 if(mFTEntry.Sign == "FILE")
                 {
+                    
                     MFTEntries.Add(mFTEntry);
+                    addToTree(new FileInfomation(mFTEntry));
+                }
+                else if (mFTEntry.Sign != "BAAD" && j >= 32)
+                {
+                    break;
                 }
             }
+        }
+
+        public void addToTree(FileInfomation src)
+        {
+            if (src == null)
+                return;
+            FolderTreeNode newNode = new FolderTreeNode(src);
+      
+            if (src.IDParentFolder == 5)
+            {
+                ListOfRoots.Add(src.ID,newNode);
+            }
+            else
+            {
+                if(ListOfFiles.ContainsKey(src.IDParentFolder))
+                {
+                    if (ListOfRoots.ContainsKey(src.IDParentFolder))
+                        ListOfRoots[src.IDParentFolder].Children.Add(src.ID);
+                    ListOfFiles[src.IDParentFolder].Children.Add(src.ID);
+                }
+                else
+                {
+                    ListOfFiles[src.IDParentFolder] = new FolderTreeNode(src.IDParentFolder);
+                    ListOfFiles[src.IDParentFolder].Children.Add(src.ID);
+                }
+                
+            }
+            if (ListOfFiles.ContainsKey(src.ID))
+                ListOfFiles[src.ID].Info = src;
+            else
+                ListOfFiles[src.ID] = newNode;
+            if(src.IDParentFolder != 5)
+                ListOfFiles[src.ID].Level = ListOfFiles[src.IDParentFolder].Level + 1;
 
         }
 
@@ -128,7 +165,12 @@ namespace FileExplorer
             Console.WriteLine("___________________________________");
             foreach (MFTEntry mFTEntry in MFTEntries)
                 mFTEntry.printInfo();
+
+            /*foreach (var node in ListOfFiles)
+                node.Value.showInfo();*/
+           
         }
+
 
 
         public void printVBRInfo()
