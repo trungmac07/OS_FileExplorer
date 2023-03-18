@@ -12,7 +12,7 @@ namespace FileExplorer
 {
 
 
-    internal partial class NTFS
+    public partial class NTFS
     {
 
         public enum OffsetVBR

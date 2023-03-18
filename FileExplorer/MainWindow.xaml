@@ -310,10 +310,10 @@
                         </Button>
                     </Border>
                 </DockPanel>
-                <StackPanel Margin="20 -15 10 0" Width="969">
-                    <DockPanel>
+                <StackPanel Margin="20 -15 10 0" Width="1050">
+                    <DockPanel HorizontalAlignment="Left" Width="1000">
 
-                        <Border Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195" Width="373">
+                        <Border Background="#FFFFFF" Margin="15 30 10 15" CornerRadius="15" Height="195" Width="385">
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                             </Border.Effect>
@@ -332,7 +332,7 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </Border>
-                        <Border HorizontalAlignment="Right" Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195" Width="535">
+                        <Border Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195" Width="542">
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                             </Border.Effect>
@@ -355,6 +355,7 @@
                             </DockPanel>
                         </Border>
                     </DockPanel>
+                    
                     <DockPanel Margin="0 10 0 20" Height="485">
                         <Border VerticalAlignment="Top" Background="#FFFFFF" Margin="15 5 15 40" CornerRadius="15" Height="400">
                             <Border.Effect>
@@ -362,31 +363,31 @@
                             </Border.Effect>
                             <ScrollViewer Margin="0 10 0 10" Width="660" >
                                 <StackPanel Margin="20 0 0 0" Name="FolderTreeContain">
-                                    
-                                    
+
+
                                 </StackPanel>
                             </ScrollViewer>
                         </Border>
                         <StackPanel Width="440">
-                            <Border HorizontalAlignment="Left" Background="#FFFFFF" Margin="12 5 48 60" CornerRadius="15" Height="400" Width="250">
+                            <Border HorizontalAlignment="Left" Background="#FFFFFF" Margin="12 5 48 60" CornerRadius="15" Height="400" Width="275">
                                 <Border.Effect>
                                     <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                                 </Border.Effect>
                                 <StackPanel Name="FileInfoArea">
                                     <DockPanel Margin="0 10 0 0" Height="100">
-                                        <Image Name ="FileImage" Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
-                                        <TextBlock Name="FileName" Margin="20 0 20 10" FontSize="17" TextWrapping="Wrap" Foreground="Black">This file has very long name to test what does the application appear.dmm</TextBlock>
+                                        <Image Name ="FileImage" Tag="-1" Margin="20 0 0 0" Width="40" Height="40" Source="resources/file.png"/>
+                                        <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" Foreground="Black"></TextBlock>
                                     </DockPanel>
                                     <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
                                     <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black">Size: 1234.567 KB</TextBlock>
-                                    <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black">Date created: 30/04/1975</TextBlock>
-                                    <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black">Time created: 11:45:00</TextBlock>
+                                    <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black"></TextBlock>
+                                    <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black"></TextBlock>
                                     <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
                                     <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black">Attributes</TextBlock>
-                                    <CheckBox Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
-                                    <CheckBox Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
+                                    <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
+                                    <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
                                     <Border Height="35" Width="100" Background="#2EC4B6" CornerRadius="10" HorizontalAlignment="Right" Margin="0 0 15 0">
-                                        <Button FontSize="15" Background="Transparent" BorderThickness="0">MORE INFO</Button>
+                                        <Button Name="MoreInfoButton" FontSize="15" Background="Transparent" BorderThickness="0" Click="moreInfoButtonClick">MORE INFO</Button>
                                     </Border>
                                 </StackPanel>
                             </Border>

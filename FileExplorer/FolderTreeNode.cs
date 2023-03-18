@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileExplorer
 {
-    internal class FolderTreeNode
+    public class FolderTreeNode
     {
         public List<long> Children { get; set; } = null;
         public FileInfomation Info { get; set; } = null;
@@ -25,11 +25,11 @@ namespace FileExplorer
         public void showInfo()
         {
             Info.showInfo();
-            foreach(var child in Children)
+            foreach (var child in Children)
                 Console.Write(child + " ");
             Console.WriteLine();
         }
-        
+
 
     }
 }

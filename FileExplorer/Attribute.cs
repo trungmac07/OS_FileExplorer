@@ -8,7 +8,7 @@ using System.Threading;
 namespace FileExplorer
 {
 
-    internal partial class NTFS
+    public partial class NTFS
     {
         public abstract class Attribute
         {

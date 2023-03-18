@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Runtime;
 namespace FileExplorer
 {
-    internal partial class NTFS
+    public partial class NTFS
     {
         public class MFTEntry : IComparable<MFTEntry>
         {

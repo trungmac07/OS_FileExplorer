@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileExplorer
 {
-    internal class FileInfomation
+    public class FileInfomation
     {
         public bool IsRoot { get; set; }
         public string FileName { get; set; } 

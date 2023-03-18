@@ -1,0 +1,35 @@
+﻿<Window x:Class="FileExplorer.PopUp"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileExplorer"
+        mc:Ignorable="d"
+        Title="PopUp" Height="720" Width="430">
+    <Grid>
+        <StackPanel Name="FileInfoArea">
+            <DockPanel Margin="0 10 0 0" Height="100">
+                <Image Name ="FileImage" Margin="20 0 0 0" Width="60" Height="60" Source="resources/file.png"/>
+                <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" Foreground="Black"></TextBlock>
+            </DockPanel>
+            <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
+            <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black">Size: 1234.567 KB</TextBlock>
+            <TextBlock Name="DateCreated" Margin="20 15 0 10" FontSize="15" Foreground="Black">crt</TextBlock>
+            <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black">mdt</TextBlock>
+            <TextBlock Name="LastModifyDate" Margin="20 15 0 10" FontSize="15" Foreground="Black">crt</TextBlock>
+
+            <TextBlock Name="LastModifyTime" Margin="20 0 0 10" FontSize="15" Foreground="Black">mdt</TextBlock>
+            
+            <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
+            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black">Attributes</TextBlock>
+            
+            <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
+            <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
+            <CheckBox IsEnabled="False" Name="IsSystem" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">System</CheckBox>
+            <CheckBox IsEnabled="False" Name="IsArchive" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Archive</CheckBox>
+            <CheckBox IsEnabled="False" Name="IsDirectory" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Directory</CheckBox>
+            
+            
+        </StackPanel>
+    </Grid>
+</Window>

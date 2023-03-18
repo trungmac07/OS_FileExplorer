@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace FileExplorer
 {
-    internal class Tree
+    public class Tree
     {
         public Dictionary<long, FolderTreeNode> ListOfRoots { get; set; }
         public Dictionary<long, FolderTreeNode> ListOfFiles { get; set; }
-        
-        
-        
-        
-        
-        
         
         public Tree()
         {

@@ -90,7 +90,7 @@ namespace FileExplorer
 
             //mBR.printMBRTable();
 
-
+            
 
 
             mBR.printPartitionInfo(currentPartition);
@@ -256,6 +256,8 @@ namespace FileExplorer
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
             button.Margin = new Thickness(37 * node.Level, 5, 0, 5);
+            button.Tag = node.Info.ID;
+            button.Click += infoButtonClick;
 
             DockPanel dockPanel = new DockPanel();
             dockPanel.Width = 600;
@@ -265,7 +267,7 @@ namespace FileExplorer
 
             expand.Style = (Style)this.FindResource("TreeExpandButton");
             expand.Tag = node.Info.ID;
-            expand.Click += (s, e) => expandButtonClick(expand, null);
+            expand.Click += expandButtonClick;
             expand.BorderThickness = new Thickness(0);
             expand.Background = Brushes.Transparent;
             expand.FontSize = 12;
@@ -273,7 +275,6 @@ namespace FileExplorer
             Image image = new Image();
             image.Width = 25;
             image.Margin = new Thickness(5, 0, 0, 0);
-
 
             TextBlock textBlock = new TextBlock();
             textBlock.Text = node.Info.FileName;
@@ -321,6 +322,39 @@ namespace FileExplorer
             {
                 renderANode(root.Value, FolderTreeContain);
             }
+        }
+
+        private void infoButtonClick(object sender, EventArgs e)
+        {
+            long id = (long)(sender as Button).Tag;
+            FileInfomation file = FolderTree.ListOfFiles[id].Info;
+
+            if (file.Type <= 1)
+                FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+            else
+                FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
+
+            string name = "";
+            if (file.FileName.Length >= 41)
+            {
+                for (int i = 0; i < 37; ++i)
+                    name += file.FileName[i];
+                name += " . . .";
+                FileName.Text = name;
+            }
+            else
+            {
+                FileName.Text = file.FileName;
+            }
+            MoreInfoButton.Tag = id;
+
+            DateCreated.Text = "Created Date: " + file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
+            TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
+
+            IsHidden.IsChecked = file.IsHidden;
+            IsReadOnly.IsChecked = file.IsReadOnly;
+
+
         }
 
         private void expandButtonClick(object sender, EventArgs e)
@@ -371,8 +405,18 @@ namespace FileExplorer
                 return;
             foreach (var child in FolderTree.ListOfFiles[parent].Children)
                 unregisterChildren(child);
-            
+
             this.UnregisterName("n" + parent);
+        }
+
+        private void moreInfoButtonClick(object sender, EventArgs e)
+        {
+            long id = (long) (sender as Button).Tag;
+            FileInfomation file = FolderTree.ListOfFiles[id].Info;
+
+            PopUp popup = new PopUp(file);
+            popup.Show();
+
         }
     }
 
