@@ -253,8 +253,8 @@
         <Style x:Key="TreeExpandButton" TargetType="Button">
             <Setter Property="Width" Value="17"/>
             <Setter Property="Height" Value="17"/>
-            <Setter Property="Background" Value="#EEEEEE"/>
-            <Setter Property="Content" Value=">"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0 0 0 0"/>
         </Style>
 
         <Style x:Key="CloseButtonBorder" TargetType="Border" >
@@ -312,12 +312,12 @@
                 </DockPanel>
                 <StackPanel Margin="20 -15 10 0" Width="969">
                     <DockPanel>
-                        
+
                         <Border Background="#FFFFFF" Margin="15 30 15 15" CornerRadius="15" Height="195" Width="373">
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                             </Border.Effect>
-                            <ScrollViewer Margin="0 10 -2 10">
+                            <ScrollViewer Margin="0 10 -3 10">
                                 <StackPanel Name ="PartitionArea">
                                     <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 1</TextBlock>
                                     <TextBlock Margin="30 20 0 0" FontSize="22">PARTITION 2</TextBlock>
@@ -337,7 +337,7 @@
                                 <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                             </Border.Effect>
                             <DockPanel  Height="185">
-                                <lvc:PieChart Margin="35 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
+                                <lvc:PieChart Margin="30 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
                                     <lvc:PieChart.ChartLegend>
                                         <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="11" TextBlock.Foreground="Black">
                                         </lvc:DefaultLegend>
@@ -360,29 +360,20 @@
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                             </Border.Effect>
-                            <ScrollViewer Margin="0 10 0 10" Width="610" >
+                            <ScrollViewer Margin="0 10 0 10" Width="660" >
                                 <StackPanel Margin="20 0 0 0" Name="FolderTreeContain">
-                                    <Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                                        <DockPanel HorizontalAlignment="Left" Width="240">
-                                            <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                                            <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                                            <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                                        </DockPanel>
-                                    </Button>
-                                    <Button Margin="30 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                                        
-                                    </Button>
-                                   
+                                    
+                                    
                                 </StackPanel>
                             </ScrollViewer>
                         </Border>
                         <StackPanel Width="440">
-                            <Border HorizontalAlignment="Left" Background="#FFFFFF" Margin="15 5 50 60" CornerRadius="15" Height="400" Width="300">
+                            <Border HorizontalAlignment="Left" Background="#FFFFFF" Margin="12 5 48 60" CornerRadius="15" Height="400" Width="250">
                                 <Border.Effect>
                                     <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                                 </Border.Effect>
                                 <StackPanel Name="FileInfoArea">
-                                    <DockPanel Margin="0 10 0 0">
+                                    <DockPanel Margin="0 10 0 0" Height="100">
                                         <Image Name ="FileImage" Margin="20 0 0 0" Width="50" Height="50" Source="resources/file.png"/>
                                         <TextBlock Name="FileName" Margin="20 0 20 10" FontSize="17" TextWrapping="Wrap" Foreground="Black">This file has very long name to test what does the application appear.dmm</TextBlock>
                                     </DockPanel>

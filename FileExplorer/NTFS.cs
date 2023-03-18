@@ -51,9 +51,6 @@ namespace FileExplorer
         private long BytesPerEntry { get; set; }
         SortedSet<MFTEntry> MFTEntries;
 
-        public Dictionary<long, FolderTreeNode> ListOfRoots { get; set; }
-        public Dictionary<long,FolderTreeNode> ListOfFiles { get; set; }
-
 
         FileStream stream = null;
 
@@ -64,28 +61,23 @@ namespace FileExplorer
             FirstByte = firstSector * 512;
             long length = totalSector * 512;
             byte[] vbr = new byte[512];
-            
+
             //string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
 
             // Open the drive for reading
-            try
-            {
-                //stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                // Read the VBR
-                Function.stream.Seek(FirstByte, SeekOrigin.Begin);
-                Function.stream.Read(vbr, 0, 512);
-               
-            }
-            catch (FileNotFoundException) { };
 
-            BytesPerSector      =   Function.littleEndian(vbr,  (int)OffsetVBR.BYTES_PER_SECTOR,     (int)LengthVBR.BYTES_PER_SECTOR);
-            SectorsPerCluster   =   Function.littleEndian(vbr,  (int)OffsetVBR.SECTORS_PER_CLUSTER,  (int)LengthVBR.SECTORS_PER_CLUSTER);
-            SectorsPerTrack     =   Function.littleEndian(vbr,  (int)OffsetVBR.SECTORS_PER_TRACK,    (int)LengthVBR.SECTORS_PER_TRACK);
-            NumberOfHeads       =   Function.littleEndian(vbr,  (int)OffsetVBR.NUMBER_OF_HEADS,      (int)LengthVBR.NUMBER_OF_HEADS);
-            NumberOfSectors     =   Function.littleEndian(vbr,  (int)OffsetVBR.NUMBER_OF_SECTORS,    (int)LengthVBR.NUMBER_OF_SECTORS);
-           
-            BeginCluster1       =   Function.littleEndian(vbr,  (int)OffsetVBR.BEGIN_CLUSTER_1,      (int)LengthVBR.BEGIN_CLUSTER_1);
-            BeginCluster2       =   Function.littleEndian(vbr,  (int)OffsetVBR.BEGIN_CLUSTER_2,      (int)LengthVBR.BEGIN_CLUSTER_2);
+            Function.stream.Seek(FirstByte, SeekOrigin.Begin);
+            Function.stream.Read(vbr, 0, 512);
+
+
+            BytesPerSector = Function.littleEndian(vbr, (int)OffsetVBR.BYTES_PER_SECTOR, (int)LengthVBR.BYTES_PER_SECTOR);
+            SectorsPerCluster = Function.littleEndian(vbr, (int)OffsetVBR.SECTORS_PER_CLUSTER, (int)LengthVBR.SECTORS_PER_CLUSTER);
+            SectorsPerTrack = Function.littleEndian(vbr, (int)OffsetVBR.SECTORS_PER_TRACK, (int)LengthVBR.SECTORS_PER_TRACK);
+            NumberOfHeads = Function.littleEndian(vbr, (int)OffsetVBR.NUMBER_OF_HEADS, (int)LengthVBR.NUMBER_OF_HEADS);
+            NumberOfSectors = Function.littleEndian(vbr, (int)OffsetVBR.NUMBER_OF_SECTORS, (int)LengthVBR.NUMBER_OF_SECTORS);
+
+            BeginCluster1 = Function.littleEndian(vbr, (int)OffsetVBR.BEGIN_CLUSTER_1, (int)LengthVBR.BEGIN_CLUSTER_1);
+            BeginCluster2 = Function.littleEndian(vbr, (int)OffsetVBR.BEGIN_CLUSTER_2, (int)LengthVBR.BEGIN_CLUSTER_2);
             //2's complement 
 
             int rawValue = vbr[(int)OffsetVBR.BYTES_PER_ENTRY];
@@ -99,66 +91,67 @@ namespace FileExplorer
             }
             BytesPerEntry = (long)Math.Pow(2, rawValue); //2^
             MFTEntries = new SortedSet<MFTEntry>();
-            ListOfRoots = new Dictionary<long, FolderTreeNode> ();
-            ListOfFiles = new Dictionary<long, FolderTreeNode> ();
+            
 
         }
-       
+
+        public long readNumberOfEntries()
+        {
+            long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
+            MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
+
+            FileInfomation tmp = new FileInfomation(mFTEntry);
+            return (tmp.Size / 1024);
+
+        }
+
+        public Tree buildTree()
+        {
+            Tree folderTree = new Tree();
+            long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
+            int j = 0;
+
+            long numberOfEntries = readNumberOfEntries();
+
+            for (long i = 0; i < numberOfEntries; ++i)
+            {
+                ++j;
+                MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
+                mFTEntry.print();
+                if (mFTEntry.Sign == "FILE")
+                {
+                    folderTree.addToTree(new FileInfomation(mFTEntry));
+                }
+
+                beginByte += BytesPerEntry;
+            }
+            return folderTree;
+        }
+
+
         public void readAttribute()
         {
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
             int j = 0;
-            for(long i=beginByte; ;i+=BytesPerEntry)
+
+            long numberOfEntries = readNumberOfEntries();
+
+            for (long i = 0; i < numberOfEntries; ++i)
             {
                 ++j;
-                MFTEntry mFTEntry = new MFTEntry(i, CurrentDisk, BytesPerEntry);
+                MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
                 mFTEntry.print();
-                if(mFTEntry.Sign == "FILE")
+                if (mFTEntry.Sign == "FILE")
                 {
-                    
                     MFTEntries.Add(mFTEntry);
-                    addToTree(new FileInfomation(mFTEntry));
+                    //addToTree(new FileInfomation(mFTEntry));
                 }
-                else if (mFTEntry.Sign != "BAAD" && j >= 32)
-                {
-                    break;
-                }
+
+                beginByte += BytesPerEntry;
             }
         }
 
-        public void addToTree(FileInfomation src)
-        {
-            if (src == null)
-                return;
-            FolderTreeNode newNode = new FolderTreeNode(src);
-      
-            if (src.IDParentFolder == 5)
-            {
-                ListOfRoots.Add(src.ID,newNode);
-            }
-            else
-            {
-                if(ListOfFiles.ContainsKey(src.IDParentFolder))
-                {
-                    if (ListOfRoots.ContainsKey(src.IDParentFolder))
-                        ListOfRoots[src.IDParentFolder].Children.Add(src.ID);
-                    ListOfFiles[src.IDParentFolder].Children.Add(src.ID);
-                }
-                else
-                {
-                    ListOfFiles[src.IDParentFolder] = new FolderTreeNode(src.IDParentFolder);
-                    ListOfFiles[src.IDParentFolder].Children.Add(src.ID);
-                }
-                
-            }
-            if (ListOfFiles.ContainsKey(src.ID))
-                ListOfFiles[src.ID].Info = src;
-            else
-                ListOfFiles[src.ID] = newNode;
-            if(src.IDParentFolder != 5)
-                ListOfFiles[src.ID].Level = ListOfFiles[src.IDParentFolder].Level + 1;
-
-        }
+        
 
         public void showTree()
         {
@@ -168,7 +161,7 @@ namespace FileExplorer
 
             /*foreach (var node in ListOfFiles)
                 node.Value.showInfo();*/
-           
+
         }
 
 

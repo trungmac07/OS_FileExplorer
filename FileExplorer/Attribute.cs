@@ -164,6 +164,7 @@ namespace FileExplorer
         public class DataAttribute : Attribute
         {
             private long dataSize = 0;
+        
             public DataAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
             {
                 if (resident == 0 && dataSize != 0)

@@ -70,7 +70,8 @@ namespace FileExplorer
         DriveInfo[] allDrives = DriveInfo.GetDrives();
         public SeriesCollection ChartData { get; set; }
         public int currentDisk = 1;
-        public int currentPartition = 1;
+        public int currentPartition = 0;
+        Tree FolderTree { get; set; }
         public MainWindow()
         {
             // Khoi's codes
@@ -97,9 +98,8 @@ namespace FileExplorer
             {
                 NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                 ntfs.printVBRInfo();
-                ntfs.readAttribute();
-                ntfs.showTree();
-                renderRoots(ntfs);
+                FolderTree = ntfs.buildTree();
+                renderRoots();
             }
 
 
@@ -246,76 +246,38 @@ namespace FileExplorer
                 this.DragMove();
         }
 
-        private void renderAllNode(NTFS ntfsPartition, FolderTreeNode node)
+
+        private void renderANode(FolderTreeNode node, StackPanel area)
         {
             Button button = new Button();
             button.Background = Brushes.Transparent;
             button.Width = 600;
-            button.Height = 35;
+            button.Height = 30;
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
-            button.Margin = new Thickness(30 * node.Level, 0, 0, 0);
+            button.Margin = new Thickness(37 * node.Level, 5, 0, 5);
 
             DockPanel dockPanel = new DockPanel();
             dockPanel.Width = 600;
             dockPanel.HorizontalAlignment = HorizontalAlignment.Left;
 
             Button expand = new Button();
-            expand.Content = "v";
+
             expand.Style = (Style)this.FindResource("TreeExpandButton");
+            expand.Tag = node.Info.ID;
+            expand.Click += (s, e) => expandButtonClick(expand, null);
+            expand.BorderThickness = new Thickness(0);
+            expand.Background = Brushes.Transparent;
+            expand.FontSize = 12;
 
             Image image = new Image();
-            if (node.Info.Type <= 1)
-                image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
-            else
-                image.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
             image.Width = 25;
-            image.Margin = new Thickness(10, 0, 0, 0);
+            image.Margin = new Thickness(5, 0, 0, 0);
 
 
             TextBlock textBlock = new TextBlock();
             textBlock.Text = node.Info.FileName;
-            textBlock.Margin = new Thickness(10, 0, 0, 0);
-            textBlock.Foreground = Brushes.Black;
-            textBlock.VerticalAlignment = VerticalAlignment.Center;
-
-            dockPanel.Children.Add(expand);
-            dockPanel.Children.Add(image);
-            dockPanel.Children.Add(textBlock);
-
-            button.Content = dockPanel;
-            FolderTreeContain.Children.Add(button);
-            foreach (var child in node.Children)
-            {
-                renderAllNode(ntfsPartition, ntfsPartition.ListOfFiles[child]);
-            }
-        }
-        private void renderANode(NTFS ntfsPartition, FolderTreeNode node)
-        {
-            Button button = new Button();
-            button.Background = Brushes.Transparent;
-            button.Width = 600;
-            button.Height = 42;
-            button.HorizontalAlignment = HorizontalAlignment.Left;
-            button.BorderThickness = new Thickness(0);
-            button.Margin = new Thickness(30 * node.Level, 0, 0, 0);
-
-            DockPanel dockPanel = new DockPanel();
-            dockPanel.Width = 600;
-            dockPanel.HorizontalAlignment = HorizontalAlignment.Left;
-
-            Button expand = new Button();
-            
-            expand.Style = (Style)this.FindResource("TreeExpandButton");
-
-            Image image = new Image();
-            image.Width = 32;
-            image.Margin = new Thickness(12, 0, 0, 0);
-
-
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = node.Info.FileName;
-            textBlock.Margin = new Thickness(15, 0, 0, 0);
+            textBlock.Margin = new Thickness(12, 0, 0, 0);
             textBlock.Foreground = Brushes.Black;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.FontSize = 15;
@@ -323,15 +285,16 @@ namespace FileExplorer
             if (node.Info.Type <= 1)
             {
                 image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
-                expand.Content = "";
                 expand.Background = Brushes.Transparent;
                 expand.BorderThickness = new Thickness(0);
             }
             else
             {
                 image.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
-                expand.Content = ">";
-
+                Image modeImage = new Image();
+                modeImage.Width = 12;
+                modeImage.Source = new BitmapImage(new Uri(@"/resources/colapse.png", UriKind.RelativeOrAbsolute));
+                expand.Content = modeImage;
             }
 
 
@@ -340,38 +303,81 @@ namespace FileExplorer
             dockPanel.Children.Add(textBlock);
 
             button.Content = dockPanel;
-            FolderTreeContain.Children.Add(button);
+
+            StackPanel stackPanel = new StackPanel();
+            stackPanel.Margin = new Thickness(0, 3, 0, 0);
+            stackPanel.Name = "n" + node.Info.ID;
+            stackPanel.Children.Add(button);
+
+            this.RegisterName(stackPanel.Name, stackPanel);
+
+            area.Children.Add(stackPanel);
 
         }
 
-
-        private void renderAllFolderTree(NTFS ntfsPartition)
+        private void renderRoots()
         {
-
-            /*<Button Margin="0 0 0 0" Background="Transparent" Width="240" Height="35" HorizontalAlignment="Left" BorderThickness="0">
-                <DockPanel HorizontalAlignment="Left" Width="240">
-                    <Button Style = "{StaticResource TreeExpandButton}"></Button>
-                    <Image Margin="10 0 0 0" Width="25" Source="resources/folder.png"/>
-                    <TextBlock Margin="10 0 0 0" Foreground="#EEEEEE" VerticalAlignment="Center">Folder1</TextBlock>
-                </DockPanel>
-            </Button>*/
-
-            //////////////////////////////////////////////
-            foreach (var root in ntfsPartition.ListOfRoots)
+            foreach (var root in FolderTree.ListOfRoots)
             {
-                renderAllNode(ntfsPartition, root.Value);
+                renderANode(root.Value, FolderTreeContain);
             }
         }
 
-        private void renderRoots(NTFS ntfsPartition)
+        private void expandButtonClick(object sender, EventArgs e)
         {
-            foreach (var root in ntfsPartition.ListOfRoots)
+            if ((sender as Button).FontSize == 12) //expand command
             {
-                renderANode(ntfsPartition, root.Value);
+                long id = (long)(sender as Button).Tag;
+
+                Image modeImage = new Image();
+                modeImage.Source = new BitmapImage(new Uri(@"/resources/expand.png", UriKind.RelativeOrAbsolute));
+                modeImage.Width = 12;
+                (sender as Button).Content = modeImage;
+                (sender as Button).FontSize = 15;
+
+
+                StackPanel area = (this.FindName("n" + id) as StackPanel);
+
+                foreach (var child in FolderTree.ListOfFiles[id].Children)
+                {
+                    Console.WriteLine("IDDDD :" + FolderTree.ListOfFiles[child].Info.FileName);
+                    Console.WriteLine("Level :" + FolderTree.ListOfFiles[child].Level);
+                    Console.WriteLine();
+                    FolderTreeNode node = FolderTree.ListOfFiles[child];
+                    renderANode(node, area);
+                }
+            }
+            else //collapse command
+            {
+                long id = (long)(sender as Button).Tag;
+                Image modeImage = new Image();
+                modeImage.Source = new BitmapImage(new Uri(@"/resources/colapse.png", UriKind.RelativeOrAbsolute));
+                modeImage.Width = 12;
+                (sender as Button).Content = modeImage;
+                (sender as Button).FontSize = 12;
+
+                StackPanel area = (this.FindName("n" + id) as StackPanel);
+
+                foreach (var child in FolderTree.ListOfFiles[id].Children)
+                {
+                    area.Children.Remove((this.FindName("n" + child) as StackPanel));
+                    unregisterChildren(child);
+                }
             }
         }
-
+        private void unregisterChildren(long parent)
+        {
+            if (this.FindName("n" + parent) == null)
+                return;
+            foreach (var child in FolderTree.ListOfFiles[parent].Children)
+                unregisterChildren(child);
+            
+            this.UnregisterName("n" + parent);
+        }
     }
+
+
+
     public class Function
     {
         public static FileStream stream = null;
