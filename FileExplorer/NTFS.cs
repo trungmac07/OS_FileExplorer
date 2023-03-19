@@ -118,7 +118,7 @@ namespace FileExplorer
                 ++j;
                 MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
                 mFTEntry.print();
-                if (mFTEntry.Sign == "FILE")
+                if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
                 {
                     folderTree.addToTree(new FileInfomation(mFTEntry));
                 }

@@ -225,12 +225,9 @@
 
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-
                     <Setter Property="FontWeight" Value="Medium"/>
-
                 </Trigger>
             </Style.Triggers>
-
         </Style>
 
         <Style x:Key="SelectedMenuButton" TargetType="Button">
@@ -281,6 +278,33 @@
             </Setter>
         </Style>
 
+        <Style x:Key="MoreInfoButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource MenuColor}"/>
+            
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0 0 0 0"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Name ="ButtonBorder" Background="{TemplateBinding Background}" >
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="FontWeight" Value="Medium"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        
         <!--Storyboard-->
         <Storyboard x:Key="MenuButtonClick">
             <ColorAnimation  From="#00ADB5" To="#222831" 
@@ -386,8 +410,18 @@
                                     <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black">Attributes</TextBlock>
                                     <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
                                     <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
-                                    <Border Height="35" Width="100" Background="#2EC4B6" CornerRadius="10" HorizontalAlignment="Right" Margin="0 0 15 0">
-                                        <Button Name="MoreInfoButton" FontSize="15" Background="Transparent" BorderThickness="0" Click="moreInfoButtonClick">MORE INFO</Button>
+                                    <Border Height="35" Width="100" CornerRadius="10" HorizontalAlignment="Right" Margin="0 0 15 0">
+                                        <Border.Style>
+                                            <Style>
+                                                <Setter Property="Border.Background" Value="#2EC4B6"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="Border.IsMouseOver" Value="True">
+                                                        <Setter Property="Border.Background" Value="{StaticResource BackgroundColor}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Button Style="{StaticResource MoreInfoButton}" Name="MoreInfoButton" FontSize="15" Background="Transparent" BorderThickness="0" Click="moreInfoButtonClick" Tag="-1" >MORE INFO</Button>
                                     </Border>
                                 </StackPanel>
                             </Border>

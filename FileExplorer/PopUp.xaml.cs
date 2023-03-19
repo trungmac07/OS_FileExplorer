@@ -29,7 +29,7 @@ namespace FileExplorer
             InitializeComponent();
             this.Title = file.FileName;
 
-            if (file.Type <= 1)
+            if (file.IsDirectory == false)
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));

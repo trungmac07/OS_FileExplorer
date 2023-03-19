@@ -114,14 +114,13 @@ namespace FileExplorer
                 long sizeOfContent = Function.littleEndian(attributeHeader, offset[3], length[3]);
                 long positionOfContent = Function.littleEndian(attributeHeader,offset[4], length[4]) + firstByte;
 
-
                 if (attributeType == 0x10)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else if (attributeType == 0x30)
                     res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
                 else if (attributeType == 0x80)
                 {
-                    Console.WriteLine(sizeOfAttribute);
+                    //Console.WriteLine(sizeOfAttribute);
                     res = new DataAttribute(firstByte, sizeOfAttribute, resident, CurrentDisk);
                 }
                 else if (attributeType == 0xFF || attributeType == 0x00)

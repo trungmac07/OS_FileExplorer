@@ -164,19 +164,25 @@ namespace FileExplorer
         public class DataAttribute : Attribute
         {
             private long dataSize = 0;
-        
+            private long sizeOnDisk = 0;
             public DataAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
             {
                 if (resident == 0 && dataSize != 0)
+                {
                     dataSize = size;
+                    sizeOnDisk = size;
+                }
                 else
                 {
                     byte[] attribute = new byte[8];
                     //Console.WriteLine(firstByte + 48);
+                    Function.stream.Seek(firstByte + 40, SeekOrigin.Begin);
+                    Function.stream.Read(attribute, 0, 8);
+                    sizeOnDisk = Function.littleEndian(attribute, 0, 8);
+
                     Function.stream.Seek(firstByte + 48, SeekOrigin.Begin);
                     Function.stream.Read(attribute, 0, 8);
                     dataSize = Function.littleEndian(attribute, 0, 8);
-
                     //Console.WriteLine("SAI:" + dataSize);
                 }
             }
@@ -184,7 +190,7 @@ namespace FileExplorer
             public override void export(FileInfomation x)
             {
                 x.Size = dataSize;
-                x.SizeOnDisk = dataSize;
+                x.SizeOnDisk = sizeOnDisk;
             }
 
             public override void showInfo()

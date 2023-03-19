@@ -102,33 +102,6 @@ namespace FileExplorer
                 renderRoots();
             }
 
-
-            ////////
-            /*string diskPath = @"\\.\D:"; // Replace with the path to your disk
-
-            using (FileStream fs = new FileStream(diskPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                byte[] mbr = new byte[512];
-                int bytesRead = 0;
-
-                bytesRead = fs.Read(mbr, 0, mbr.Length);
-
-                // Process the MBR data here
-                // The contents of the 'mbr' array represent the bytes read from the MBR sector
-
-                for (int i = 0; i < mbr.Length; i++)
-                {
-                    byte b = mbr[i];
-                    // Do something with the byte here
-                    if(b == 128)
-                        Console.WriteLine("HERE:" + i);
-                    Console.WriteLine(b);
-                }
-                Console.WriteLine(mbr[446]);
-            }*/
-
-
-
         }
         public void chart()
         {
@@ -246,7 +219,6 @@ namespace FileExplorer
                 this.DragMove();
         }
 
-
         private void renderANode(FolderTreeNode node, StackPanel area)
         {
             Button button = new Button();
@@ -283,7 +255,7 @@ namespace FileExplorer
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.FontSize = 15;
 
-            if (node.Info.Type <= 1)
+            if (node.Info.IsDirectory == false)
             {
                 image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
                 expand.Background = Brushes.Transparent;
@@ -329,10 +301,31 @@ namespace FileExplorer
             long id = (long)(sender as Button).Tag;
             FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
-            if (file.Type <= 1)
+            if (file.IsDirectory == false)
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
+
+            double size = file.SizeOnDisk;
+            string unit = " ";
+            if (size > 1000)
+            { 
+                size /= 1024;
+                unit = " K";
+            }
+            if(size>1000)
+            {
+                size /= 1024;
+                unit = " M";
+            }
+            if(size > 1000)
+            {
+                size /= 1024;
+                unit = " G";
+            }
+
+
+            FileSize.Text = size.ToString() + unit + "B";
 
             string name = "";
             if (file.FileName.Length >= 41)
@@ -411,12 +404,18 @@ namespace FileExplorer
 
         private void moreInfoButtonClick(object sender, EventArgs e)
         {
-            long id = (long) (sender as Button).Tag;
-            FileInfomation file = FolderTree.ListOfFiles[id].Info;
+            long id = Int64.Parse((sender as Button).Tag.ToString());
+            if(FolderTree.ListOfFiles.ContainsKey(id) == true)
+            {
+                FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
-            PopUp popup = new PopUp(file);
-            popup.Show();
-
+                PopUp popup = new PopUp(file);
+                popup.Show();
+            }
+            else
+            {
+                MessageBox.Show("Please choose a file or folder");
+            }
         }
     }
 
