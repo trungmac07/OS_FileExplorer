@@ -409,7 +409,7 @@
                                 </lvc:PieChart>
 
                                 <StackPanel Margin="30 0 0 0">
-                                    <TextBlock Height="68" FontSize="30" Foreground="Black" Margin="0 30 0 0">NTFS/FAT</TextBlock>
+                                    <TextBlock Height="68" FontSize="30" Foreground="Black" Margin="0 30 0 0" Name="PartitionType">NTFS/FAT</TextBlock>
                                     <TextBlock Height="95" FontSize="30" Foreground="Black">512/1024</TextBlock>
                                 </StackPanel>
                             </DockPanel>
@@ -443,7 +443,7 @@
                                     <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black"></TextBlock>
                                     <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black"></TextBlock>
                                     <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
-                                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black">Attributes</TextBlock>
+                                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Name ="Attribute">Attributes</TextBlock>
                                     <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
                                     <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
                                     <Border Height="35" Width="100" CornerRadius="10" HorizontalAlignment="Right" Margin="0 0 15 0">

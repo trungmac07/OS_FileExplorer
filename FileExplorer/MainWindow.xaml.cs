@@ -28,6 +28,27 @@ namespace FileExplorer
     /// </summary>
     public partial class MainWindow : Window
     {
+        class HardDrive
+        {
+            private string model = null;
+            private string type = null;
+            private string serialNo = null;
+            public string Model
+            {
+                get { return model; }
+                set { model = value; }
+            }
+            public string Type
+            {
+                get { return type; }
+                set { type = value; }
+            }
+            public string SerialNo
+            {
+                get { return serialNo; }
+                set { serialNo = value; }
+            }
+        }
         public void initialization()
         {
             getDrive();
@@ -134,13 +155,29 @@ namespace FileExplorer
             {
                 currentPartition = index;
                 string partitionType = mBR.getPartitionType(index);
+                long head = 0, sector = 0, cylinder = 0;
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/compact-disk.png", UriKind.RelativeOrAbsolute));
+                PartitionType.Text = partitionType;
                 FileName.Text = "PARTITION " + index.ToString();
-                //DateCreated.Text = "Status: " + mBR.getPartitionStatus(index);
-                //TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
+                FileSize.Text = "First Sector(LBA): " + mBR.getFirstSectorLBA(index);
+                mBR.getStartSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
+                DateCreated.Text = "Begin address(CHS): " + head + "(Head)" + sector + "(Sector)" + cylinder + "(Cylinder)";
+                mBR.getLastSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
+                TimeCreated.Text = "End address(CHS): " + head + "(Head)" + sector + "(Sector)" + cylinder + "(Cylinder)";
+                Attribute.Text = "Status";
+                IsHidden.Content = "Bootable";
+                IsReadOnly.Content = "Unbootable";
+                if (mBR.getPartitionStatus(index) == "bootable")
+                {
+                    IsHidden.IsChecked = true;
+                    IsReadOnly.IsChecked = false;
+                } 
+                else if (mBR.getPartitionStatus(index) == "unbootable")
+                {
+                    IsHidden.IsChecked = false;
+                    IsReadOnly.IsChecked = true;
+                }
 
-                //IsHidden.IsChecked = file.IsHidden;
-                //IsReadOnly.IsChecked = file.IsReadOnly;
                 if (partitionType == "FAT32")
                 {
                     while (FolderTreeContain.Children.Count > 0)
@@ -206,27 +243,7 @@ namespace FileExplorer
             TimeCreated.Text = fileinfo.CreationTime.ToString();
             getDrive();
         }
-        class HardDrive
-        {
-            private string model = null;
-            private string type = null;
-            private string serialNo = null;
-            public string Model
-            {
-                get { return model; }
-                set { model = value; }
-            }
-            public string Type
-            {
-                get { return type; }
-                set { type = value; }
-            }
-            public string SerialNo
-            {
-                get { return serialNo; }
-                set { serialNo = value; }
-            }
-        }
+        
         public void getDrive()
         {
             ManagementObjectSearcher searcher = new
@@ -452,6 +469,7 @@ namespace FileExplorer
                 FileName.Text = file.FileName;
             }
             MoreInfoButton.Tag = id;
+            Attribute.Text = "Attributes";
 
             DateCreated.Text = "Created Date: " + file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
             TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
