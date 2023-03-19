@@ -34,15 +34,17 @@ namespace FileExplorer
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
+            FileSize.Text = Function.toFileSize(file.Size);
+            OnDiskSize.Text = Function.toFileSize(file.SizeOnDisk);
 
             FileName.Text = file.FileName;
 
 
-            DateCreated.Text = "Created Date: " + file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
-            TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
+            DateCreated.Text = file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
+            TimeCreated.Text = file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
 
-            LastModifyDate.Text = "Last Modified Date: " + file.LastModifiedTime.ToLocalTime().ToString("dd/MM/yyyy");
-            LastModifyTime.Text = "Last Modified Time: " + file.LastModifiedTime.ToLocalTime().ToString("HH:mm:ss");
+            LastModifyDate.Text = file.LastModifiedTime.ToLocalTime().ToString("dd/MM/yyyy");
+            LastModifyTime.Text = file.LastModifiedTime.ToLocalTime().ToString("HH:mm:ss");
 
 
             IsHidden.IsChecked = file.IsHidden;

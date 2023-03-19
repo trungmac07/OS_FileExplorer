@@ -108,7 +108,7 @@ namespace FileExplorer
                 int[] length = { 4, 4, 1, 4, 2 };
 
                 byte attributeType = attributeHeader[0];
-                byte tmp = attributeHeader[1];
+                
                 long sizeOfAttribute = Function.littleEndian(attributeHeader, offset[1], length[1]);
                 long resident = Function.littleEndian(attributeHeader, offset[2], length[2]);
                 long sizeOfContent = Function.littleEndian(attributeHeader, offset[3], length[3]);

@@ -10,26 +10,52 @@
         <StackPanel Name="FileInfoArea">
             <DockPanel Margin="0 10 0 0" Height="100">
                 <Image Name ="FileImage" Margin="20 0 0 0" Width="60" Height="60" Source="resources/file.png"/>
-                <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" Foreground="Black"></TextBlock>
+                <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" FontWeight="Medium" Foreground="Black"></TextBlock>
             </DockPanel>
-            <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
-            <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black">Size: 1234.567 KB</TextBlock>
-            <TextBlock Name="DateCreated" Margin="20 15 0 10" FontSize="15" Foreground="Black">crt</TextBlock>
-            <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black">mdt</TextBlock>
-            <TextBlock Name="LastModifyDate" Margin="20 15 0 10" FontSize="15" Foreground="Black">crt</TextBlock>
+            <Border Margin="15 30 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
 
-            <TextBlock Name="LastModifyTime" Margin="20 0 0 10" FontSize="15" Foreground="Black">mdt</TextBlock>
-            
-            <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
-            <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black">Attributes</TextBlock>
-            
-            <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
-            <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
-            <CheckBox IsEnabled="False" Name="IsSystem" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">System</CheckBox>
-            <CheckBox IsEnabled="False" Name="IsArchive" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Archive</CheckBox>
-            <CheckBox IsEnabled="False" Name="IsDirectory" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Directory</CheckBox>
-            
-            
+            <TextBlock Margin="40 0 0 12" FontSize="17" Foreground="Black" FontWeight="Medium">Infomation</TextBlock>
+            <Grid Margin="20 0 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="170"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="0">Size :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="1">Size On Disk :</TextBlock>
+                <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="2">Created Date :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="3">Created Time :</TextBlock>
+                <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="4">Last Modified Date :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="5">Last Modified Time :</TextBlock>
+
+                <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="0"></TextBlock>
+                <TextBlock Name="OnDiskSize" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="1"></TextBlock>
+                <TextBlock Name="DateCreated" Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="2"></TextBlock>
+                <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="3"></TextBlock>
+                <TextBlock Name="LastModifyDate" Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="4"></TextBlock>
+                <TextBlock Name="LastModifyTime" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="5"></TextBlock>
+            </Grid>
+
+
+            <Border Margin="15 30 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
+
+            <StackPanel Margin="20 0 0 0">
+                <TextBlock Margin="20 0 0 12" FontSize="17" Foreground="Black" FontWeight="Medium">Attributes</TextBlock>
+
+                <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
+                <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
+                <CheckBox IsEnabled="False" Name="IsSystem" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">System</CheckBox>
+                <CheckBox IsEnabled="False" Name="IsArchive" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Archive</CheckBox>
+                <CheckBox IsEnabled="False" Name="IsDirectory" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Directory</CheckBox>
+            </StackPanel>
+
         </StackPanel>
     </Grid>
 </Window>

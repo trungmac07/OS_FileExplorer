@@ -306,26 +306,9 @@ namespace FileExplorer
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
-            double size = file.SizeOnDisk;
-            string unit = " ";
-            if (size > 1000)
-            { 
-                size /= 1024;
-                unit = " K";
-            }
-            if(size>1000)
-            {
-                size /= 1024;
-                unit = " M";
-            }
-            if(size > 1000)
-            {
-                size /= 1024;
-                unit = " G";
-            }
 
 
-            FileSize.Text = size.ToString() + unit + "B";
+            FileSize.Text = "Size: " + Function.toFileSize(file.Size);
 
             string name = "";
             if (file.FileName.Length >= 41)
@@ -435,6 +418,27 @@ namespace FileExplorer
             return res;
         }
 
+        static public string toFileSize(double size)
+        {
+            string unit = " ";
+            if (size > 1000)
+            {
+                size /= 1024;
+                unit = " K";
+            }
+            if (size > 1000)
+            {
+                size /= 1024;
+                unit = " M";
+            }
+            if (size > 1000)
+            {
+                size /= 1024;
+                unit = " G";
+            }
+
+            return size.ToString("F2") + unit + "B";
+        }
 
     }
 }

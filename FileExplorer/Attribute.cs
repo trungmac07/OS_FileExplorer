@@ -12,7 +12,6 @@ namespace FileExplorer
     {
         public abstract class Attribute
         {
-            public FileStream stream = null;
             public long CurrentDisk { get; }
             public long Size { get; }
             public long Resident { get; }
@@ -167,35 +166,50 @@ namespace FileExplorer
             private long sizeOnDisk = 0;
             public DataAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
             {
-                if (resident == 0 && dataSize != 0)
+                if (resident == 0 ) //is resident
                 {
-                    dataSize = size;
-                    sizeOnDisk = size;
+                    byte[] attribute = new byte[4];
+                    Function.stream.Seek(firstByte + 16, SeekOrigin.Begin);
+                    Function.stream.Read(attribute, 0, 4);
+                    dataSize = Function.littleEndian(attribute, 0, 4);
+                    sizeOnDisk = 0;
                 }
                 else
                 {
                     byte[] attribute = new byte[8];
-                    //Console.WriteLine(firstByte + 48);
                     Function.stream.Seek(firstByte + 40, SeekOrigin.Begin);
                     Function.stream.Read(attribute, 0, 8);
                     sizeOnDisk = Function.littleEndian(attribute, 0, 8);
 
+                    byte[] attribute2 = new byte[8];
                     Function.stream.Seek(firstByte + 48, SeekOrigin.Begin);
-                    Function.stream.Read(attribute, 0, 8);
-                    dataSize = Function.littleEndian(attribute, 0, 8);
-                    //Console.WriteLine("SAI:" + dataSize);
+                    Function.stream.Read(attribute2, 0, 8);
+                    dataSize = Function.littleEndian(attribute2, 0, 8);
                 }
             }
 
             public override void export(FileInfomation x)
             {
-                x.Size = dataSize;
-                x.SizeOnDisk = sizeOnDisk;
+                if(Resident == 0) //is resident
+                {
+                    if(x.Size == 0)
+                    {
+                        x.Size = dataSize;
+                        x.SizeOnDisk = 0;
+                    }
+                }
+                else
+                {
+                    x.Size = dataSize;
+                    x.SizeOnDisk = sizeOnDisk;
+                }
+              
+                Console.WriteLine("Size: " + sizeOnDisk);
             }
 
             public override void showInfo()
             {
-                Console.WriteLine("Size: " + dataSize);
+                Console.WriteLine("Size: " + sizeOnDisk);
             }
         }
 

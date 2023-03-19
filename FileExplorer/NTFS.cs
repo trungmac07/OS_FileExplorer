@@ -101,8 +101,31 @@ namespace FileExplorer
             MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
 
             FileInfomation tmp = new FileInfomation(mFTEntry);
-            return (tmp.Size / 1024);
+            return (tmp.SizeOnDisk / 1024);
+        }
 
+
+        public void readAttribute()
+        {
+            long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
+            int j = 0;
+
+            long numberOfEntries = readNumberOfEntries();
+            Console.WriteLine("Number of entries:" + numberOfEntries);
+
+            for (long i = 0; i < numberOfEntries; ++i)
+            {
+                ++j;
+                MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
+                mFTEntry.print();
+                if (mFTEntry.Sign == "FILE")
+                {
+                    MFTEntries.Add(mFTEntry);
+                    //addToTree(new FileInfomation(mFTEntry));
+                }
+
+                beginByte += BytesPerEntry;
+            }
         }
 
         public Tree buildTree()
@@ -126,29 +149,6 @@ namespace FileExplorer
                 beginByte += BytesPerEntry;
             }
             return folderTree;
-        }
-
-
-        public void readAttribute()
-        {
-            long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
-            int j = 0;
-
-            long numberOfEntries = readNumberOfEntries();
-
-            for (long i = 0; i < numberOfEntries; ++i)
-            {
-                ++j;
-                MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
-                mFTEntry.print();
-                if (mFTEntry.Sign == "FILE")
-                {
-                    MFTEntries.Add(mFTEntry);
-                    //addToTree(new FileInfomation(mFTEntry));
-                }
-
-                beginByte += BytesPerEntry;
-            }
         }
 
         
