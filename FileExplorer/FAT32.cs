@@ -72,10 +72,11 @@ namespace FileExplorer
             fs.Close();
             return s;
         }
-        public void readFileFromRDET()
+        public Tree readMainFileFromRDET()
         {
             FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            
+            Tree rs = new Tree();
+
             long FirstSectorInRDET = 0;
             FirstSectorInRDET += this.sectorsBeforeFAT;
             FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
@@ -84,64 +85,45 @@ namespace FileExplorer
             fs.Read(a, 0, 160);
             fs.Seek(FirstSectorInRDET * this.bytesPerSector + 128, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
-            int subEntry = 0;
-            long pos1 = fs.Position;
-            long pos2 = 0;
+            int level = 0;
+            long pos = 0;
+            
             while (a[0] != 0)
             {
-                if (a[0] == 0xE5)
+                if(a[0x00] != 0xE5 && a[0x0B] != 0x0F)
                 {
+                    pos = fs.Position - 32;
+                    fs.Close();
+                    FolderTreeNode temp = ReadFile(pos, 0, level);
+                    rs.ListOfRoots.Add(temp.Info.ID, temp);
+                    GetAllFiles(temp, rs.ListOfFiles, level);
+                    fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    fs.Seek(pos + 32, SeekOrigin.Begin);
+                    long offset = pos + 32;
+                    long x = offset / bytesPerSector;
+                    long y = x * bytesPerSector;
+                    int z = (int)(offset - y);
+                    fs.Seek(y, SeekOrigin.Begin);
+                    fs.Read(a, 0, z);
+                    fs.Seek(offset, SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
-                    continue;
-                }
-                else
-                {
-                    if (a[0x0B] == 0x0F)
-                    {
-                        //Luu lai vi tri cua sub entry dau tien
-                        if (subEntry == 0) pos1 = fs.Position - 32 * 2;
-                        subEntry++;
-                        fs.Read(a, 0, 32);
-                        continue;
-                    }
-                    else
-                    {
-                        pos2 = fs.Position - 32;
-                        int check = 0;
-                        string name = "";
-                        for (long i = pos2; i > pos1; i -= 32)
-                        {
-                            fs.Seek(i, SeekOrigin.Begin);
-                            fs.Read(a, 0, 32);
-                            if (check == 1)
-                            {
-                                //cong them cac ten cua entry phu
-                                name += subEntryName(a);
-                            }
-                            else
-                            {
-                                if (a[0x06] == 0x7E)
-                                {
-                                    check = 1;
-                                    continue;
-                                }
-                                else
-                                {
-                                    //La entry chinh
-                                    name += mainEntryName(a);
-                                    break;
-                                }
-                            }
-                        }
-                        Console.WriteLine(name);
-                        fs.Seek(pos2 + 32, SeekOrigin.Begin);
-                        fs.Read(a, 0, 32);
-                        //reset position
-                        subEntry = 0;
-                    }
-                }
+                }    
+                else fs.Read(a, 0, 32);
             }
             fs.Close();
+            return rs;
+        }
+        public void GetAllFiles(FolderTreeNode node, Dictionary<long, FolderTreeNode> Files , int level)
+        {
+            Files.Add(node.Info.ID, node);
+            if (node.Children.Count == 0) return;
+            else
+            {
+                for (int i = 0; i < node.Children.Count; i++)
+                {
+                    GetAllFiles(ReadFile(node.Children[i], node.Info.ID, level++), Files, level++);
+                }
+            }
         }
         public string subEntryName(byte[] arr)
         {
@@ -171,5 +153,195 @@ namespace FileExplorer
             }
             return s;
         }
+
+        public DateTime createTime(byte a, byte b, byte c, byte d, byte e)
+        {
+
+            string s1 = Convert.ToString(a, 2);
+            string s2 = Convert.ToString(b, 2);
+            string s3 = Convert.ToString(c, 2);
+            while (s1.Length < 8)
+            {
+                s1 = "0" + s1;
+            }
+            while (s2.Length < 8)
+            {
+                s2 = "0" + s2;
+            }
+            while (s3.Length < 8)
+            {
+                s3 = "0" + s3;
+            }
+            string s = s1 + s2 + s3;
+
+            int gio, phut, giay, miligiay;
+            gio = Convert.ToInt32(s.Substring(0, 5), 2);
+            phut = Convert.ToInt32(s.Substring(5, 6), 2);
+            giay = Convert.ToInt32(s.Substring(11, 6), 2);
+            miligiay = Convert.ToInt32(s.Substring(17, 7), 2);
+
+            string s4 = Convert.ToString(d, 2);
+            string s5 = Convert.ToString(e, 2);
+
+            while (s4.Length < 8)
+            {
+                s4 = "0" + s4;
+            }
+            while (s5.Length < 8)
+            {
+                s5 = "0" + s5;
+            }
+
+            s = s4 + s5;
+
+            int nam, thang, ngay;
+            nam = Convert.ToInt32(s.Substring(0, 7), 2) + 1980;
+            thang = Convert.ToInt32(s.Substring(7, 4), 2);
+            ngay = Convert.ToInt32(s.Substring(11, 5), 2);
+            DateTime temp = new DateTime(nam,thang,ngay,gio,phut,giay);
+            return temp;
+            
+        }
+        public string createDate(byte a, byte b)
+        {
+
+            string s1 = Convert.ToString(a, 2);
+            string s2 = Convert.ToString(b, 2);
+
+            while (s1.Length < 8)
+            {
+                s1 = "0" + s1;
+            }
+            while (s2.Length < 8)
+            {
+                s2 = "0" + s2;
+            }
+
+            string s = s1 + s2;
+
+            int nam, thang, ngay;
+            nam = Convert.ToInt32(s.Substring(0, 7), 2) + 1980;
+            thang = Convert.ToInt32(s.Substring(7, 4), 2);
+            ngay = Convert.ToInt32(s.Substring(11, 5), 2);
+            s1 = Convert.ToString(thang);
+            s2 = Convert.ToString(ngay);
+            if (s1.Length < 2) s1 = "0" + s1;
+            if (s2.Length < 2) s2 = "0" + s2;
+
+            s = Convert.ToString(nam) + "/" + s1 + "/" + s2;
+            return s;
+        }
+        public long size(byte a, byte b, byte c, byte d)
+        {
+            byte[] arr = { a, b, c, d };
+            long s = Function.littleEndian(arr, 0, 4);
+            return s;
+        }
+        public FolderTreeNode ReadFile(long FirstByte, long Parent,int level)
+        {
+            FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            //get the sector--------------------------------
+            byte[] a = new byte[512];
+            long offset = FirstByte;
+            long x = offset / (long)512;
+            long y = x * 512;
+            int z = (int)(offset - y);
+            fs.Seek(y, SeekOrigin.Begin);
+            fs.Read(a, 0, z);
+            fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(a, 0, 32);
+            //information------------------------------------
+            long pos1 = offset - 32;
+            long pos2 = offset;
+            string name = "";
+            DateTime time = new DateTime();
+            long s = 0;
+            long cluster = 0;
+
+            if (a[0x06] == 0x7E)
+            {
+                fs.Seek(pos1, SeekOrigin.Begin);
+                fs.Read(a, 0, 32);
+                while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
+                {
+                    pos1 -= 32;
+                    fs.Seek(pos1, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                }
+
+                for (long i = pos2 - 32; i > pos1; i -= 32)
+                {
+                    fs.Seek(i, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    name += subEntryName(a);
+                }
+            }
+            else
+            {
+                fs.Seek(offset, SeekOrigin.Begin);
+                fs.Read(a, 0, 32);
+                name += mainEntryName(a);
+            }
+            fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(a, 0, 32);
+            time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10]);
+            s = size(a[0x1C], a[0x1D], a[0x1E], a[0x1F]);
+            cluster = Function.littleEndian(a, 0x1A, 2);
+
+            FileInfomation FileTemp = new FileInfomation(fs.Position - 32);
+            FileTemp.FileName = name;
+            if(Parent == 0) FileTemp.IsRoot = true;
+            else FileTemp.IsRoot = false;
+            FileTemp.IDParentFolder = Parent;
+            if (a[0x11] == 0x01) FileTemp.IsReadOnly = true;
+            else FileTemp.IsReadOnly = false;
+            if (a[0x11] == 0x02) FileTemp.IsHidden = true;
+            else FileTemp.IsHidden = false;
+            if (a[0x11] == 0x04) FileTemp.IsSystem = true;
+            else FileTemp.IsSystem = false;
+            if (a[0x11] == 0x10) FileTemp.IsDirectory = true;
+            else FileTemp.IsDirectory = false;
+            if (a[0x11] == 0x20) FileTemp.IsArchive = true;
+            else FileTemp.IsArchive = false;
+
+            FileTemp.CreatedTime = time;
+            FileTemp.Size = s;
+
+            if (FileTemp.IsArchive == true) FileTemp.Type = 0;
+            else FileTemp.Type = 1;
+            //Children-------------------------
+            List<long> Children = new List<long>();
+            long FirstSectorInRDET = 0;
+            FirstSectorInRDET += this.sectorsBeforeFAT;
+            FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
+            offset = (FirstSectorInRDET + (cluster - 2) * sectorsPerCluster) * bytesPerSector;
+            x = offset / bytesPerSector;
+            y = x * bytesPerSector;
+            
+
+            fs.Seek(y, SeekOrigin.Begin);
+            fs.Read(a, 0, 64);
+            //fs.Read(a, 0, 32);
+            
+            while (a[0x00] != 0x00)
+            {
+                offset = fs.Position + 32;
+                x = offset / bytesPerSector;
+                y = x * bytesPerSector;
+                z = (int)(offset - y);
+                fs.Seek(y,SeekOrigin.Begin);
+                fs.Read(a, 0, z);
+                fs.Seek(offset - 32, SeekOrigin.Begin);
+                fs.Read(a, 0, 32);
+                if (a[0x00] != 0xE5 && a[0x0B] != 0x0F && a[0x00] != 0x00) Children.Add(fs.Position - 32);
+            }
+            //return
+            FolderTreeNode res = new FolderTreeNode(FileTemp);
+            res.Children = Children;
+            res.Level = level;
+            fs.Close();
+            return res;
+        }
     }
+    
 }
