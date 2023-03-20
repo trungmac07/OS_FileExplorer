@@ -109,13 +109,13 @@ namespace FileExplorer
             int j = 0;
 
             long numberOfEntries = readNumberOfEntries();
-            Console.WriteLine("Number of entries:" + numberOfEntries);
+            //Console.WriteLine("Number of entries:" + numberOfEntries);
 
             for (long i = 0; i < numberOfEntries; ++i)
             {
                 ++j;
                 MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
-                mFTEntry.print();
+                //mFTEntry.print();
                 if (mFTEntry.Sign == "FILE")
                 {
                     MFTEntries.Add(mFTEntry);
@@ -138,7 +138,7 @@ namespace FileExplorer
             {
                 ++j;
                 MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
-                mFTEntry.print();
+               // mFTEntry.print();
                 if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
                 {
                     folderTree.addToTree(new FileInfomation(mFTEntry));
@@ -148,21 +148,6 @@ namespace FileExplorer
             }
             return folderTree;
         }
-
-        
-
-        public void showTree()
-        {
-            Console.WriteLine("___________________________________");
-            foreach (MFTEntry mFTEntry in MFTEntries)
-                mFTEntry.printInfo();
-
-            /*foreach (var node in ListOfFiles)
-                node.Value.showInfo();*/
-
-        }
-
-
 
         public void printVBRInfo()
         {

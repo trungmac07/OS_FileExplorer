@@ -204,12 +204,12 @@ namespace FileExplorer
                     x.SizeOnDisk = sizeOnDisk;
                 }
               
-                Console.WriteLine("Size: " + sizeOnDisk);
+                //Console.WriteLine("Size: " + sizeOnDisk);
             }
 
             public override void showInfo()
             {
-                Console.WriteLine("Size: " + sizeOnDisk);
+                //Console.WriteLine("Size: " + sizeOnDisk);
             }
         }
 

@@ -152,7 +152,7 @@ namespace FileExplorer
             }
             public void print()
             {
-                Console.WriteLine("Sign: " + Sign);
+                //Console.WriteLine("Sign: " + Sign);
               /*Console.WriteLine("BeginFirstAttribute: " + BeginFirstAttribute);
                 Console.WriteLine("Type: " + Type);
                 Console.WriteLine("BytesUsed: " + BytesUsed);

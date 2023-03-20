@@ -100,7 +100,7 @@ namespace FileExplorer
         public int currentDisk = 1;
         public int currentPartition = 0;
         MBR mBR = new MBR();
-        Tree FolderTree { get; set; }
+        Tree FolderTree { get; set; } = new Tree();
         public MainWindow()
         {
             // Khoi's codes
@@ -111,15 +111,9 @@ namespace FileExplorer
             string drivePath = @"\\.\PhysicalDrive" + currentDisk;
             Function.stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
 
-
-
             MBR mBR = new MBR();
             mBR.readMBR(currentDisk);
-
             //mBR.printMBRTable();
-
-            
-
 
             mBR.printPartitionInfo(currentPartition);
             if (mBR.getPartitionType(currentPartition) == "NTFS")
@@ -130,7 +124,6 @@ namespace FileExplorer
                 renderRoots();
             }
             */
-
         }
         public void deleteParitionFromView()
         {
@@ -171,7 +164,7 @@ namespace FileExplorer
                 {
                     IsHidden.IsChecked = true;
                     IsReadOnly.IsChecked = false;
-                } 
+                }
                 else if (mBR.getPartitionStatus(index) == "unbootable")
                 {
                     IsHidden.IsChecked = false;
@@ -180,13 +173,11 @@ namespace FileExplorer
 
                 if (partitionType == "FAT32")
                 {
-                    while (FolderTreeContain.Children.Count > 0)
-                        FolderTreeContain.Children.RemoveAt(0);
+                    clearFolderTree();
                 }
                 else if (partitionType == "NTFS")
                 {
-                    while (FolderTreeContain.Children.Count > 0)
-                        FolderTreeContain.Children.RemoveAt(0);
+                    clearFolderTree();
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
@@ -196,6 +187,19 @@ namespace FileExplorer
             };
             PartitionArea.Children.Add(button);
         }
+
+        public void clearFolderTree()
+        {
+            foreach(var file in FolderTree.ListOfFiles)
+            {
+                if(this.FindName("n" + file.Key) != null)
+                {
+                    this.UnregisterName("n" + file.Key);
+                }
+            }
+            FolderTreeContain.Children.Clear();
+        }
+
         public void chart()
         {
             ChartData = new SeriesCollection
@@ -243,7 +247,7 @@ namespace FileExplorer
             TimeCreated.Text = fileinfo.CreationTime.ToString();
             getDrive();
         }
-        
+
         public void getDrive()
         {
             ManagementObjectSearcher searcher = new
@@ -254,7 +258,7 @@ namespace FileExplorer
                 HardDrive hd = new HardDrive();
                 hd.Model = wmi_HD["Model"].ToString();
                 hd.Type = wmi_HD["InterfaceType"].ToString();
-                hdCollection.Insert(0, hd);
+                hdCollection.Add(hd);
             }
             searcher = new
             ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
@@ -284,6 +288,7 @@ namespace FileExplorer
                 index++;
             }
         }
+
         public void createDiskButton(int index, string s, int kind)
         {
             Button DiskButton1 = new Button();
@@ -328,8 +333,6 @@ namespace FileExplorer
 
             };
             DiskArea.Children.Add(DiskButton1);
-
-
         }
 
         public void menuButtonClick(object sender, EventArgs e)
@@ -343,6 +346,7 @@ namespace FileExplorer
             }
             (sender as Button).Style = (Style)this.FindResource("SelectedMenuButton");
         }
+
         public void PartitionButtonClick(object sender, EventArgs e)
         {
             foreach (var child in PartitionArea.Children)
@@ -354,6 +358,7 @@ namespace FileExplorer
             }
            (sender as Button).Style = (Style)this.FindResource("SelectedPartitionButton");
         }
+
         public void closeApp(object sender, EventArgs e)
         {
             Close();
@@ -452,8 +457,6 @@ namespace FileExplorer
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
-
-
             FileSize.Text = "Size: " + Function.toFileSize(file.Size);
 
             string name = "";
@@ -477,7 +480,6 @@ namespace FileExplorer
             IsHidden.IsChecked = file.IsHidden;
             IsReadOnly.IsChecked = file.IsReadOnly;
 
-
         }
 
         private void expandButtonClick(object sender, EventArgs e)
@@ -490,7 +492,7 @@ namespace FileExplorer
                 modeImage.Source = new BitmapImage(new Uri(@"/resources/expand.png", UriKind.RelativeOrAbsolute));
                 modeImage.Width = 12;
                 (sender as Button).Content = modeImage;
-                (sender as Button).FontSize = 15;
+                (sender as Button).FontSize = 15;   //change to open
 
 
                 StackPanel area = (this.FindName("n" + id) as StackPanel);
@@ -511,7 +513,8 @@ namespace FileExplorer
                 modeImage.Source = new BitmapImage(new Uri(@"/resources/colapse.png", UriKind.RelativeOrAbsolute));
                 modeImage.Width = 12;
                 (sender as Button).Content = modeImage;
-                (sender as Button).FontSize = 12;
+                (sender as Button).FontSize = 12;   //change to close 
+
 
                 StackPanel area = (this.FindName("n" + id) as StackPanel);
 
@@ -535,7 +538,7 @@ namespace FileExplorer
         private void moreInfoButtonClick(object sender, EventArgs e)
         {
             long id = Int64.Parse((sender as Button).Tag.ToString());
-            if(FolderTree.ListOfFiles.ContainsKey(id) == true)
+            if (FolderTree.ListOfFiles.ContainsKey(id) == true)
             {
                 FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
