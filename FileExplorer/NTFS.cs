@@ -91,8 +91,6 @@ namespace FileExplorer
             }
             BytesPerEntry = (long)Math.Pow(2, rawValue); //2^
             MFTEntries = new SortedSet<MFTEntry>();
-            
-
         }
 
         public long readNumberOfEntries()

@@ -9,18 +9,10 @@ namespace FileExplorer
 {
     public partial class NTFS
     {
-        public class MFTEntry : IComparable<MFTEntry>
+        public class MFTEntry
         {
-            //Define type of attribute
-            public enum AttributeType
-            {
-                STANDARD_INFOMATION = 0x10,
-                FILE_NAME = 0x30,
-                DATA = 0x80,
-                END = 0xFF,
-                NULL,
-            }
-            
+           
+          
 
             //Define mask value to get attributes from FILE_NAME attribute
            
@@ -44,8 +36,38 @@ namespace FileExplorer
                 ID = 4,
             }
 
+            public enum OffsetAttributeHeader
+            {
+                ATTRIBUTE_TYPE = 0x00,
+                SIZE_OF_ATTRIBUTE = 0x04,
+                RESIDENT = 0x08,
+                SIZE_OF_CONTENT = 0x10,
+                POSITION_OF_CONTENT = 0x14,
+
+            }
+
+            public enum LengthAttributeHeader
+            {
+                ATTRIBUTE_TYPE = 4,
+                SIZE_OF_ATTRIBUTE = 4,
+                RESIDENT = 1,
+                SIZE_OF_CONTENT = 4,
+                POSITION_OF_CONTENT = 2,
+            }
+
+            //Define type of attribute
+            public enum AttributeType
+            {
+                STANDARD_INFO = 0x10,
+                FILE_NAME = 0x30,
+                DATA = 0x80,
+                END = 0xFF,
+                EMPTY = 0x00,
+            }
+
             private long FirstByte { get; set; }    
             private long CurrentDisk { get; set; }
+            
 
             //In MFT Entry header
             public string Sign { get; }
@@ -107,27 +129,23 @@ namespace FileExplorer
                 int[] offset = { 0x00, 0x04, 0x08, 0x10, 0x14};
                 int[] length = { 4, 4, 1, 4, 2 };
 
-                byte attributeType = attributeHeader[0];
+                byte attributeType = attributeHeader[(int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
                 
-                long sizeOfAttribute = Function.littleEndian(attributeHeader, offset[1], length[1]);
-                long resident = Function.littleEndian(attributeHeader, offset[2], length[2]);
-                long sizeOfContent = Function.littleEndian(attributeHeader, offset[3], length[3]);
-                long positionOfContent = Function.littleEndian(attributeHeader,offset[4], length[4]) + firstByte;
+                long sizeOfAttribute    =   Function.littleEndian(attributeHeader,  (int) OffsetAttributeHeader.SIZE_OF_ATTRIBUTE,  (int) LengthAttributeHeader.SIZE_OF_ATTRIBUTE);
+                long resident           =   Function.littleEndian(attributeHeader,  (int)OffsetAttributeHeader.RESIDENT,            (int) LengthAttributeHeader.RESIDENT);
+                long sizeOfContent      =   Function.littleEndian(attributeHeader,  (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
+                long positionOfContent  =   Function.littleEndian(attributeHeader,  (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
 
-                if (attributeType == 0x10)
+                if (attributeType == (int) AttributeType.STANDARD_INFO)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
-                else if (attributeType == 0x30)
+                else if (attributeType == (int) AttributeType.FILE_NAME)
                     res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
-                else if (attributeType == 0x80)
-                {
-                    //Console.WriteLine(sizeOfAttribute);
+                else if (attributeType == (int) AttributeType.DATA)
                     res = new DataAttribute(firstByte, sizeOfAttribute, resident, CurrentDisk);
-                }
-                else if (attributeType == 0xFF || attributeType == 0x00)
+                else if (attributeType == (int) AttributeType.END || attributeType == (int)AttributeType.EMPTY)
                     res = null;
                 else 
                     res = new OtherAttribute(0,0,0,0);
-
                 firstByte += sizeOfAttribute;
                 return res;
 
