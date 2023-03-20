@@ -17,12 +17,14 @@
     <None Remove="resources\folder.png" />
     <None Remove="resources\hdd.png" />
     <None Remove="resources\ssd.png" />
+    <None Remove="resources\storage.png" />
     <None Remove="resources\usb-flash-drive.png" />
     <None Remove="resources\usb.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="System.Management" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

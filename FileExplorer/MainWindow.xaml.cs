@@ -17,6 +17,8 @@ using System.Windows.Shapes;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using System.Management;
+using System.Collections;
 
 
 namespace FileExplorer
@@ -26,6 +28,32 @@ namespace FileExplorer
     /// </summary>
     public partial class MainWindow : Window
     {
+        class HardDrive
+        {
+            private string model = null;
+            private string type = null;
+            private string serialNo = null;
+            public string Model
+            {
+                get { return model; }
+                set { model = value; }
+            }
+            public string Type
+            {
+                get { return type; }
+                set { type = value; }
+            }
+            public string SerialNo
+            {
+                get { return serialNo; }
+                set { serialNo = value; }
+            }
+        }
+        public void initialization()
+        {
+            getDrive();
+            chart();
+        }
         public void getDirectoryTree()
         {
             DriveInfo curDrive = DriveInfo.GetDrives()[0];
@@ -71,14 +99,14 @@ namespace FileExplorer
         public SeriesCollection ChartData { get; set; }
         public int currentDisk = 1;
         public int currentPartition = 0;
+        MBR mBR = new MBR();
         Tree FolderTree { get; set; }
         public MainWindow()
         {
             // Khoi's codes
             InitializeComponent();
-            //getDirectoryTree();
-            getDrive();
-            chart();
+            initialization();
+            /*
 
             string drivePath = @"\\.\PhysicalDrive" + currentDisk;
             Function.stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
@@ -101,7 +129,72 @@ namespace FileExplorer
                 FolderTree = ntfs.buildTree();
                 renderRoots();
             }
+            */
 
+        }
+        public void deleteParitionFromView()
+        {
+            while (PartitionArea.Children.Count > 0)
+            {
+                PartitionArea.Children.RemoveAt(0);
+            }
+        }
+        public void printPartition(int index)
+        {
+            Button button = new Button();
+            TextBlock textBlock = new TextBlock();
+
+            textBlock.Margin = new Thickness(20, 0, 0, 0);
+            textBlock.Text = "PARTITION " + index.ToString();
+            textBlock.FontSize = 22;
+
+            button.Content = textBlock;
+            button.Style = (Style)this.FindResource("PartitionButton");
+
+            button.Click += (sender, e) =>
+            {
+                currentPartition = index;
+                string partitionType = mBR.getPartitionType(index);
+                long head = 0, sector = 0, cylinder = 0;
+                FileImage.Source = new BitmapImage(new Uri(@"/resources/compact-disk.png", UriKind.RelativeOrAbsolute));
+                PartitionType.Text = partitionType;
+                FileName.Text = "PARTITION " + index.ToString();
+                FileSize.Text = "First Sector(LBA): " + mBR.getFirstSectorLBA(index);
+                mBR.getStartSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
+                DateCreated.Text = "Begin address(CHS): " + head + "(Head)" + sector + "(Sector)" + cylinder + "(Cylinder)";
+                mBR.getLastSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
+                TimeCreated.Text = "End address(CHS): " + head + "(Head)" + sector + "(Sector)" + cylinder + "(Cylinder)";
+                Attribute.Text = "Status";
+                IsHidden.Content = "Bootable";
+                IsReadOnly.Content = "Unbootable";
+                if (mBR.getPartitionStatus(index) == "bootable")
+                {
+                    IsHidden.IsChecked = true;
+                    IsReadOnly.IsChecked = false;
+                } 
+                else if (mBR.getPartitionStatus(index) == "unbootable")
+                {
+                    IsHidden.IsChecked = false;
+                    IsReadOnly.IsChecked = true;
+                }
+
+                if (partitionType == "FAT32")
+                {
+                    while (FolderTreeContain.Children.Count > 0)
+                        FolderTreeContain.Children.RemoveAt(0);
+                }
+                else if (partitionType == "NTFS")
+                {
+                    while (FolderTreeContain.Children.Count > 0)
+                        FolderTreeContain.Children.RemoveAt(0);
+                    NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
+                    ntfs.printVBRInfo();
+                    FolderTree = ntfs.buildTree();
+                    renderRoots();
+                }
+
+            };
+            PartitionArea.Children.Add(button);
         }
         public void chart()
         {
@@ -150,19 +243,49 @@ namespace FileExplorer
             TimeCreated.Text = fileinfo.CreationTime.ToString();
             getDrive();
         }
+        
         public void getDrive()
         {
-            foreach (DriveInfo d in allDrives)
+            ManagementObjectSearcher searcher = new
+            ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+            ArrayList hdCollection = new ArrayList();
+            foreach (ManagementObject wmi_HD in searcher.Get())
             {
-                if (d.DriveType == DriveType.Fixed)
-                    createButton(d.Name, 0);
-                else if (d.DriveType == DriveType.Removable)
-                    createButton(d.Name, 1);
+                HardDrive hd = new HardDrive();
+                hd.Model = wmi_HD["Model"].ToString();
+                hd.Type = wmi_HD["InterfaceType"].ToString();
+                hdCollection.Insert(0, hd);
+            }
+            searcher = new
+            ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
+
+            int i = 0;
+            foreach (ManagementObject wmi_HD in searcher.Get())
+            {
+                // get the hard drive from collection
+                // using index
+                HardDrive hd = (HardDrive)hdCollection[i];
+
+                // get the hardware serial no.
+                if (wmi_HD["SerialNumber"] == null)
+                    hd.SerialNo = "None";
+                else
+                    hd.SerialNo = wmi_HD["SerialNumber"].ToString();
+
+                ++i;
+            }
+            int index = 0;
+            foreach (HardDrive hd in hdCollection)
+            {
+                while (hd.Model[0] == ' ') hd.Model = hd.Model.Remove(0, 1);
+                if (hd.Type == "USB")
+                    createDiskButton(index, hd.Model, 1);
+                else createDiskButton(index, hd.Model, 0);
+                index++;
             }
         }
-        public void createButton(string s, int kind)
+        public void createDiskButton(int index, string s, int kind)
         {
-            s += "abcdef name";
             Button DiskButton1 = new Button();
 
             DockPanel dcPanel1 = new DockPanel();
@@ -170,8 +293,8 @@ namespace FileExplorer
             TextBlock txt = new TextBlock();
             Image img = new Image();
 
-            img.Height = 40;
-            img.Width = 40;
+            img.Height = 30;
+            img.Width = 30;
             if (kind == 0)
                 img.Source = new BitmapImage(new Uri("/resources/hdd.png", UriKind.RelativeOrAbsolute));
             else if (kind == 1)
@@ -184,13 +307,26 @@ namespace FileExplorer
             txt.Width = 150;
             txt.Text = s;
             txt.Padding = new Thickness(0, 7, 0, 0);
+            txt.FontSize = 13;
 
             dcPanel1.Children.Add(img);
             dcPanel1.Children.Add(txt);
 
-            DiskButton1.Height = 70;
+            DiskButton1.Height = 50;
             DiskButton1.Content = dcPanel1;
             DiskButton1.Style = (Style)this.FindResource("MenuButton");
+            DiskButton1.Click += (sender, e) =>
+            {
+                currentDisk = index;
+                deleteParitionFromView();
+                mBR.readMBR(index);
+                for (int i = 0; i < 3; i++)
+                {
+                    if (mBR.isPartitionActive(i) == true)
+                        printPartition(i);
+                }
+
+            };
             DiskArea.Children.Add(DiskButton1);
 
 
@@ -207,7 +343,17 @@ namespace FileExplorer
             }
             (sender as Button).Style = (Style)this.FindResource("SelectedMenuButton");
         }
-
+        public void PartitionButtonClick(object sender, EventArgs e)
+        {
+            foreach (var child in PartitionArea.Children)
+            {
+                if (child is Button)
+                {
+                    (child as Button).Style = (Style)this.FindResource("PartitionButton");
+                }
+            }
+           (sender as Button).Style = (Style)this.FindResource("SelectedPartitionButton");
+        }
         public void closeApp(object sender, EventArgs e)
         {
             Close();
@@ -323,6 +469,7 @@ namespace FileExplorer
                 FileName.Text = file.FileName;
             }
             MoreInfoButton.Tag = id;
+            Attribute.Text = "Attributes";
 
             DateCreated.Text = "Created Date: " + file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
             TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");

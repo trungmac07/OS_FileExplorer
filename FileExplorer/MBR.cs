@@ -95,6 +95,7 @@ namespace FileExplorer
         public void readMBR(int index)
         {
             string drivePath = @"\\.\PhysicalDrive" + index.ToString() ;
+            Function.stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
 
             // Open the drive for reading
             try
@@ -184,6 +185,24 @@ namespace FileExplorer
             Console.WriteLine("Cylinder: " + cylinder);
             Console.WriteLine("First sector(LBA): " + getFirstSectorLBA(index));
             Console.WriteLine("Total sectors: " + getSectorInPartition(index).ToString());
+        }
+
+        public bool isPartitionActive(int index)
+        {
+            long start_head = 0, start_sector = 0, start_cylinder = 0;
+            getStartSectorInPartitionCHS(index, ref start_head, ref start_sector, ref start_cylinder);
+            long end_head = 0, end_sector = 0, end_cylinder = 0;
+            getStartSectorInPartitionCHS(index, ref end_head, ref end_sector, ref end_cylinder);
+
+            if (start_head == end_head && end_head == 0)
+            {
+                if (start_sector == end_sector && end_sector == 0)
+                {
+                    if (start_cylinder == end_cylinder && end_cylinder == 0)
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }
