@@ -278,6 +278,7 @@ namespace FileExplorer
 
                 ++i;
             }
+            
             int index = 0;
             foreach (HardDrive hd in hdCollection)
             {
@@ -333,6 +334,8 @@ namespace FileExplorer
 
             };
             DiskArea.Children.Add(DiskButton1);
+
+           
         }
 
         public void menuButtonClick(object sender, EventArgs e)
@@ -357,6 +360,7 @@ namespace FileExplorer
                 }
             }
            (sender as Button).Style = (Style)this.FindResource("SelectedPartitionButton");
+          
         }
 
         public void closeApp(object sender, EventArgs e)
@@ -457,7 +461,7 @@ namespace FileExplorer
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
-            FileSize.Text = "Size: " + Function.toFileSize(file.Size);
+            FileSize.Text = "Size: " + Function.toFileSize(FolderTree.getSize(id));
 
             string name = "";
             if (file.FileName.Length >= 41)
@@ -476,6 +480,9 @@ namespace FileExplorer
 
             DateCreated.Text = "Created Date: " + file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
             TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
+
+            IsHidden.Content = "Is Hidden";
+            IsReadOnly.Content = "Is ReadOnly";
 
             IsHidden.IsChecked = file.IsHidden;
             IsReadOnly.IsChecked = file.IsReadOnly;
@@ -553,7 +560,17 @@ namespace FileExplorer
     }
 
 
+    public class ByteReader
+    {
+        public int CurrentDisk { get; set; } = 0;
+        public FileStream stream { get; set; } = null;
+        public ByteReader(int index, string drivePath)
+        {
+            CurrentDisk = index;
+            stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
+        }
 
+    }
     public class Function
     {
         public static FileStream stream = null;
@@ -563,7 +580,7 @@ namespace FileExplorer
             for (int i = length - 1; i >= 0; --i)
             {
                 res <<= 8;
-                res += (int)src[offset + i];
+                res += (long) src[offset + i];
             }
             return res;
         }

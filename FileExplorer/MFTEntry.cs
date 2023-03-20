@@ -12,8 +12,6 @@ namespace FileExplorer
         public class MFTEntry
         {
            
-          
-
             //Define mask value to get attributes from FILE_NAME attribute
            
             public enum OffsetMFTEntryHeader
@@ -66,11 +64,11 @@ namespace FileExplorer
             }
 
 
-            //
+            // entry byte array
             private byte[] Info { get; set; }
-
+            //first byte of entry
             private long FirstByte { get; set; }    
-            private long CurrentDisk { get; set; }
+      
             
 
             //In MFT Entry header
@@ -85,9 +83,8 @@ namespace FileExplorer
             List<Attribute> ListOfAttributes { get; } = new List<Attribute>();
 
 
-            public MFTEntry(long firstByte, long currentDisk, long bytesPerEntry) 
+            public MFTEntry(long firstByte, long bytesPerEntry) 
             {
-                CurrentDisk = currentDisk;
                 FirstByte = firstByte;
                 Info = new byte[bytesPerEntry];
                 try
@@ -116,6 +113,7 @@ namespace FileExplorer
             {
                 long firstByte = BeginFirstAttribute;
                 Attribute tmp = null;
+     
                 while((tmp = readAttributeHeader(ref firstByte)) != null)
                 {
                     ListOfAttributes.Add(tmp);
@@ -133,12 +131,18 @@ namespace FileExplorer
                 Function.stream.Read(attributeHeader, 0, 32);*/
 
                 byte attributeType = Info[position + (int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
-               
+
+                if (attributeType == (int)AttributeType.END || attributeType == (int)AttributeType.EMPTY)
+                    return null;
+
                 long sizeOfAttribute    =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_ATTRIBUTE,   (int) LengthAttributeHeader.SIZE_OF_ATTRIBUTE);
                 long resident           =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.RESIDENT,            (int) LengthAttributeHeader.RESIDENT);
                 long sizeOfContent      =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
                 long positionOfContent  =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
-                
+
+                if(FirstByte == 694306816)
+                    Console.WriteLine("kkkk");
+
                 if (attributeType == (int) AttributeType.STANDARD_INFO)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, Info);
                 else if (attributeType == (int) AttributeType.FILE_NAME)
@@ -153,38 +157,7 @@ namespace FileExplorer
                 return res;
 
             }
-            public void print()
-            {
-                //Console.WriteLine("Sign: " + Sign);
-              /*Console.WriteLine("BeginFirstAttribute: " + BeginFirstAttribute);
-                Console.WriteLine("Type: " + Type);
-                Console.WriteLine("BytesUsed: " + BytesUsed);
-                Console.WriteLine("NumberOfBytes: " + NumberOfBytes);
-                Console.WriteLine("ID: " + ID); */
-            }
-
-            public void printInfo()
-            {
-                Console.WriteLine("ID: " + ID);
-                foreach(Attribute a in ListOfAttributes)
-                    a.showInfo();
-                Console.WriteLine();
-                //Console.WriteLine("Size: " + BytesUsed + "/" + NumberOfBytes);
-            }
-
-            public string showType()
-            {
-                if (Type == 0) 
-                    return "Deleted File";
-                if (Type == 1)
-                    return "File";
-                if (Type == 2)
-                    return "Deleted Folder";
-                if (Type == 3)
-                    return "Folder";
-                return "";
-            }
-
+           
             public int CompareTo(MFTEntry other)
             {
                 return this.ID.CompareTo(other.ID);
@@ -198,8 +171,6 @@ namespace FileExplorer
                     a.export(x);
             }
             
-            
-
         }
     }
 }

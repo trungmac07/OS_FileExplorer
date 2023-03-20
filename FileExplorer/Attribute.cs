@@ -162,13 +162,15 @@ namespace FileExplorer
             {
                 if (resident == 0 ) //is resident
                 {
+                    
                     dataSize = Function.littleEndian(info, firstByte + 16, 4);
                     sizeOnDisk = 0;
+                    
                 }
                 else
                 {
                     sizeOnDisk = Function.littleEndian(info, firstByte + 40, 8);
-                    sizeOnDisk = Function.littleEndian(info, firstByte + 48, 8);
+                    dataSize = Function.littleEndian(info, firstByte + 48, 8);
                 }
             }
 
@@ -188,7 +190,6 @@ namespace FileExplorer
                     x.SizeOnDisk = sizeOnDisk;
                 }
               
-                //Console.WriteLine("Size: " + sizeOnDisk);
             }
 
             public override void showInfo()

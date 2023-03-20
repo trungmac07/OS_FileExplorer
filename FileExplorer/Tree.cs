@@ -17,6 +17,44 @@ namespace FileExplorer
             ListOfFiles = new Dictionary<long, FolderTreeNode>();
         }
 
+        public long getSize(long id)
+        {
+            if(ListOfFiles.ContainsKey(id))
+            {
+                if(ListOfFiles[id].Info.IsDirectory == true)
+                {
+                    long sum = 0;
+                    foreach(var child in ListOfFiles[id].Children)
+                        sum += getSize(child);
+                    return sum;
+                }
+                else
+                {
+                    return ListOfFiles[id].Info.Size;
+                }
+            }
+            return -1;
+        }
+
+        public long getSizeOnDisk(long id)
+        {
+            if (ListOfFiles.ContainsKey(id))
+            {
+                if (ListOfFiles[id].Info.IsDirectory == true)
+                {
+                    long sum = 0;
+                    foreach (var child in ListOfFiles[id].Children)
+                        sum += getSizeOnDisk(child);
+                }
+                else
+                {
+                    return ListOfFiles[id].Info.SizeOnDisk;
+                }
+            }
+            return -1;
+        }
+
+
         public void addToTree(FileInfomation src)
         {
             //null

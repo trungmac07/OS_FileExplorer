@@ -51,9 +51,6 @@ namespace FileExplorer
         private long BytesPerEntry { get; set; }
         SortedSet<MFTEntry> MFTEntries;
 
-
-        FileStream stream = null;
-
         private long FirstByte { get; set; }
         public NTFS(long firstSector, long totalSector, int currentDisk)
         {
@@ -78,8 +75,9 @@ namespace FileExplorer
 
             BeginCluster1 = Function.littleEndian(vbr, (int)OffsetVBR.BEGIN_CLUSTER_1, (int)LengthVBR.BEGIN_CLUSTER_1);
             BeginCluster2 = Function.littleEndian(vbr, (int)OffsetVBR.BEGIN_CLUSTER_2, (int)LengthVBR.BEGIN_CLUSTER_2);
+            
+            
             //2's complement 
-
             int rawValue = vbr[(int)OffsetVBR.BYTES_PER_ENTRY];
             int negativeMask = 0x00000080;
             int invertMask = ~0x000000ff;
@@ -96,7 +94,7 @@ namespace FileExplorer
         public long readNumberOfEntries()
         {
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
-            MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
+            MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry);
 
             FileInfomation tmp = new FileInfomation(mFTEntry);
             return (tmp.SizeOnDisk / 1024);
@@ -106,20 +104,17 @@ namespace FileExplorer
         public void readAttribute()
         {
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
-            int j = 0;
-
             long numberOfEntries = readNumberOfEntries();
-            //Console.WriteLine("Number of entries:" + numberOfEntries);
+       
 
             for (long i = 0; i < numberOfEntries; ++i)
             {
-                ++j;
-                MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
-                //mFTEntry.print();
+                MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry);
+               
                 if (mFTEntry.Sign == "FILE")
                 {
                     MFTEntries.Add(mFTEntry);
-                    //addToTree(new FileInfomation(mFTEntry));
+                  
                 }
 
                 beginByte += BytesPerEntry;
@@ -137,8 +132,8 @@ namespace FileExplorer
             for (long i = 0; i < numberOfEntries; ++i)
             {
             
-                MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
-               // mFTEntry.print();
+                MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry);
+               
                 if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
                 {
                     folderTree.addToTree(new FileInfomation(mFTEntry));
