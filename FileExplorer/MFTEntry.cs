@@ -65,6 +65,10 @@ namespace FileExplorer
                 EMPTY = 0x00,
             }
 
+
+            //
+            private byte[] Info { get; set; }
+
             private long FirstByte { get; set; }    
             private long CurrentDisk { get; set; }
             
@@ -85,25 +89,26 @@ namespace FileExplorer
             {
                 CurrentDisk = currentDisk;
                 FirstByte = firstByte;
-                byte[] entryHeader = new byte[bytesPerEntry];
+                Info = new byte[bytesPerEntry];
                 try
                 {
                     Function.stream.Seek(FirstByte, SeekOrigin.Begin);
-                    Function.stream.Read(entryHeader, 0, (int)bytesPerEntry);
+                    Function.stream.Read(Info, 0, (int)bytesPerEntry);
        
                 }
                 catch (FileNotFoundException) { };
 
                 Sign = "";
                 for (int i = 0; i < 4; ++i)
-                    Sign += (char)entryHeader[(int)OffsetMFTEntryHeader.SIGN + i];
+                    Sign += (char)Info[(int)OffsetMFTEntryHeader.SIGN + i];
 
-                BeginFirstAttribute =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.BEGIN_FIRST_ATTRIBUTE, (int) LengthMFTEntryHeader.BEGIN_FIRST_ATTRIBUTE) + FirstByte;
-                Type                =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.TYPE,                  (int) LengthMFTEntryHeader.TYPE);
-                BytesUsed           =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.BYTES_USED,            (int) LengthMFTEntryHeader.BYTES_USED);
-                NumberOfBytes       =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.NUMBER_OF_BYTES,       (int) LengthMFTEntryHeader.NUMBER_OF_BYTES);
-                ID                  =   Function.littleEndian(entryHeader,  (int) OffsetMFTEntryHeader.ID,                    (int) LengthMFTEntryHeader.ID);
-                
+                BeginFirstAttribute =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.BEGIN_FIRST_ATTRIBUTE, (int) LengthMFTEntryHeader.BEGIN_FIRST_ATTRIBUTE);
+                Type                =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.TYPE,                  (int) LengthMFTEntryHeader.TYPE);
+                BytesUsed           =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.BYTES_USED,            (int) LengthMFTEntryHeader.BYTES_USED);
+                NumberOfBytes       =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.NUMBER_OF_BYTES,       (int) LengthMFTEntryHeader.NUMBER_OF_BYTES);
+                ID                  =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.ID,                    (int) LengthMFTEntryHeader.ID);
+
+               
                 readAttributes();
             }
 
@@ -121,31 +126,29 @@ namespace FileExplorer
             {
                 
                 Attribute res = null;
-                byte[] attributeHeader = new byte[32];
-          
-                Function.stream.Seek(firstByte, SeekOrigin.Begin);
-                Function.stream.Read(attributeHeader, 0, 32);
+                int position = (int) firstByte;
 
-                int[] offset = { 0x00, 0x04, 0x08, 0x10, 0x14};
-                int[] length = { 4, 4, 1, 4, 2 };
-
-                byte attributeType = attributeHeader[(int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
                 
-                long sizeOfAttribute    =   Function.littleEndian(attributeHeader,  (int) OffsetAttributeHeader.SIZE_OF_ATTRIBUTE,  (int) LengthAttributeHeader.SIZE_OF_ATTRIBUTE);
-                long resident           =   Function.littleEndian(attributeHeader,  (int)OffsetAttributeHeader.RESIDENT,            (int) LengthAttributeHeader.RESIDENT);
-                long sizeOfContent      =   Function.littleEndian(attributeHeader,  (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
-                long positionOfContent  =   Function.littleEndian(attributeHeader,  (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
+               /*Function.stream.Seek(firstByte, SeekOrigin.Begin);
+                Function.stream.Read(attributeHeader, 0, 32);*/
 
+                byte attributeType = Info[position + (int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
+               
+                long sizeOfAttribute    =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_ATTRIBUTE,   (int) LengthAttributeHeader.SIZE_OF_ATTRIBUTE);
+                long resident           =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.RESIDENT,            (int) LengthAttributeHeader.RESIDENT);
+                long sizeOfContent      =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
+                long positionOfContent  =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
+                
                 if (attributeType == (int) AttributeType.STANDARD_INFO)
-                    res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
+                    res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, Info);
                 else if (attributeType == (int) AttributeType.FILE_NAME)
-                    res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, CurrentDisk);
+                    res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, Info);
                 else if (attributeType == (int) AttributeType.DATA)
-                    res = new DataAttribute(firstByte, sizeOfAttribute, resident, CurrentDisk);
+                    res = new DataAttribute(firstByte, sizeOfAttribute, resident, Info);
                 else if (attributeType == (int) AttributeType.END || attributeType == (int)AttributeType.EMPTY)
                     res = null;
                 else 
-                    res = new OtherAttribute(0,0,0,0);
+                    res = new OtherAttribute(0,0,0,Info);
                 firstByte += sizeOfAttribute;
                 return res;
 

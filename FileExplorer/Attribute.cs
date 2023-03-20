@@ -15,11 +15,10 @@ namespace FileExplorer
             public long CurrentDisk { get; }
             public long Size { get; }
             public long Resident { get; }
-            public Attribute(long firstByte, long size, long resident, long currentDisk)
+            public Attribute(long firstByte, long size, long resident, byte[] info)
             {
                 this.Size = size;
                 this.Resident = resident;
-                this.CurrentDisk = currentDisk;
 
             }
             abstract public void showInfo();
@@ -43,15 +42,10 @@ namespace FileExplorer
                 CREATEDTIME = 8,
                 MODIFIEDTIME = 8,
             }
-            public StandardInfoAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
+            public StandardInfoAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
-                byte[] attribute = new byte[size];
-
-                Function.stream.Seek(firstByte, SeekOrigin.Begin);
-                Function.stream.Read(attribute, 0, (int)size);
-
-                createdTime = Function.littleEndian(attribute, (int)OffsetTime.CREATEDTIME, (int)LengthTime.CREATEDTIME);
-                modifiedTime = Function.littleEndian(attribute, (int)OffsetTime.MODIFIEDTIME, (int)LengthTime.MODIFIEDTIME);
+                createdTime  = Function.littleEndian(info, firstByte + (long)OffsetTime.CREATEDTIME,  (int)LengthTime.CREATEDTIME);
+                modifiedTime = Function.littleEndian(info, firstByte + (long)OffsetTime.MODIFIEDTIME, (int)LengthTime.MODIFIEDTIME);
             }
 
             public DateTime CreateTime()
@@ -104,19 +98,19 @@ namespace FileExplorer
             }
 
 
-            public FileNameAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
+            public FileNameAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
-                byte[] attribute = new byte[size];
+                /*byte[] attribute = new byte[size];
 
                 Function.stream.Seek(firstByte, SeekOrigin.Begin);
-                Function.stream.Read(attribute, 0, (int)size);
+                Function.stream.Read(attribute, 0, (int)size);*/
 
-                int[] offset = { 0x00, 0x38, 0x40, 0x42 };
-                int[] length = { 6, 4, 1 };
+                long[] offset = { 0x00, 0x38, 0x40, 0x42 };
+                long[] length = { 6, 4, 1 };
 
-                IDParentFolder = Function.littleEndian(attribute, offset[0], length[0]);
+                IDParentFolder = Function.littleEndian(info, firstByte + offset[0], length[0]);
 
-                int attributes = (int)Function.littleEndian(attribute, offset[1], length[1]);
+                int attributes = (int)Function.littleEndian(info, firstByte + offset[1], length[1]);
                 if ((attributes & (int)FileAttribute.MASK_READ_ONLY) != 0)
                     IsReadOnly = true;
                 if ((attributes & (int)FileAttribute.MASK_HIDDEN) != 0)
@@ -128,13 +122,13 @@ namespace FileExplorer
                 if ((attributes & (int)FileAttribute.MASK_DIRECTORY) != 0)
                     IsDirectory = true;
 
-                long nameLength = Function.littleEndian(attribute, offset[2], length[2]);
+                long nameLength = Function.littleEndian(info, firstByte + offset[2], length[2]);
 
 
                 byte[] name = new byte[nameLength * 2];
                 for (int i = 0; i < nameLength * 2; ++i)
                 {
-                    name[i] = attribute[offset[3] + i];
+                    name[i] = info[firstByte + offset[3] + i];
                 }
 
                 fileName = Encoding.Unicode.GetString(name);
@@ -164,27 +158,17 @@ namespace FileExplorer
         {
             private long dataSize = 0;
             private long sizeOnDisk = 0;
-            public DataAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
+            public DataAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
                 if (resident == 0 ) //is resident
                 {
-                    byte[] attribute = new byte[4];
-                    Function.stream.Seek(firstByte + 16, SeekOrigin.Begin);
-                    Function.stream.Read(attribute, 0, 4);
-                    dataSize = Function.littleEndian(attribute, 0, 4);
+                    dataSize = Function.littleEndian(info, firstByte + 16, 4);
                     sizeOnDisk = 0;
                 }
                 else
                 {
-                    byte[] attribute = new byte[8];
-                    Function.stream.Seek(firstByte + 40, SeekOrigin.Begin);
-                    Function.stream.Read(attribute, 0, 8);
-                    sizeOnDisk = Function.littleEndian(attribute, 0, 8);
-
-                    byte[] attribute2 = new byte[8];
-                    Function.stream.Seek(firstByte + 48, SeekOrigin.Begin);
-                    Function.stream.Read(attribute2, 0, 8);
-                    dataSize = Function.littleEndian(attribute2, 0, 8);
+                    sizeOnDisk = Function.littleEndian(info, firstByte + 40, 8);
+                    sizeOnDisk = Function.littleEndian(info, firstByte + 48, 8);
                 }
             }
 
@@ -215,7 +199,7 @@ namespace FileExplorer
 
         public class OtherAttribute : Attribute
         {
-            public OtherAttribute(long firstByte, long size, long resident, long currentDisk) : base(firstByte, size, resident, currentDisk)
+            public OtherAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
 
             }

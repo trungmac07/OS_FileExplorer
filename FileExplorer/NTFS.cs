@@ -130,13 +130,13 @@ namespace FileExplorer
         {
             Tree folderTree = new Tree();
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
-            int j = 0;
+
 
             long numberOfEntries = readNumberOfEntries();
 
             for (long i = 0; i < numberOfEntries; ++i)
             {
-                ++j;
+            
                 MFTEntry mFTEntry = new MFTEntry(beginByte, CurrentDisk, BytesPerEntry);
                // mFTEntry.print();
                 if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
@@ -149,6 +149,7 @@ namespace FileExplorer
             return folderTree;
         }
 
+
         public void printVBRInfo()
         {
             Console.WriteLine("Bytes per sector: " + BytesPerSector);
@@ -160,7 +161,6 @@ namespace FileExplorer
             Console.WriteLine("Begin cluster 2: " + BeginCluster2);
             Console.WriteLine("Bytes per entry: " + BytesPerEntry);
         }
-
 
 
     }

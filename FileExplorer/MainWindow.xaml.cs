@@ -568,6 +568,17 @@ namespace FileExplorer
             return res;
         }
 
+        static public long littleEndian(byte[] src, long offset, long length)
+        {
+            long res = 0;
+            for (long i = length - 1; i >= 0; --i)
+            {
+                res <<= 8;
+                res += (long) src[offset + i];
+            }
+            return res;
+        }
+
         static public string toFileSize(double size)
         {
             string unit = " ";
