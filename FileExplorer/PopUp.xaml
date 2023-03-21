@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileExplorer"
         mc:Ignorable="d"
-        Title="PopUp" Height="720" Width="430">
+        Title="PopUp" Height="720" Width="470">
     <Grid>
         <StackPanel Name="FileInfoArea">
             <DockPanel Margin="0 10 0 0" Height="100">
@@ -35,12 +35,12 @@
                 <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="4">Last Modified Date :</TextBlock>
                 <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="5">Last Modified Time :</TextBlock>
 
-                <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="0"></TextBlock>
-                <TextBlock Name="OnDiskSize" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="1"></TextBlock>
-                <TextBlock Name="DateCreated" Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="2"></TextBlock>
-                <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="3"></TextBlock>
-                <TextBlock Name="LastModifyDate" Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="4"></TextBlock>
-                <TextBlock Name="LastModifyTime" Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="5"></TextBlock>
+                <TextBlock Name="FileSize" Margin="10,0,-105,10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="0"/>
+                <TextBlock Name="OnDiskSize" Margin="10,0,-105,10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="1"/>
+                <TextBlock Name="DateCreated" Margin="10,15,-105,10"  FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="2"/>
+                <TextBlock Name="TimeCreated" Margin="10,0,-105,10"  FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="3"/>
+                <TextBlock Name="LastModifyDate" Margin="10,15,-105,10"  FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="4"/>
+                <TextBlock Name="LastModifyTime" Margin="10,0,-105,10"  FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="5"/>
             </Grid>
 
 

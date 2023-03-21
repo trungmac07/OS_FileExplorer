@@ -34,8 +34,12 @@ namespace FileExplorer
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
+            long id = file.ID;
+
             FileSize.Text = Function.toFileSize(file.Size) + " (" + file.Size +" Bytes)";
             OnDiskSize.Text = Function.toFileSize(file.SizeOnDisk) + " (" + file.SizeOnDisk + " Bytes)";
+
+            
 
             FileName.Text = file.FileName;
 

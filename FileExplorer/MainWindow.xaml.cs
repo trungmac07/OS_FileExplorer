@@ -462,7 +462,7 @@ namespace FileExplorer
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
             FileSize.Text = "Size: " + Function.toFileSize(FolderTree.getSize(id));
-
+            FolderTree.getSizeOnDisk(id);
             string name = "";
             if (file.FileName.Length >= 41)
             {

@@ -26,6 +26,7 @@ namespace FileExplorer
                     long sum = 0;
                     foreach(var child in ListOfFiles[id].Children)
                         sum += getSize(child);
+                    ListOfFiles[id].Info.Size = sum;
                     return sum;
                 }
                 else
@@ -45,6 +46,8 @@ namespace FileExplorer
                     long sum = 0;
                     foreach (var child in ListOfFiles[id].Children)
                         sum += getSizeOnDisk(child);
+                    ListOfFiles[id].Info.SizeOnDisk = sum;
+                    return sum;
                 }
                 else
                 {
@@ -61,6 +64,7 @@ namespace FileExplorer
             if (src == null)
                 return;
             FolderTreeNode newNode = new FolderTreeNode(src);
+
 
             //is root
             if (src.IsRoot == true)
