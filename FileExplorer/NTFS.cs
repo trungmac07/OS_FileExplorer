@@ -10,11 +10,10 @@ using System.Windows.Media;
 
 namespace FileExplorer
 {
-
-
     public partial class NTFS
     {
 
+        //Offset and length for reading VBR
         public enum OffsetVBR
         {
             BYTES_PER_SECTOR = 0x0b,
@@ -39,8 +38,8 @@ namespace FileExplorer
             BYTES_PER_ENTRY = 1,
         }
 
-        private long CurrentDisk { get; set; }
-
+        //In VBR
+        private int CurrentDisk { get; set; }
         private long BytesPerSector { get; set; }
         private long SectorsPerCluster { get; set; }
         private long SectorsPerTrack { get; set; }
@@ -49,6 +48,8 @@ namespace FileExplorer
         private long BeginCluster1 { get; set; }
         private long BeginCluster2 { get; set; }
         private long BytesPerEntry { get; set; }
+
+        //List of entry
         SortedSet<MFTEntry> MFTEntries;
 
         private long FirstByte { get; set; }
@@ -59,12 +60,14 @@ namespace FileExplorer
             long length = totalSector * 512;
             byte[] vbr = new byte[512];
 
-            //string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
+            string drivePath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
 
             // Open the drive for reading
 
-            Function.stream.Seek(FirstByte, SeekOrigin.Begin);
-            Function.stream.Read(vbr, 0, 512);
+            FileStream stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
+
+            stream.Seek(FirstByte, SeekOrigin.Begin);
+            stream.Read(vbr, 0, 512);
 
 
             BytesPerSector = Function.littleEndian(vbr, (int)OffsetVBR.BYTES_PER_SECTOR, (int)LengthVBR.BYTES_PER_SECTOR);
@@ -75,7 +78,6 @@ namespace FileExplorer
 
             BeginCluster1 = Function.littleEndian(vbr, (int)OffsetVBR.BEGIN_CLUSTER_1, (int)LengthVBR.BEGIN_CLUSTER_1);
             BeginCluster2 = Function.littleEndian(vbr, (int)OffsetVBR.BEGIN_CLUSTER_2, (int)LengthVBR.BEGIN_CLUSTER_2);
-            
             
             //2's complement 
             int rawValue = vbr[(int)OffsetVBR.BYTES_PER_ENTRY];
@@ -91,16 +93,18 @@ namespace FileExplorer
             MFTEntries = new SortedSet<MFTEntry>();
         }
 
+        //First entry, at $DATA, offset 40 -> /1024 
         public long readNumberOfEntries()
         {
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
-            MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry);
+            MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);
 
             FileInfomation tmp = new FileInfomation(mFTEntry);
             return (tmp.SizeOnDisk / 1024);
         }
 
 
+        //read entries and add into entries list
         public void readAttribute()
         {
             long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
@@ -109,7 +113,7 @@ namespace FileExplorer
 
             for (long i = 0; i < numberOfEntries; ++i)
             {
-                MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry);
+                MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);
                
                 if (mFTEntry.Sign == "FILE")
                 {
@@ -121,6 +125,7 @@ namespace FileExplorer
             }
         }
 
+        //return a fodler tree
         public Tree buildTree()
         {
             Tree folderTree = new Tree();
@@ -132,12 +137,12 @@ namespace FileExplorer
             for (long i = 0; i < numberOfEntries; ++i)
             {
             
-                MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry);
+                MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);
                
                 if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
-                {
                     folderTree.addToTree(new FileInfomation(mFTEntry));
-                }
+
+                
 
                 beginByte += BytesPerEntry;
             }
@@ -145,6 +150,7 @@ namespace FileExplorer
         }
 
 
+        //print info for testing
         public void printVBRInfo()
         {
             Console.WriteLine("Bytes per sector: " + BytesPerSector);

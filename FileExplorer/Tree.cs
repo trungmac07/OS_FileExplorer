@@ -17,6 +17,9 @@ namespace FileExplorer
             ListOfFiles = new Dictionary<long, FolderTreeNode>();
         }
 
+        //Return size of a file or folder
+        //If a file -> just return its size
+        //If a folder -> return it owns files
         public long getSize(long id)
         {
             if(ListOfFiles.ContainsKey(id))
@@ -26,7 +29,7 @@ namespace FileExplorer
                     long sum = 0;
                     foreach(var child in ListOfFiles[id].Children)
                         sum += getSize(child);
-                    ListOfFiles[id].Info.Size = sum;
+                    
                     return sum;
                 }
                 else
@@ -37,6 +40,7 @@ namespace FileExplorer
             return -1;
         }
 
+        //size on disk
         public long getSizeOnDisk(long id)
         {
             if (ListOfFiles.ContainsKey(id))
@@ -46,7 +50,6 @@ namespace FileExplorer
                     long sum = 0;
                     foreach (var child in ListOfFiles[id].Children)
                         sum += getSizeOnDisk(child);
-                    ListOfFiles[id].Info.SizeOnDisk = sum;
                     return sum;
                 }
                 else
@@ -57,7 +60,21 @@ namespace FileExplorer
             return -1;
         }
 
+        //used bytes of this tree
+        public long sizeOnDiskOfTree()
+        {
+            long sum = 0;
+            foreach (var root in ListOfRoots)
+            {
+                if (root.Key != 8)
+                    sum += getSizeOnDisk(root.Key);
+                Console.WriteLine("SUM: " + getSizeOnDisk(root.Key));
+                Console.WriteLine("FILE: " + root.Value.Info.FileName);
+            }
+            return sum;
+        }
 
+        //add a file to tree
         public void addToTree(FileInfomation src)
         {
             //null
@@ -84,7 +101,6 @@ namespace FileExplorer
                     ListOfFiles[src.IDParentFolder] = new FolderTreeNode(src.IDParentFolder);
                     ListOfFiles[src.IDParentFolder].Children.Add(src.ID);
                 }
-
             }
             //if exist this -> only update info
             if (ListOfFiles.ContainsKey(src.ID))
@@ -95,7 +111,6 @@ namespace FileExplorer
                     ListOfFiles[child].Level = ListOfFiles[src.ID].Level + 1;
                 }
             }
-
             else
                 ListOfFiles[src.ID] = newNode;
 
@@ -103,6 +118,7 @@ namespace FileExplorer
             if (src.IDParentFolder != 5)
                 ListOfFiles[src.ID].Level = ListOfFiles[src.IDParentFolder].Level + 1;
 
+            //update level
             foreach (var child in ListOfFiles[src.ID].Children)
             {
                 ListOfFiles[child].Level = ListOfFiles[src.ID].Level + 1;

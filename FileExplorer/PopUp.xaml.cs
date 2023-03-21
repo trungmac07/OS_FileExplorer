@@ -24,9 +24,12 @@ namespace FileExplorer
             InitializeComponent();
         }
 
-        public PopUp(FileInfomation file)
+        public PopUp(Tree folderTree, long id)
         {
             InitializeComponent();
+
+            FileInfomation file = folderTree.ListOfFiles[id].Info;
+
             this.Title = file.FileName;
 
             if (file.IsDirectory == false)
@@ -34,10 +37,12 @@ namespace FileExplorer
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
-            long id = file.ID;
+            long size = folderTree.getSize(id);
+            long sizeOnDisk = folderTree.getSizeOnDisk(id);
 
-            FileSize.Text = Function.toFileSize(file.Size) + " (" + file.Size +" Bytes)";
-            OnDiskSize.Text = Function.toFileSize(file.SizeOnDisk) + " (" + file.SizeOnDisk + " Bytes)";
+
+            FileSize.Text = Function.toFileSize(size) + " (" + size + " Bytes)";
+            OnDiskSize.Text = Function.toFileSize(sizeOnDisk) + " (" + sizeOnDisk + " Bytes)";
 
             
 

@@ -89,9 +89,8 @@ namespace FileExplorer
             );
             */
             return binString;
-
-            
         }
+
         public void readMBR(int index)
         {
             string drivePath = @"\\.\PhysicalDrive" + index.ToString() ;

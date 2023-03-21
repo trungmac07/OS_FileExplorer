@@ -12,7 +12,7 @@ namespace FileExplorer
         public class MFTEntry
         {
            
-            //Define mask value to get attributes from FILE_NAME attribute
+            //Offset and length for reading MFTEntry header
            
             public enum OffsetMFTEntryHeader
             {
@@ -34,6 +34,7 @@ namespace FileExplorer
                 ID = 4,
             }
 
+            //Offset and length for reading attribute header
             public enum OffsetAttributeHeader
             {
                 ATTRIBUTE_TYPE = 0x00,
@@ -53,7 +54,7 @@ namespace FileExplorer
                 POSITION_OF_CONTENT = 2,
             }
 
-            //Define type of attribute
+            //Type of attributes
             public enum AttributeType
             {
                 STANDARD_INFO = 0x10,
@@ -64,9 +65,9 @@ namespace FileExplorer
             }
 
 
-            // entry byte array
+            //Entry byte array
             private byte[] Info { get; set; }
-            //first byte of entry
+            //First byte of entry
             private long FirstByte { get; set; }    
       
             
@@ -79,21 +80,23 @@ namespace FileExplorer
             public long NumberOfBytes { get; }
             public long ID { get; }
 
-            //Attribute 
+            //List of attributes 
             List<Attribute> ListOfAttributes { get; } = new List<Attribute>();
 
 
-            public MFTEntry(long firstByte, long bytesPerEntry) 
+            //Constructor MFTEntry 
+            public MFTEntry(long firstByte, long bytesPerEntry, int currentDisk) 
             {
                 FirstByte = firstByte;
                 Info = new byte[bytesPerEntry];
-                try
-                {
-                    Function.stream.Seek(FirstByte, SeekOrigin.Begin);
-                    Function.stream.Read(Info, 0, (int)bytesPerEntry);
+                string drivePath = @"\\.\PhysicalDrive" + currentDisk.ToString();
+                
+                FileStream stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
+
+                stream.Seek(FirstByte, SeekOrigin.Begin);
+                stream.Read(Info, 0, (int)bytesPerEntry);
        
-                }
-                catch (FileNotFoundException) { };
+           
 
                 Sign = "";
                 for (int i = 0; i < 4; ++i)
@@ -105,10 +108,11 @@ namespace FileExplorer
                 NumberOfBytes       =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.NUMBER_OF_BYTES,       (int) LengthMFTEntryHeader.NUMBER_OF_BYTES);
                 ID                  =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.ID,                    (int) LengthMFTEntryHeader.ID);
 
-               
+               //create list of attributes
                 readAttributes();
             }
 
+            //Read attributes until 0xFF
             public void readAttributes()
             {
                 long firstByte = BeginFirstAttribute;
@@ -125,11 +129,7 @@ namespace FileExplorer
                 
                 Attribute res = null;
                 int position = (int) firstByte;
-
                 
-               /*Function.stream.Seek(firstByte, SeekOrigin.Begin);
-                Function.stream.Read(attributeHeader, 0, 32);*/
-
                 byte attributeType = Info[position + (int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
 
                 if (attributeType == (int)AttributeType.END || attributeType == (int)AttributeType.EMPTY)
@@ -140,8 +140,6 @@ namespace FileExplorer
                 long sizeOfContent      =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
                 long positionOfContent  =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
 
-                if(FirstByte == 694306816)
-                    Console.WriteLine("kkkk");
 
                 if (attributeType == (int) AttributeType.STANDARD_INFO)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, Info);
@@ -158,11 +156,8 @@ namespace FileExplorer
 
             }
            
-            public int CompareTo(MFTEntry other)
-            {
-                return this.ID.CompareTo(other.ID);
-            }
-
+           
+            //export info 
             public void export(FileInfomation x)
             {
                 x.Type = (int)Type;

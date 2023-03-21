@@ -21,12 +21,15 @@ namespace FileExplorer
                 this.Resident = resident;
 
             }
+            //show info for testing
             abstract public void showInfo();
 
+            //export info to a file
             abstract public void export(FileInfomation x);
 
         }
 
+        
         public class StandardInfoAttribute : Attribute
         {
             private long createdTime;
@@ -100,10 +103,6 @@ namespace FileExplorer
 
             public FileNameAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
-                /*byte[] attribute = new byte[size];
-
-                Function.stream.Seek(firstByte, SeekOrigin.Begin);
-                Function.stream.Read(attribute, 0, (int)size);*/
 
                 long[] offset = { 0x00, 0x38, 0x40, 0x42 };
                 long[] length = { 6, 4, 1 };

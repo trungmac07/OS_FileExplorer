@@ -52,7 +52,7 @@ namespace FileExplorer
         public void initialization()
         {
             getDrive();
-            chart();
+            
         }
         public void getDirectoryTree()
         {
@@ -174,6 +174,7 @@ namespace FileExplorer
                 if (partitionType == "FAT32")
                 {
                     clearFolderTree();
+                    //chart();
                 }
                 else if (partitionType == "NTFS")
                 {
@@ -181,8 +182,10 @@ namespace FileExplorer
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
+                    chart(mBR.getSectorInPartition(currentPartition) * 512);
                     renderRoots();
                 }
+
 
             };
             PartitionArea.Children.Add(button);
@@ -198,16 +201,17 @@ namespace FileExplorer
                 }
             }
             FolderTreeContain.Children.Clear();
+
         }
 
-        public void chart()
+        public void chart(long paritionSize)
         {
             ChartData = new SeriesCollection
             {
                 new PieSeries
                 {
                     Title = "Used",
-                    Values = new ChartValues<ObservableValue>{new ObservableValue(73) },
+                    Values = new ChartValues<ObservableValue>{new ObservableValue(FolderTree.sizeOnDiskOfTree()) },
                     DataLabels = false,
                     StrokeThickness = 0,
                     Stroke = null,
@@ -217,7 +221,7 @@ namespace FileExplorer
                 new PieSeries
                 {
                     Title = "Free",
-                    Values = new ChartValues<ObservableValue>{new ObservableValue(27) },
+                    Values = new ChartValues<ObservableValue>{new ObservableValue(paritionSize - FolderTree.sizeOnDiskOfTree()) },
                     DataLabels = false,
                     StrokeThickness = 0,
                     Stroke = null,
@@ -532,6 +536,8 @@ namespace FileExplorer
                 }
             }
         }
+
+        //
         private void unregisterChildren(long parent)
         {
             if (this.FindName("n" + parent) == null)
@@ -549,7 +555,7 @@ namespace FileExplorer
             {
                 FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
-                PopUp popup = new PopUp(file);
+                PopUp popup = new PopUp(FolderTree,id);
                 popup.Show();
             }
             else
@@ -560,17 +566,7 @@ namespace FileExplorer
     }
 
 
-    public class ByteReader
-    {
-        public int CurrentDisk { get; set; } = 0;
-        public FileStream stream { get; set; } = null;
-        public ByteReader(int index, string drivePath)
-        {
-            CurrentDisk = index;
-            stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
-        }
 
-    }
     public class Function
     {
         public static FileStream stream = null;

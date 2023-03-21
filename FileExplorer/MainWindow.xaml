@@ -369,6 +369,7 @@
                 <StackPanel Margin="0 45 0 0" Background="Transparent" Width="240">
                     <TextBlock Foreground="#2EC4B6" Padding="30 30 0 0" Height="100" FontWeight="Bold" FontSize="35">STORAGE</TextBlock>
                     <StackPanel Name ="DiskArea" Margin="0 20 0 0" Width="250" Background="#393E46">
+                        
                     </StackPanel>
                 </StackPanel>
             </Border>
