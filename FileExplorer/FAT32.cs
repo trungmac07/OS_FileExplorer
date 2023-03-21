@@ -29,6 +29,7 @@ namespace FileExplorer
             SECTORS_PER_FAT = 4,
             BEGGIN_CLUSTER = 4,
         }
+        public long firstSectorOfPartition { get; set; }
         public long bytesPerSector { get; set; }
         public long sectorsPerCluster { get; set; }
         public long sectorsBeforeFAT { get; set; }
@@ -37,10 +38,12 @@ namespace FileExplorer
         public long sectorsPerFAT { get; set; }
         public long begginCluster { get; set; }
         public string diskPath { get; set; }
-        public FAT32(string disk)
+        public FAT32(long firstSector,int CurrentDisk)
         {
-            diskPath = disk;
+            diskPath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
+            firstSectorOfPartition = firstSector * 512;
             FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            fs.Seek(firstSectorOfPartition, SeekOrigin.Begin);
             byte[] BST = new byte[512];
             fs.Read(BST, 0, BST.Length);
             bytesPerSector = Function.littleEndian(BST, (int)OffsetBST.BYTES_PER_SECTOR, (int)LengthBST.BYTES_PER_SECTOR);
@@ -60,8 +63,7 @@ namespace FileExplorer
             FirstSectorInRDET += this.sectorsBeforeFAT;
             FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
             byte[] a = new byte[this.bytesPerSector];
-            fs.Seek(0, SeekOrigin.Begin);
-            fs.Seek(FirstSectorInRDET * this.bytesPerSector, SeekOrigin.Begin);
+            fs.Seek(FirstSectorInRDET * this.bytesPerSector + firstSectorOfPartition, SeekOrigin.Begin);
             fs.Read(a, 0, 192);
 
             string s = "";
@@ -81,17 +83,18 @@ namespace FileExplorer
             FirstSectorInRDET += this.sectorsBeforeFAT;
             FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
             byte[] a = new byte[this.bytesPerSector];
-            fs.Seek(FirstSectorInRDET * this.bytesPerSector, SeekOrigin.Begin);
+            fs.Seek(FirstSectorInRDET * this.bytesPerSector + firstSectorOfPartition, SeekOrigin.Begin);
             fs.Read(a, 0, 160);
-            fs.Seek(FirstSectorInRDET * this.bytesPerSector + 128, SeekOrigin.Begin);
+            fs.Seek(FirstSectorInRDET * this.bytesPerSector + 128 + firstSectorOfPartition, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
             int level = 0;
             long pos = 0;
-            
+            int dem = 0;
             while (a[0] != 0)
             {
                 if(a[0x00] != 0xE5 && a[0x0B] != 0x0F)
                 {
+                    dem++;
                     pos = fs.Position - 32;
                     fs.Close();
                     FolderTreeNode temp = ReadFile(pos, 0, level);
@@ -130,6 +133,7 @@ namespace FileExplorer
             string s = "";
             for (int i = 0x01; i < 0x01 + 10; i++)
             {
+                if (arr[i] == 0xFF) break;
                 s += (char)arr[i];
             }
             for (int i = 0x0E; i < 0x0E + 12; i++)
@@ -149,6 +153,7 @@ namespace FileExplorer
             string s = "";
             for (int i = 0x00; i < 0x00 + 11; i++)
             {
+                if (arr[i] == 0xFF) break;
                 s += (char)arr[i];
             }
             return s;
@@ -265,7 +270,7 @@ namespace FileExplorer
                 while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
                 {
                     pos1 -= 32;
-                    fs.Seek(pos1, SeekOrigin.Begin);
+                    fs.Seek(pos1 , SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
                 }
 
@@ -293,15 +298,15 @@ namespace FileExplorer
             if(Parent == 0) FileTemp.IsRoot = true;
             else FileTemp.IsRoot = false;
             FileTemp.IDParentFolder = Parent;
-            if (a[0x11] == 0x01) FileTemp.IsReadOnly = true;
+            if (a[0x0B] == 0x01) FileTemp.IsReadOnly = true;
             else FileTemp.IsReadOnly = false;
-            if (a[0x11] == 0x02) FileTemp.IsHidden = true;
+            if (a[0x0B] == 0x02) FileTemp.IsHidden = true;
             else FileTemp.IsHidden = false;
-            if (a[0x11] == 0x04) FileTemp.IsSystem = true;
+            if (a[0x0B] == 0x04) FileTemp.IsSystem = true;
             else FileTemp.IsSystem = false;
-            if (a[0x11] == 0x10) FileTemp.IsDirectory = true;
+            if (a[0x0B] == 0x10) FileTemp.IsDirectory = true;
             else FileTemp.IsDirectory = false;
-            if (a[0x11] == 0x20) FileTemp.IsArchive = true;
+            if (a[0x0B] == 0x20) FileTemp.IsArchive = true;
             else FileTemp.IsArchive = false;
 
             FileTemp.CreatedTime = time;
@@ -311,29 +316,32 @@ namespace FileExplorer
             else FileTemp.Type = 1;
             //Children-------------------------
             List<long> Children = new List<long>();
-            long FirstSectorInRDET = 0;
-            FirstSectorInRDET += this.sectorsBeforeFAT;
-            FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
-            offset = (FirstSectorInRDET + (cluster - 2) * sectorsPerCluster) * bytesPerSector;
-            x = offset / bytesPerSector;
-            y = x * bytesPerSector;
-            
-
-            fs.Seek(y, SeekOrigin.Begin);
-            fs.Read(a, 0, 64);
-            //fs.Read(a, 0, 32);
-            
-            while (a[0x00] != 0x00)
+            if (FileTemp.IsDirectory == true)
             {
-                offset = fs.Position + 32;
+                long FirstSectorInRDET = 0;
+                FirstSectorInRDET += this.sectorsBeforeFAT;
+                FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
+                offset = (FirstSectorInRDET + (cluster - 2) * sectorsPerCluster) * bytesPerSector + firstSectorOfPartition;
                 x = offset / bytesPerSector;
                 y = x * bytesPerSector;
-                z = (int)(offset - y);
-                fs.Seek(y,SeekOrigin.Begin);
-                fs.Read(a, 0, z);
-                fs.Seek(offset - 32, SeekOrigin.Begin);
-                fs.Read(a, 0, 32);
-                if (a[0x00] != 0xE5 && a[0x0B] != 0x0F && a[0x00] != 0x00) Children.Add(fs.Position - 32);
+
+
+                fs.Seek(y, SeekOrigin.Begin);
+                fs.Read(a, 0, 64);
+                //fs.Read(a, 0, 32);
+
+                while (a[0x00] != 0x00)
+                {
+                    offset = fs.Position + 32;
+                    x = offset / bytesPerSector;
+                    y = x * bytesPerSector;
+                    z = (int)(offset - y);
+                    fs.Seek(y, SeekOrigin.Begin);
+                    fs.Read(a, 0, z);
+                    fs.Seek(offset - 32, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    if (a[0x00] != 0xE5 && a[0x0B] != 0x0F && a[0x00] != 0x00) Children.Add(fs.Position - 32);
+                }
             }
             //return
             FolderTreeNode res = new FolderTreeNode(FileTemp);
