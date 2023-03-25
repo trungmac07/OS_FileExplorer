@@ -24,6 +24,47 @@ namespace FileExplorer
             InitializeComponent();
         }
 
+        public PopUp(int curDisk, int curPartition)
+        {
+            MBR mBR = new MBR();
+            mBR.readMBR(curDisk);
+            InitializeComponent();
+            this.Title = "Partition: " + curPartition;
+            this.Width = 550;
+            FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+
+            long head = 0, sector = 0, cylinder = 0;
+
+            FileName.Text = "Partition: " + curPartition;
+
+            sizeTitle.Text = "Status: ";
+            FileSize.Text =  mBR.getPartitionStatus(curPartition);
+
+            mBR.getStartSectorInPartitionCHS(curPartition, ref head, ref sector, ref cylinder);
+            sizeODTitle.Text = "Start Sector(CHS): ";
+            OnDiskSize.Text =  head + "(head)" + sector + "(sector)" + cylinder + "(cylinder)";
+
+            createdDateTitle.Text = "Partition's type: ";
+            DateCreated.Text =  mBR.getPartitionType(curPartition);
+
+            mBR.getLastSectorInPartitionCHS(curPartition, ref head, ref sector, ref cylinder);
+            createdTimeTitle.Text = "Last Sector(CHS): ";
+            TimeCreated.Text = head + "(head)" + sector + "(sector)" + cylinder + "(cylinder)";
+
+            LastModifyDateTitle.Text = "First Sector(LBA): ";
+            LastModifyDate.Text =  mBR.getFirstSectorLBA(curPartition).ToString();
+
+            LastModifyTImeTitle.Text = "Total sector: ";
+            LastModifyTime.Text = mBR.getSectorInPartition(curPartition).ToString();
+            
+            AttributeBlock.Visibility = Visibility.Hidden;
+            IsHidden.Visibility = Visibility.Hidden;
+            IsReadOnly.Visibility = Visibility.Hidden;
+            IsSystem.Visibility = Visibility.Hidden;
+            IsArchive.Visibility = Visibility.Hidden;
+            IsDirectory.Visibility = Visibility.Hidden;
+
+        }
         public PopUp(Tree folderTree, long id)
         {
             InitializeComponent();
