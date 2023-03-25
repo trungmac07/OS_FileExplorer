@@ -99,6 +99,7 @@ namespace FileExplorer
         public SeriesCollection ChartData { get; set; }
         public int currentDisk = 1;
         public int currentPartition = 0;
+        bool isPartitionClicked = false;
         MBR mBR = new MBR();
         Tree FolderTree { get; set; } = new Tree();
         public MainWindow()
@@ -146,6 +147,7 @@ namespace FileExplorer
 
             button.Click += (sender, e) =>
             {
+                isPartitionClicked = true;
                 currentPartition = index;
                 string partitionType = mBR.getPartitionType(index);
                 long head = 0, sector = 0, cylinder = 0;
@@ -457,6 +459,7 @@ namespace FileExplorer
 
         private void infoButtonClick(object sender, EventArgs e)
         {
+            isPartitionClicked = false;
             long id = (long)(sender as Button).Tag;
             FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
@@ -551,12 +554,15 @@ namespace FileExplorer
         private void moreInfoButtonClick(object sender, EventArgs e)
         {
             long id = Int64.Parse((sender as Button).Tag.ToString());
-            if (FolderTree.ListOfFiles.ContainsKey(id) == true)
+            if (isPartitionClicked == false)
             {
-                FileInfomation file = FolderTree.ListOfFiles[id].Info;
+                if (FolderTree.ListOfFiles.ContainsKey(id) == true)
+                {
+                    FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
-                PopUp popup = new PopUp(FolderTree,id);
-                popup.Show();
+                    PopUp popup = new PopUp(FolderTree, id);
+                    popup.Show();
+                }
             }
             else
             {
@@ -566,8 +572,6 @@ namespace FileExplorer
                     popup.Show();
 
                 }
-                else
-                    MessageBox.Show("Please choose a file or folder");
             }
         }
     }
