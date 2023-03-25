@@ -182,7 +182,10 @@ namespace FileExplorer
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
+                    //PieChart.Series = null;
+            
                     chart(mBR.getSectorInPartition(currentPartition) * 512);
+                    PieChart.Series = ChartData;
                     renderRoots();
                 }
 

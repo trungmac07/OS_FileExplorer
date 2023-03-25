@@ -398,7 +398,7 @@
                                 <DropShadowEffect ShadowDepth="2" Direction ="-90" Opacity="0.3"  RenderingBias = "Quality" BlurRadius="15" />
                             </Border.Effect>
                             <DockPanel  Height="185">
-                                <lvc:PieChart Margin="30 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
+                                <lvc:PieChart Name="PieChart" Margin="30 0 0 0" Width="240" LegendLocation="Bottom" Series="{Binding ChartData}" InnerRadius="60" AnimationsSpeed="00:00:0.5" StartingRotationAngle="0">
                                     <lvc:PieChart.ChartLegend>
                                         <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="11" TextBlock.Foreground="Black">
                                         </lvc:DefaultLegend>
