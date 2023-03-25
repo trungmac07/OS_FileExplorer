@@ -186,7 +186,6 @@ namespace FileExplorer
                     renderRoots();
                 }
 
-
             };
             PartitionArea.Children.Add(button);
         }
@@ -328,6 +327,7 @@ namespace FileExplorer
             DiskButton1.Click += (sender, e) =>
             {
                 currentDisk = index;
+                currentPartition = -1;
                 deleteParitionFromView();
                 mBR.readMBR(index);
                 for (int i = 0; i < 3; i++)
@@ -560,7 +560,14 @@ namespace FileExplorer
             }
             else
             {
-                MessageBox.Show("Please choose a file or folder");
+                if (currentPartition != -1)
+                {
+                    PopUp popup = new PopUp(currentDisk, currentPartition);
+                    popup.Show();
+
+                }
+                else
+                    MessageBox.Show("Please choose a file or folder");
             }
         }
     }

@@ -28,12 +28,12 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="0">Size :</TextBlock>
-                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="1">Size On Disk :</TextBlock>
-                <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="2">Created Date :</TextBlock>
-                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="3">Created Time :</TextBlock>
-                <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="4">Last Modified Date :</TextBlock>
-                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="5">Last Modified Time :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="0" Name="sizeTitle">Size :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="1" Name="sizeODTitle">Size On Disk :</TextBlock>
+                <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="2" Name="createdDateTitle">Created Date :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="3" Name="createdTimeTitle">Created Time :</TextBlock>
+                <TextBlock Margin="20 15 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="4" Name="LastModifyDateTitle">Last Modified Date :</TextBlock>
+                <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Grid.Column="0" Grid.Row="5" Name="LastModifyTImeTitle">Last Modified Time :</TextBlock>
 
                 <TextBlock Name="FileSize" Margin="10,0,-105,10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="0"/>
                 <TextBlock Name="OnDiskSize" Margin="10,0,-105,10" FontSize="15" Foreground="Black" Grid.Column="1" Grid.Row="1"/>
@@ -47,7 +47,7 @@
             <Border Margin="15 30 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
 
             <StackPanel Margin="20 0 0 0">
-                <TextBlock Margin="20 0 0 12" FontSize="17" Foreground="Black" FontWeight="Medium">Attributes</TextBlock>
+                <TextBlock Margin="20 0 0 12" FontSize="17" Foreground="Black" FontWeight="Medium" Name="AttributeBlock">Attributes</TextBlock>
 
                 <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
                 <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
