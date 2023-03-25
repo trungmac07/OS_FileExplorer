@@ -127,5 +127,31 @@ namespace FileExplorer
 
         }
 
+
+        //Sorted Dictionary for building a tree ordered by filename
+        public SortedDictionary<FileIdentifier,FolderTreeNode> getRootsSortedByName()
+        {
+            SortedDictionary<FileIdentifier,FolderTreeNode> rootsSortedByName = new SortedDictionary<FileIdentifier, FolderTreeNode>();
+            
+            foreach (var root in ListOfRoots)
+            {
+                rootsSortedByName.Add(new FileIdentifier(root.Value.Info.ID, root.Value.Info.FileName, root.Value.Info.IsSystem),root.Value);
+            }
+            
+            return rootsSortedByName;
+        }
+
+        public SortedDictionary<FileIdentifier, FolderTreeNode> getChildrenSortedByName(long id)
+        {
+            SortedDictionary<FileIdentifier, FolderTreeNode> filesSortedByName = new SortedDictionary<FileIdentifier, FolderTreeNode>();
+
+            foreach (var child in ListOfFiles[id].Children)
+            {
+                filesSortedByName.Add(new FileIdentifier(ListOfFiles[child].Info.ID, ListOfFiles[child].Info.FileName, ListOfFiles[child].Info.IsSystem), ListOfFiles[child]);
+            }
+
+            return filesSortedByName;
+        }
+
     }
 }

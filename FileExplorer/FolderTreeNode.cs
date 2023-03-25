@@ -6,7 +6,48 @@ using System.Threading.Tasks;
 
 namespace FileExplorer
 {
-    public class FolderTreeNode
+    public class FileIdentifier : IComparable<FileIdentifier>
+    {
+        public long ID { get; set; }
+        public string FileName { get; set; }
+        public bool IsSystem { get; set; }
+
+        public FileIdentifier(long id, string name, bool system)
+        {
+            ID = id;
+            FileName = name;
+            IsSystem = system;
+        }
+
+        public int CompareTo(FileIdentifier other)
+        {
+            if (this.IsSystem ^ other.IsSystem == true)
+            {
+                if (this.IsSystem == true)
+                    return (int)2e9;
+                else
+                    return (int)-2e9;
+            }
+            else
+            {
+                if (this.FileName == other.FileName)
+                    return this.ID.CompareTo(other.ID);
+                else
+                    return this.FileName.CompareTo(other.FileName);
+            }
+
+        }
+
+        public int Compare(FileIdentifier node2)
+        {
+            return this.CompareTo(node2);
+        }
+
+        
+
+
+    }
+    public class FolderTreeNode : IComparable<FolderTreeNode>
     {
         public List<long> Children { get; set; } = null;
         public FileInfomation Info { get; set; } = null;
@@ -33,6 +74,31 @@ namespace FileExplorer
             foreach (var child in Children)
                 Console.Write(child + " ");
             Console.WriteLine();
+        }
+
+        public int CompareTo(FolderTreeNode other)
+        {
+            if (this.Info.IsSystem ^ other.Info.IsSystem == true)
+            {
+                if (this.Info.IsSystem == true)
+                    return (int)2e9;
+                else
+                    return (int)-2e9;
+            }
+            else
+            {
+                if (this.Info.FileName == other.Info.FileName)
+                    return this.Info.ID.CompareTo(other.Info.ID);
+                else
+                    return this.Info.FileName.CompareTo(other.Info.FileName);
+
+            }
+
+        }
+
+        public int Compare(FolderTreeNode node2)
+        {
+            return this.CompareTo(node2);
         }
 
     }

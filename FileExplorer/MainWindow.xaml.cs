@@ -52,7 +52,7 @@ namespace FileExplorer
         public void initialization()
         {
             getDrive();
-            
+
         }
         public void getDirectoryTree()
         {
@@ -184,10 +184,13 @@ namespace FileExplorer
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
+                    var ordered = FolderTree.ListOfRoots.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+                    FolderTree.ListOfRoots = ordered;
                     //PieChart.Series = null;
-            
+
                     chart(mBR.getSectorInPartition(currentPartition) * 512);
                     PieChart.Series = ChartData;
+                  
                     renderRoots();
                 }
 
@@ -197,9 +200,9 @@ namespace FileExplorer
 
         public void clearFolderTree()
         {
-            foreach(var file in FolderTree.ListOfFiles)
+            foreach (var file in FolderTree.ListOfFiles)
             {
-                if(this.FindName("n" + file.Key) != null)
+                if (this.FindName("n" + file.Key) != null)
                 {
                     this.UnregisterName("n" + file.Key);
                 }
@@ -286,7 +289,7 @@ namespace FileExplorer
 
                 ++i;
             }
-            
+
             int index = 0;
             foreach (HardDrive hd in hdCollection)
             {
@@ -344,7 +347,7 @@ namespace FileExplorer
             };
             DiskArea.Children.Add(DiskButton1);
 
-           
+
         }
 
         public void menuButtonClick(object sender, EventArgs e)
@@ -369,7 +372,7 @@ namespace FileExplorer
                 }
             }
            (sender as Button).Style = (Style)this.FindResource("SelectedPartitionButton");
-          
+
         }
 
         public void closeApp(object sender, EventArgs e)
@@ -391,9 +394,10 @@ namespace FileExplorer
             button.Height = 30;
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
-            button.Margin = new Thickness(37 * node.Level, 5, 0, 5);
+            button.Margin = new Thickness(15 * node.Level, 5, 0, 5);
             button.Tag = node.Info.ID;
             button.Click += infoButtonClick;
+
 
             DockPanel dockPanel = new DockPanel();
             dockPanel.Width = 600;
@@ -407,6 +411,10 @@ namespace FileExplorer
             expand.BorderThickness = new Thickness(0);
             expand.Background = Brushes.Transparent;
             expand.FontSize = 12;
+
+            if (node.Info.IsDirectory == true)
+                button.MouseDoubleClick += (sender, e) => expandButtonClick(expand, e);
+
 
             Image image = new Image();
             image.Width = 25;
@@ -454,7 +462,7 @@ namespace FileExplorer
 
         private void renderRoots()
         {
-            foreach (var root in FolderTree.ListOfRoots)
+            foreach (var root in FolderTree.getRootsSortedByName())
             {
                 renderANode(root.Value, FolderTreeContain);
             }
@@ -514,14 +522,11 @@ namespace FileExplorer
 
                 StackPanel area = (this.FindName("n" + id) as StackPanel);
 
-                foreach (var child in FolderTree.ListOfFiles[id].Children)
-                {
-                    Console.WriteLine("IDDDD :" + FolderTree.ListOfFiles[child].Info.FileName);
-                    Console.WriteLine("Level :" + FolderTree.ListOfFiles[child].Level);
-                    Console.WriteLine();
-                    FolderTreeNode node = FolderTree.ListOfFiles[child];
-                    renderANode(node, area);
-                }
+
+                var childrenList = FolderTree.getChildrenSortedByName(id);
+                foreach (var child in childrenList)
+                    renderANode(child.Value, area);
+
             }
             else //collapse command
             {
@@ -590,7 +595,7 @@ namespace FileExplorer
             for (int i = length - 1; i >= 0; --i)
             {
                 res <<= 8;
-                res += (long) src[offset + i];
+                res += (long)src[offset + i];
             }
             return res;
         }
@@ -601,7 +606,7 @@ namespace FileExplorer
             for (long i = length - 1; i >= 0; --i)
             {
                 res <<= 8;
-                res += (long) src[offset + i];
+                res += (long)src[offset + i];
             }
             return res;
         }

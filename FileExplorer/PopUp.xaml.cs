@@ -82,8 +82,8 @@ namespace FileExplorer
             long sizeOnDisk = folderTree.getSizeOnDisk(id);
 
 
-            FileSize.Text = Function.toFileSize(size) + " (" + size + " Bytes)";
-            OnDiskSize.Text = Function.toFileSize(sizeOnDisk) + " (" + sizeOnDisk + " Bytes)";
+            FileSize.Text = Function.toFileSize(size) + " (" + size.ToString("#,##0") + " Bytes)";
+            OnDiskSize.Text = Function.toFileSize(sizeOnDisk) + " (" + sizeOnDisk.ToString("#,##0") + " Bytes)";
 
             
 

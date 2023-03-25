@@ -29,26 +29,54 @@ namespace FileExplorer
 
         }
 
-        
+
         public class StandardInfoAttribute : Attribute
         {
             private long createdTime;
             private long modifiedTime;
+
+            private bool IsReadOnly { get; set; } = false;
+            private bool IsHidden { get; set; } = false;
+            private bool IsSystem { get; set; } = false;
+        
+
             private static DateTime baseTime = new DateTime(1601, 1, 1);
+
+            public enum FileAttribute
+            {
+                MASK_READ_ONLY = 0x01,
+                MASK_HIDDEN = 0x02,
+                MASK_SYSTEM = 0x04,
+       
+            }
+
             public enum OffsetTime
             {
                 CREATEDTIME = 0x00,
                 MODIFIEDTIME = 0x08,
+                ATTRIBUTE = 0x20,
             }
             public enum LengthTime
             {
                 CREATEDTIME = 8,
                 MODIFIEDTIME = 8,
+                ATTRIBUTE = 4,
             }
             public StandardInfoAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
-                createdTime  = Function.littleEndian(info, firstByte + (long)OffsetTime.CREATEDTIME,  (int)LengthTime.CREATEDTIME);
+                createdTime = Function.littleEndian(info, firstByte + (long)OffsetTime.CREATEDTIME, (int)LengthTime.CREATEDTIME);
                 modifiedTime = Function.littleEndian(info, firstByte + (long)OffsetTime.MODIFIEDTIME, (int)LengthTime.MODIFIEDTIME);
+
+                int attributes = (int)Function.littleEndian(info, firstByte + (long)OffsetTime.ATTRIBUTE, (long)LengthTime.ATTRIBUTE);
+
+                if ((attributes & (int)FileAttribute.MASK_READ_ONLY) != 0)
+                    IsReadOnly = true;
+                if ((attributes & (int)FileAttribute.MASK_HIDDEN) != 0)
+                    IsHidden = true;
+                if ((attributes & (int)FileAttribute.MASK_SYSTEM) != 0)
+                    IsSystem = true;
+        
+
             }
 
             public DateTime CreateTime()
@@ -69,6 +97,10 @@ namespace FileExplorer
             {
                 x.CreatedTime = CreateTime();
                 x.LastModifiedTime = ModifiedTime();
+                x.IsReadOnly = IsReadOnly;
+                x.IsHidden = IsHidden;
+                x.IsSystem = IsSystem;
+        
             }
 
             public override void showInfo()
@@ -85,22 +117,16 @@ namespace FileExplorer
         public class FileNameAttribute : Attribute
         {
             private long IDParentFolder;
-            private bool IsReadOnly { get; set; } = false;
-            private bool IsHidden { get; set; } = false;
-            private bool IsSystem { get; set; } = false;
+
+            private string fileName = "";
             private bool IsArchive { get; set; } = false;
             private bool IsDirectory { get; set; } = false;
-            private string fileName = "";
             public enum FileAttribute
             {
-                MASK_READ_ONLY = 0x01,
-                MASK_HIDDEN = 0x02,
-                MASK_SYSTEM = 0x04,
+                
                 MASK_ARCHIVE = 0x20,
                 MASK_DIRECTORY = 0x10000000
             }
-
-
             public FileNameAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
 
@@ -108,14 +134,8 @@ namespace FileExplorer
                 long[] length = { 6, 4, 1 };
 
                 IDParentFolder = Function.littleEndian(info, firstByte + offset[0], length[0]);
-
                 int attributes = (int)Function.littleEndian(info, firstByte + offset[1], length[1]);
-                if ((attributes & (int)FileAttribute.MASK_READ_ONLY) != 0)
-                    IsReadOnly = true;
-                if ((attributes & (int)FileAttribute.MASK_HIDDEN) != 0)
-                    IsHidden = true;
-                if ((attributes & (int)FileAttribute.MASK_SYSTEM) != 0)
-                    IsSystem = true;
+
                 if ((attributes & (int)FileAttribute.MASK_ARCHIVE) != 0)
                     IsArchive = true;
                 if ((attributes & (int)FileAttribute.MASK_DIRECTORY) != 0)
@@ -133,15 +153,13 @@ namespace FileExplorer
                 fileName = Encoding.Unicode.GetString(name);
 
 
+
             }
 
             public override void export(FileInfomation x)
             {
                 x.FileName = fileName;
                 x.IDParentFolder = IDParentFolder;
-                x.IsReadOnly = IsReadOnly;
-                x.IsHidden = IsHidden;
-                x.IsSystem = IsSystem;
                 x.IsArchive = IsArchive;
                 x.IsDirectory = IsDirectory;
             }
@@ -159,12 +177,12 @@ namespace FileExplorer
             private long sizeOnDisk = 0;
             public DataAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
-                if (resident == 0 ) //is resident
+                if (resident == 0) //is resident
                 {
-                    
+
                     dataSize = Function.littleEndian(info, firstByte + 16, 4);
                     sizeOnDisk = 0;
-                    
+
                 }
                 else
                 {
@@ -175,9 +193,9 @@ namespace FileExplorer
 
             public override void export(FileInfomation x)
             {
-                if(Resident == 0) //is resident
+                if (Resident == 0) //is resident
                 {
-                    if(x.Size == 0)
+                    if (x.Size == 0)
                     {
                         x.Size = dataSize;
                         x.SizeOnDisk = 0;
@@ -188,7 +206,7 @@ namespace FileExplorer
                     x.Size = dataSize;
                     x.SizeOnDisk = sizeOnDisk;
                 }
-              
+
             }
 
             public override void showInfo()
@@ -206,7 +224,7 @@ namespace FileExplorer
 
             public override void export(FileInfomation x)
             {
-               
+
             }
             public override void showInfo()
             {

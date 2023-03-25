@@ -136,13 +136,10 @@ namespace FileExplorer
 
             for (long i = 0; i < numberOfEntries; ++i)
             {
-            
                 MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);
                
                 if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
                     folderTree.addToTree(new FileInfomation(mFTEntry));
-
-                
 
                 beginByte += BytesPerEntry;
             }
