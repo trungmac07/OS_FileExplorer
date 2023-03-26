@@ -341,6 +341,7 @@ namespace FileExplorer
             DiskButton1.Style = (Style)this.FindResource("MenuButton");
             DiskButton1.Click += (sender, e) =>
             {
+                resetFileInfoArea();
                 currentDisk = index;
                 currentPartition = -1;
                 deleteParitionFromView();
@@ -356,6 +357,19 @@ namespace FileExplorer
             DiskArea.Children.Add(DiskButton1);
 
 
+        }
+
+        void resetFileInfoArea()
+        {
+            FileName.Text = "";
+            FileImage.Source = new BitmapImage(new Uri("/resources/file.png", UriKind.RelativeOrAbsolute));
+            FileSize.Text = "";
+            DateCreated.Text = "";
+            TimeCreated.Text = "";
+            IsHidden.Content = "";
+            IsHidden.IsChecked = false;
+            IsReadOnly.Content = "";
+            IsReadOnly.IsChecked = false;
         }
 
         public void menuButtonClick(object sender, EventArgs e)
