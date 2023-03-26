@@ -72,8 +72,11 @@ namespace FileExplorer
             FileInfomation file = folderTree.ListOfFiles[id].Info;
 
             this.Title = file.FileName;
-
-            if (file.IsDirectory == false)
+            if (file.IsSystem == true)
+            {
+                FileImage.Source = new BitmapImage(new Uri(@"/resources/system.png", UriKind.RelativeOrAbsolute));
+            }
+            else if (file.IsDirectory == false)
             {
                 string ex = Function.getFilenameExtension(file.FileName);
 

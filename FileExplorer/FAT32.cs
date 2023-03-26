@@ -148,6 +148,7 @@ namespace FileExplorer
             }
             return s;
         }
+
         public string mainEntryName(byte[] arr)
         {
             string s = "";
@@ -353,7 +354,6 @@ namespace FileExplorer
                 offset = (FirstSectorInRDET + (cluster - 2) * sectorsPerCluster) * bytesPerSector + firstSectorOfPartition;
                 x = offset / bytesPerSector;
                 y = x * bytesPerSector;
-
 
                 fs.Seek(y, SeekOrigin.Begin);
                 fs.Read(a, 0, 64);

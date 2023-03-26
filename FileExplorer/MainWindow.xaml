@@ -410,8 +410,8 @@
                                 </lvc:PieChart>
 
                                 <StackPanel Margin="30 0 0 0">
-                                    <TextBlock Height="68" FontSize="30" Foreground="Black" Margin="0 30 0 0" Name="PartitionType">NTFS/FAT</TextBlock>
-                                    <TextBlock Height="95" FontSize="30" Foreground="Black">512/1024</TextBlock>
+                                    <TextBlock Name="PartitionType" Height="68" FontSize="30" Foreground="Black" Margin="0 30 0 0" ></TextBlock>
+                                    <TextBlock Name="UsedTotal" Height="95" FontSize="20" Foreground="Black"></TextBlock>
                                 </StackPanel>
                             </DockPanel>
                         </Border>

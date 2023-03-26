@@ -189,10 +189,13 @@ namespace FileExplorer
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
-                    
-                    //PieChart.Series = null;
 
-                    chart(mBR.getSectorInPartition(currentPartition) * 512);
+                    //PieChart.Series = null;
+                    long partitionSize = mBR.getSectorInPartition(currentPartition) * 512;
+
+                    UsedTotal.Text = Function.toFileSize((double)FolderTree.sizeOnDiskOfTree()) + " / " + Function.toFileSize((double)partitionSize);
+
+                    chart(partitionSize);
                     PieChart.Series = ChartData;
 
                     renderRoots();
@@ -396,7 +399,7 @@ namespace FileExplorer
             Button button = new Button();
             button.Background = Brushes.Transparent;
             button.Width = 600;
-            button.Height = 37;
+            button.Height = 45;
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
             button.Margin = new Thickness(15 * node.Level, 5, 0, 5);
@@ -404,8 +407,8 @@ namespace FileExplorer
             button.Click += infoButtonClick;
 
             Image image = new Image();
-            image.Width = 32;
-            image.Height = 32;
+            image.Width = 42;
+            image.Height = 42;
             image.Margin = new Thickness(5, 0, 0, 0);
             image.Stretch = Stretch.UniformToFill;
 
@@ -435,8 +438,12 @@ namespace FileExplorer
             textBlock.Foreground = Brushes.Black;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.FontSize = 15;
+            if (node.Info.IsSystem == true)
+            {
+                image.Source = new BitmapImage(new Uri(@"/resources/system.png", UriKind.RelativeOrAbsolute));
 
-            if (node.Info.IsDirectory == false)
+            }
+            else if (node.Info.IsDirectory == false)
             {
                 string ex = Function.getFilenameExtension(node.Info.FileName);
 
@@ -490,7 +497,12 @@ namespace FileExplorer
             long id = (long)(sender as Button).Tag;
             FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
-            if (file.IsDirectory == false)
+            if(file.IsSystem == true)
+            {
+                FileImage.Source = new BitmapImage(new Uri(@"/resources/system.png", UriKind.RelativeOrAbsolute));
+
+            }
+            else if (file.IsDirectory == false)
             {
 
                 string ex = Function.getFilenameExtension(file.FileName);
@@ -500,10 +512,7 @@ namespace FileExplorer
                 else
                     FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
 
-
-
             }
-
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
