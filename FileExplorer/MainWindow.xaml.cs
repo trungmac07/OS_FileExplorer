@@ -96,6 +96,7 @@ namespace FileExplorer
             }
         }
         DriveInfo[] allDrives = DriveInfo.GetDrives();
+
         public SeriesCollection ChartData { get; set; }
         public int currentDisk = 1;
         public int currentPartition = 0;
@@ -190,7 +191,7 @@ namespace FileExplorer
 
                     chart(mBR.getSectorInPartition(currentPartition) * 512);
                     PieChart.Series = ChartData;
-                  
+
                     renderRoots();
                 }
 
@@ -269,7 +270,7 @@ namespace FileExplorer
                 HardDrive hd = new HardDrive();
                 hd.Model = wmi_HD["Model"].ToString();
                 hd.Type = wmi_HD["InterfaceType"].ToString();
-                hdCollection.Add(hd);
+                hdCollection.Insert(0, hd);
             }
             searcher = new
             ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
@@ -337,6 +338,7 @@ namespace FileExplorer
                 currentDisk = index;
                 currentPartition = -1;
                 deleteParitionFromView();
+                clearFolderTree();
                 mBR.readMBR(index);
                 for (int i = 0; i < 3; i++)
                 {
@@ -391,12 +393,18 @@ namespace FileExplorer
             Button button = new Button();
             button.Background = Brushes.Transparent;
             button.Width = 600;
-            button.Height = 30;
+            button.Height = 37;
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
             button.Margin = new Thickness(15 * node.Level, 5, 0, 5);
             button.Tag = node.Info.ID;
             button.Click += infoButtonClick;
+
+            Image image = new Image();
+            image.Width = 32;
+            image.Height = 32;
+            image.Margin = new Thickness(5, 0, 0, 0);
+            image.Stretch = Stretch.UniformToFill;
 
 
             DockPanel dockPanel = new DockPanel();
@@ -407,19 +415,17 @@ namespace FileExplorer
 
             expand.Style = (Style)this.FindResource("TreeExpandButton");
             expand.Tag = node.Info.ID;
-            expand.Click += expandButtonClick;
+            expand.Click += (s, e) => expandButtonClick(s, e, image);
+            expand.MouseDoubleClick += (s, e) => expandButtonClick(s, e, image);
             expand.BorderThickness = new Thickness(0);
             expand.Background = Brushes.Transparent;
             expand.FontSize = 12;
 
             if (node.Info.IsDirectory == true)
-                button.MouseDoubleClick += (sender, e) => expandButtonClick(expand, e);
+                button.MouseDoubleClick += (sender, e) => expandButtonClick(expand, e, image);
 
 
-            Image image = new Image();
-            image.Width = 25;
-            image.Margin = new Thickness(5, 0, 0, 0);
-
+            
             TextBlock textBlock = new TextBlock();
             textBlock.Text = node.Info.FileName;
             textBlock.Margin = new Thickness(12, 0, 0, 0);
@@ -429,7 +435,14 @@ namespace FileExplorer
 
             if (node.Info.IsDirectory == false)
             {
-                image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+                string ex = Function.getFilenameExtension(node.Info.FileName);
+
+                if (Function.extension.ContainsKey(ex))
+                    image.Source = new BitmapImage(Function.extension[ex]);
+                else
+                    image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+
+
                 expand.Background = Brushes.Transparent;
                 expand.BorderThickness = new Thickness(0);
             }
@@ -475,11 +488,24 @@ namespace FileExplorer
             FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
             if (file.IsDirectory == false)
-                FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+            {
+
+                string ex = Function.getFilenameExtension(file.FileName);
+
+                if (Function.extension.ContainsKey(ex))
+                    FileImage.Source = new BitmapImage(Function.extension[ex]);
+                else
+                    FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+
+
+
+            }
+
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 
             FileSize.Text = "Size: " + Function.toFileSize(FolderTree.getSize(id));
+            Function.getFilenameExtension(file.FileName);
             FolderTree.getSizeOnDisk(id);
             string name = "";
             if (file.FileName.Length >= 41)
@@ -507,8 +533,9 @@ namespace FileExplorer
 
         }
 
-        private void expandButtonClick(object sender, EventArgs e)
+        private void expandButtonClick(object sender, EventArgs e, object image)
         {
+
             if ((sender as Button).FontSize == 12) //expand command
             {
                 long id = (long)(sender as Button).Tag;
@@ -516,12 +543,14 @@ namespace FileExplorer
                 Image modeImage = new Image();
                 modeImage.Source = new BitmapImage(new Uri(@"/resources/expand.png", UriKind.RelativeOrAbsolute));
                 modeImage.Width = 12;
+
                 (sender as Button).Content = modeImage;
                 (sender as Button).FontSize = 15;   //change to open
 
 
                 StackPanel area = (this.FindName("n" + id) as StackPanel);
-
+                
+                (image as Image).Source = new BitmapImage(new Uri(@"/resources/open-folder.png", UriKind.RelativeOrAbsolute));
 
                 var childrenList = FolderTree.getChildrenSortedByName(id);
                 foreach (var child in childrenList)
@@ -540,12 +569,16 @@ namespace FileExplorer
 
                 StackPanel area = (this.FindName("n" + id) as StackPanel);
 
+                (image as Image).Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
+
+
                 foreach (var child in FolderTree.ListOfFiles[id].Children)
                 {
                     area.Children.Remove((this.FindName("n" + child) as StackPanel));
                     unregisterChildren(child);
                 }
             }
+
         }
 
         //
@@ -588,6 +621,26 @@ namespace FileExplorer
 
     public class Function
     {
+
+        static public Dictionary<string, Uri> extension = new Dictionary<string, Uri>()
+        {
+            {"css",new Uri("/resources/icons/css.png",UriKind.RelativeOrAbsolute) },
+            {"doc",new Uri("/resources/icons/doc.png",UriKind.RelativeOrAbsolute) },
+            {"docx",new Uri("/resources/icons/doc.png",UriKind.RelativeOrAbsolute) },
+            {"exe",new Uri("/resources/icons/exe.png",UriKind.RelativeOrAbsolute) },
+            {"html",new Uri("/resources/icons/html.png",UriKind.RelativeOrAbsolute) },
+            {"jpg",new Uri("/resources/icons/jpg.png",UriKind.RelativeOrAbsolute) },
+            {"json",new Uri("/resources/icons/json.png",UriKind.RelativeOrAbsolute) },
+            {"mp3",new Uri("/resources/icons/mp3.png",UriKind.RelativeOrAbsolute) },
+            {"mp4",new Uri("/resources/icons/mp4.png",UriKind.RelativeOrAbsolute) },
+            {"pdf",new Uri("/resources/icons/pdf.png",UriKind.RelativeOrAbsolute) },
+            {"ppt",new Uri("/resources/icons/ppt.png",UriKind.RelativeOrAbsolute) },
+            {"pptx",new Uri("/resources/icons/pptx.png",UriKind.RelativeOrAbsolute) },
+            {"txt",new Uri("/resources/icons/txt.png",UriKind.RelativeOrAbsolute) },
+            {"xml",new Uri("/resources/icons/xml.png",UriKind.RelativeOrAbsolute) },
+
+        };
+
         public static FileStream stream = null;
         static public long littleEndian(byte[] src, int offset, int length)
         {
@@ -631,6 +684,27 @@ namespace FileExplorer
             }
 
             return size.ToString("F2") + unit + "B";
+
+        }
+
+        static public string getFilenameExtension(string fileName)
+        {
+            int i = 0;
+            string ex = "";
+            for (i = fileName.Length - 1; i >= 0; --i)
+            {
+                if (fileName[i] == '\u002E')
+                    break;
+            }
+            if (i == 0)
+                return "";
+            ++i;
+            for (; i < fileName.Length; ++i)
+            {
+                ex += fileName[i];
+            }
+            Console.WriteLine(ex);
+            return ex;
         }
 
     }

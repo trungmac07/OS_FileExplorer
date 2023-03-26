@@ -74,7 +74,16 @@ namespace FileExplorer
             this.Title = file.FileName;
 
             if (file.IsDirectory == false)
-                FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+            {
+                string ex = Function.getFilenameExtension(file.FileName);
+
+                if (Function.extension.ContainsKey(ex))
+                    FileImage.Source = new BitmapImage(Function.extension[ex]);
+                else
+                    FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+
+            }
+
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
 

@@ -436,15 +436,15 @@
                                 </Border.Effect>
                                 <StackPanel Name="FileInfoArea">
                                     <DockPanel Margin="0 10 0 0" Height="100">
-                                        <Image Name ="FileImage" Tag="-1" Margin="20 0 0 0" Width="40" Height="40" Source="resources/file.png"/>
-                                        <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" Foreground="Black"></TextBlock>
+                                        <Image Name ="FileImage" Tag="-1" Margin="20 0 0 0" Width="64" Height="64" Source="resources/file.png"/>
+                                        <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" Foreground="Black" FontWeight="Medium" FontFamily="resources/fonts/#Ubuntu">WELCOME TO <LineBreak/> FILE EXPLORER</TextBlock>
                                     </DockPanel>
                                     <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
-                                    <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black">Size: 1234.567 KB</TextBlock>
-                                    <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black"></TextBlock>
-                                    <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black"></TextBlock>
+                                    <TextBlock Name="FileSize" Margin="20 0 0 10" FontSize="15" Foreground="Black" FontFamily="resources/fonts/#Ubuntu"></TextBlock>
+                                    <TextBlock Name="DateCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black" FontFamily="resources/fonts/#Ubuntu"></TextBlock>
+                                    <TextBlock Name="TimeCreated" Margin="20 0 0 10" FontSize="15" Foreground="Black" FontFamily="resources/fonts/#Ubuntu"></TextBlock>
                                     <Border Margin="15 10 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
-                                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Name ="Attribute">Attributes</TextBlock>
+                                    <TextBlock Margin="20 0 0 10" FontSize="15" Foreground="Black" Name ="Attribute" FontWeight="Medium" FontFamily="resources/fonts/#Ubuntu">Attributes</TextBlock>
                                     <CheckBox IsEnabled="False" Name="IsHidden" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Hidden</CheckBox>
                                     <CheckBox IsEnabled="False" Name="IsReadOnly" Margin="20 0 0 10" FontSize="15" Foreground="Black" VerticalContentAlignment="Center">Read only</CheckBox>
                                     <Border Height="35" Width="100" CornerRadius="10" HorizontalAlignment="Right" Margin="0 0 15 0">

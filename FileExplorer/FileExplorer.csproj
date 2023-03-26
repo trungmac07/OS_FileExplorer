@@ -12,10 +12,32 @@
     <None Remove="resources\close-01-01.png" />
     <None Remove="resources\close.png" />
     <None Remove="resources\colapse.png" />
+    <None Remove="resources\compact-disk.png" />
     <None Remove="resources\expand.png" />
     <None Remove="resources\file.png" />
     <None Remove="resources\folder.png" />
+    <None Remove="resources\fonts\Ubuntu-Bold.ttf" />
+    <None Remove="resources\fonts\Ubuntu-BoldItalic.ttf" />
+    <None Remove="resources\fonts\Ubuntu-Italic.ttf" />
+    <None Remove="resources\fonts\Ubuntu-Light.ttf" />
+    <None Remove="resources\fonts\Ubuntu-LightItalic.ttf" />
+    <None Remove="resources\fonts\Ubuntu-Medium.ttf" />
+    <None Remove="resources\fonts\Ubuntu-MediumItalic.ttf" />
+    <None Remove="resources\fonts\Ubuntu-Regular.ttf" />
     <None Remove="resources\hdd.png" />
+    <None Remove="resources\icons\css.png" />
+    <None Remove="resources\icons\doc.png" />
+    <None Remove="resources\icons\exe.png" />
+    <None Remove="resources\icons\html.png" />
+    <None Remove="resources\icons\jpg.png" />
+    <None Remove="resources\icons\json.png" />
+    <None Remove="resources\icons\mp3.png" />
+    <None Remove="resources\icons\mp4.png" />
+    <None Remove="resources\icons\pdf.png" />
+    <None Remove="resources\icons\ppt.png" />
+    <None Remove="resources\icons\txt.png" />
+    <None Remove="resources\icons\xml.png" />
+    <None Remove="resources\open-folder.png" />
     <None Remove="resources\ssd.png" />
     <None Remove="resources\storage.png" />
     <None Remove="resources\usb-flash-drive.png" />
@@ -34,6 +56,9 @@
     <Resource Include="resources\colapse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="resources\compact-disk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="resources\expand.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -43,7 +68,70 @@
     <Resource Include="resources\folder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Content Include="resources\fonts\Ubuntu-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-BoldItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-Italic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-LightItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-Medium.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-MediumItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\fonts\Ubuntu-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="resources\hdd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\css.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\doc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\exe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\html.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\jpg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\json.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\mp3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\mp4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\pdf.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\ppt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\txt.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\icons\xml.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\open-folder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="resources\usb.png">

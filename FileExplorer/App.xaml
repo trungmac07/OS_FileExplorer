@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:FileExplorer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <FontFamily x:Key="Ubuntu">resources/fonts/Ubuntu-Regular.ttf</FontFamily>
+   
     </Application.Resources>
 </Application>

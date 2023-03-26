@@ -9,7 +9,7 @@
     <Grid>
         <StackPanel Name="FileInfoArea">
             <DockPanel Margin="0 10 0 0" Height="100">
-                <Image Name ="FileImage" Margin="20 0 0 0" Width="60" Height="60" Source="resources/file.png"/>
+                <Image Name ="FileImage" Margin="25 0 0 0" Width="77" Height="77" Source="resources/file.png"/>
                 <TextBlock Name="FileName" Margin="20 0 20 10" VerticalAlignment="Center" FontSize="17" TextWrapping="Wrap" FontWeight="Medium" Foreground="Black"></TextBlock>
             </DockPanel>
             <Border Margin="15 30 15 20" BorderThickness="1.5" BorderBrush="#2EC4B6" CornerRadius="3"></Border>
