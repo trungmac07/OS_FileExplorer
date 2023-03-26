@@ -263,19 +263,38 @@ namespace FileExplorer
             long s = 0;
             long cluster = 0;
 
+            long realPOS = 0;
+            long soDu = 0;
+            long sectorPOS = 0;
+          
             if (a[0x06] == 0x7E)
             {
+                realPOS = pos1;
+                soDu = realPOS / 512;
+                sectorPOS = soDu * 512;
+                fs.Seek(sectorPOS, SeekOrigin.Begin);
+                fs.Read(a, 0, 512);
                 fs.Seek(pos1, SeekOrigin.Begin);
                 fs.Read(a, 0, 32);
                 while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
                 {
                     pos1 -= 32;
+                    realPOS = pos1;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
                     fs.Seek(pos1 , SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
                 }
 
                 for (long i = pos2 - 32; i > pos1; i -= 32)
                 {
+                    realPOS = i;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
                     fs.Seek(i, SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
                     name += subEntryName(a);
@@ -283,10 +302,20 @@ namespace FileExplorer
             }
             else
             {
+                realPOS = offset;
+                soDu = realPOS / 512;
+                sectorPOS = soDu * 512;
+                fs.Seek(sectorPOS, SeekOrigin.Begin);
+                fs.Read(a, 0, 512);
                 fs.Seek(offset, SeekOrigin.Begin);
                 fs.Read(a, 0, 32);
                 name += mainEntryName(a);
             }
+            realPOS = offset;
+            soDu = realPOS / 512;
+            sectorPOS = soDu * 512;
+            fs.Seek(sectorPOS, SeekOrigin.Begin);
+            fs.Read(a, 0, 512);
             fs.Seek(offset, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
             time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10]);
