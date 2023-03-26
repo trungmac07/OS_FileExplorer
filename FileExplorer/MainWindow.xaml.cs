@@ -53,49 +53,9 @@ namespace FileExplorer
         {
             getDrive();
 
+
         }
-        public void getDirectoryTree()
-        {
-            DriveInfo curDrive = DriveInfo.GetDrives()[0];
-            DirectoryInfo curDirectory = curDrive.RootDirectory;
-            DirectoryInfo[] directoryList = curDirectory.GetDirectories();
 
-            foreach (DirectoryInfo directory in directoryList)
-            {
-                //<Button Height="80" Background="#222831" Foreground="#EEEEEE" BorderThickness="0 0 0 0">O DIA C</Button>
-                Button button = new Button();
-                button.Height = 50;
-                button.Background = new SolidColorBrush(Colors.White);
-                //button.Foreground = new SolidColorBrush(Color.FromRgb(238, 238, 238));
-                button.BorderThickness = new Thickness(0, 0, 0, 0);
-                button.Content = directory.Name;
-                button.HorizontalContentAlignment = HorizontalAlignment.Left;
-                button.Cursor = Cursors.Hand;
-
-                DockPanel dockPanel = new DockPanel();
-                TextBlock textBlock = new TextBlock();
-                textBlock.Text = directory.Name;
-                textBlock.Margin = new Thickness(10, 5, 0, 0);
-                textBlock.Foreground = new SolidColorBrush(Colors.Black);
-
-                BitmapImage myBitmapImage = new BitmapImage();
-                myBitmapImage.BeginInit();
-                myBitmapImage.UriSource = new Uri("resources/folder.png", UriKind.RelativeOrAbsolute);
-                myBitmapImage.DecodePixelWidth = 2048;
-                myBitmapImage.EndInit();
-                Image image = new Image();
-                image.Source = myBitmapImage;
-                image.Height = 25;
-                image.Width = 25;
-
-                dockPanel.Children.Add(image);
-                dockPanel.Children.Add(textBlock);
-                button.Content = dockPanel;
-
-                FolderTreeContain.Children.Add(button);
-            }
-        }
-        DriveInfo[] allDrives = DriveInfo.GetDrives();
 
         public SeriesCollection ChartData { get; set; }
         public int currentDisk = 1;
@@ -129,10 +89,7 @@ namespace FileExplorer
         }
         public void deleteParitionFromView()
         {
-            while (PartitionArea.Children.Count > 0)
-            {
-                PartitionArea.Children.RemoveAt(0);
-            }
+            PartitionArea.Children.Clear();
         }
         public void printPartition(int index)
         {
@@ -215,7 +172,14 @@ namespace FileExplorer
                 }
             }
             FolderTreeContain.Children.Clear();
-
+            TextBlock pleaseChoose = new TextBlock();
+            pleaseChoose.Text = "PLEASE CHOOSE A DISK AND A PARTITION TO VIEW";
+            pleaseChoose.Style = (Style)FindResource("UbuntuFont");
+            pleaseChoose.FontSize = 25;
+            pleaseChoose.HorizontalAlignment = HorizontalAlignment.Center;
+            pleaseChoose.Margin = new Thickness(0, 150, 0, 0);
+            pleaseChoose.Foreground = new SolidColorBrush(Color.FromRgb(201, 201, 201));
+            FolderTreeContain.Children.Add(pleaseChoose);
         }
 
         public void chart(long paritionSize)
@@ -230,7 +194,6 @@ namespace FileExplorer
                     StrokeThickness = 0,
                     Stroke = null,
                     Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2EC4B6")),
-
                 },
                 new PieSeries
                 {
@@ -333,6 +296,7 @@ namespace FileExplorer
                     if (mBR.isPartitionActive(i) == true)
                         printPartition(i);
                 }
+                PleaseChoose.Visibility = Visibility.Visible;
 
             };
             DiskArea.Children.Add(DiskButton1);
@@ -394,7 +358,7 @@ namespace FileExplorer
             Button button = new Button();
             button.Background = Brushes.Transparent;
             button.Width = 600;
-            button.Height = 45;
+            button.Height = 42;
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
             button.Margin = new Thickness(15 * node.Level, 5, 0, 5);
@@ -402,8 +366,8 @@ namespace FileExplorer
             button.Click += infoButtonClick;
 
             Image image = new Image();
-            image.Width = 42;
-            image.Height = 42;
+            image.Width = 39;
+            image.Height = 39;
             image.Margin = new Thickness(5, 0, 0, 0);
             image.Stretch = Stretch.UniformToFill;
 
@@ -426,7 +390,7 @@ namespace FileExplorer
                 button.MouseDoubleClick += (sender, e) => expandButtonClick(expand, e, image);
 
 
-            
+
             TextBlock textBlock = new TextBlock();
             textBlock.Text = node.Info.FileName;
             textBlock.Margin = new Thickness(12, 0, 0, 0);
@@ -480,6 +444,7 @@ namespace FileExplorer
 
         private void renderRoots()
         {
+            FolderTreeContain.Children.Clear();
             foreach (var root in FolderTree.getRootsSortedByName())
             {
                 renderANode(root.Value, FolderTreeContain);
@@ -492,7 +457,7 @@ namespace FileExplorer
             long id = (long)(sender as Button).Tag;
             FileInfomation file = FolderTree.ListOfFiles[id].Info;
 
-            if(file.IsSystem == true)
+            if (file.IsSystem == true)
             {
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/system.png", UriKind.RelativeOrAbsolute));
 
@@ -556,7 +521,7 @@ namespace FileExplorer
 
 
                 StackPanel area = (this.FindName("n" + id) as StackPanel);
-                
+
                 (image as Image).Source = new BitmapImage(new Uri(@"/resources/open-folder.png", UriKind.RelativeOrAbsolute));
 
                 var childrenList = FolderTree.getChildrenSortedByName(id);
