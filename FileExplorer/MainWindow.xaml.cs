@@ -268,42 +268,25 @@ namespace FileExplorer
 
         public void getDrive()
         {
-            ManagementObjectSearcher searcher = new
-            ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
             ArrayList hdCollection = new ArrayList();
+            ArrayList indexing = new ArrayList();
+            int count = 0;
+            foreach (ManagementObject wmi_HD in searcher.Get()) count++;
+            if (count > 0) count--;
             foreach (ManagementObject wmi_HD in searcher.Get())
             {
                 HardDrive hd = new HardDrive();
                 hd.Model = wmi_HD["Model"].ToString();
                 hd.Type = wmi_HD["InterfaceType"].ToString();
-                hdCollection.Insert(0, hd);
-            }
-            searcher = new
-            ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
-
-            int i = 0;
-            foreach (ManagementObject wmi_HD in searcher.Get())
-            {
-                // get the hard drive from collection
-                // using index
-                HardDrive hd = (HardDrive)hdCollection[i];
-
-                // get the hardware serial no.
-                if (wmi_HD["SerialNumber"] == null)
-                    hd.SerialNo = "None";
-                else
-                    hd.SerialNo = wmi_HD["SerialNumber"].ToString();
-                ++i;
-            }
-
-            int index = 0;
-            foreach (HardDrive hd in hdCollection)
-            {
-                while (hd.Model[0] == ' ') hd.Model = hd.Model.Remove(0, 1);
+                Console.WriteLine(hd.Type);
                 if (hd.Type == "USB")
-                    createDiskButton(index, hd.Model, 1);
-                index++;
+                {
+                    createDiskButton(count, hd.Model, 1);
+                }
+                count--;
             }
+
         }
 
         public void createDiskButton(int index, string s, int kind)
