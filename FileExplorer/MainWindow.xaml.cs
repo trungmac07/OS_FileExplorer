@@ -114,9 +114,9 @@ namespace FileExplorer
                 FileName.Text = "PARTITION " + index.ToString();
                 FileSize.Text = "First Sector(LBA): " + mBR.getFirstSectorLBA(index);
                 mBR.getStartSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
-                DateCreated.Text = "Begin address(CHS): " + head + "(Head)" + sector + "(Sector)" + cylinder + "(Cylinder)";
+                DateCreated.Text = "Begin address(CHS): (" + head + "," + sector + "," + cylinder + ")";
                 mBR.getLastSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
-                TimeCreated.Text = "End address(CHS): " + head + "(Head)" + sector + "(Sector)" + cylinder + "(Cylinder)";
+                TimeCreated.Text = "End address(CHS): (" + head + "," + sector + "," + cylinder + ")";
                 Attribute.Text = "Status";
                 IsHidden.Content = "Bootable";
                 IsReadOnly.Content = "Unbootable";
@@ -256,7 +256,6 @@ namespace FileExplorer
                     hd.SerialNo = "None";
                 else
                     hd.SerialNo = wmi_HD["SerialNumber"].ToString();
-
                 ++i;
             }
 
@@ -266,7 +265,6 @@ namespace FileExplorer
                 while (hd.Model[0] == ' ') hd.Model = hd.Model.Remove(0, 1);
                 if (hd.Type == "USB")
                     createDiskButton(index, hd.Model, 1);
-                else createDiskButton(index, hd.Model, 0);
                 index++;
             }
         }
@@ -304,6 +302,7 @@ namespace FileExplorer
             DiskButton1.Style = (Style)this.FindResource("MenuButton");
             DiskButton1.Click += (sender, e) =>
             {
+                resetFileInfoArea();
                 currentDisk = index;
                 currentPartition = -1;
                 deleteParitionFromView();
@@ -320,6 +319,19 @@ namespace FileExplorer
             DiskArea.Children.Add(DiskButton1);
 
 
+        }
+
+        void resetFileInfoArea()
+        {
+            FileName.Text = "";
+            FileImage.Source = new BitmapImage(new Uri("/resources/file.png", UriKind.RelativeOrAbsolute));
+            FileSize.Text = "";
+            DateCreated.Text = "";
+            TimeCreated.Text = "";
+            IsHidden.Content = "";
+            IsHidden.IsChecked = false;
+            IsReadOnly.Content = "";
+            IsReadOnly.IsChecked = false;
         }
 
         public void menuButtonClick(object sender, EventArgs e)
