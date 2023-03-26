@@ -23,6 +23,10 @@
         <SolidColorBrush x:Key="MenuColor" Color="#EFEFEF"/>
         <SolidColorBrush x:Key="BackgroundColor" Color="#9CD3CA"/>
 
+        <Style x:Key="UbuntuFont" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="/resources/fonts/#Ubuntu"/>
+        </Style>
+        
         <LinearGradientBrush x:Key="ListBoxBackgroundBrush" StartPoint="0,0" EndPoint="1,0.001">
             <GradientBrush.GradientStops>
                 <GradientStopCollection>
@@ -424,7 +428,8 @@
                             </Border.Effect>
                             <ScrollViewer Margin="0 10 0 10" Width="660" >
                                 <StackPanel Margin="20 0 0 0" Name="FolderTreeContain">
-
+                                    <TextBlock Name ="Welcome" HorizontalAlignment="Center" Margin="0 135 0 0"  FontFamily="resources/fonts/#Ubuntu" Foreground="#C9C9C9" FontSize="25">WELCOME TO FILE EXPLORER</TextBlock>
+                                    <TextBlock Name="PleaseChoose" HorizontalAlignment="Center" Margin="0 35 0 0" FontFamily="resources/fonts/#Ubuntu" Foreground="#C9C9C9" FontSize="25">PLEASE CHOOSE A DISK AND A PARTITION TO VIEW</TextBlock>
 
                                 </StackPanel>
                             </ScrollViewer>
