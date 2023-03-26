@@ -177,7 +177,11 @@ namespace FileExplorer
                 if (partitionType == "FAT32")
                 {
                     clearFolderTree();
-                    //chart();
+                    FAT32 fat32 = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
+                    string s = fat32.NameDisk();
+                    FolderTree = fat32.readMainFileFromRDET();
+                    renderRoots();
+
                 }
                 else if (partitionType == "NTFS")
                 {
@@ -185,8 +189,7 @@ namespace FileExplorer
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
-                    var ordered = FolderTree.ListOfRoots.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
-                    FolderTree.ListOfRoots = ordered;
+                    
                     //PieChart.Series = null;
 
                     chart(mBR.getSectorInPartition(currentPartition) * 512);
