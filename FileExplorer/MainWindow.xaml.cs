@@ -65,27 +65,8 @@ namespace FileExplorer
         Tree FolderTree { get; set; } = new Tree();
         public MainWindow()
         {
-            // Khoi's codes
             InitializeComponent();
             initialization();
-            /*
-
-            string drivePath = @"\\.\PhysicalDrive" + currentDisk;
-            Function.stream = new FileStream(drivePath, FileMode.Open, FileAccess.Read);
-
-            MBR mBR = new MBR();
-            mBR.readMBR(currentDisk);
-            //mBR.printMBRTable();
-
-            mBR.printPartitionInfo(currentPartition);
-            if (mBR.getPartitionType(currentPartition) == "NTFS")
-            {
-                NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
-                ntfs.printVBRInfo();
-                FolderTree = ntfs.buildTree();
-                renderRoots();
-            }
-            */
         }
         public void deleteParitionFromView()
         {
@@ -231,9 +212,10 @@ namespace FileExplorer
 
         public void getDrive()
         {
-            ManagementObjectSearcher searcher = new
-            ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
-            ArrayList hdCollection = new ArrayList();
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+            int count = 0;
+            foreach (ManagementObject wmi_HD in searcher.Get()) count++;
+            if (count > 0) count--;
             foreach (ManagementObject wmi_HD in searcher.Get())
             {
                 HardDrive hd = new HardDrive();
@@ -260,14 +242,6 @@ namespace FileExplorer
                 ++i;
             }
 
-            int index = 0;
-            foreach (HardDrive hd in hdCollection)
-            {
-                while (hd.Model[0] == ' ') hd.Model = hd.Model.Remove(0, 1);
-                if (hd.Type == "USB")
-                    createDiskButton(index, hd.Model, 1);
-                index++;
-            }
         }
 
         public void createDiskButton(int index, string s, int kind)

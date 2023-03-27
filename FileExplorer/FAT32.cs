@@ -90,8 +90,8 @@ namespace FileExplorer
             int level = 0;
             long pos = 0;
             int dem = 0;
-            while (a[0] != 0)
-            {
+            while (a[0] != 0 && a[0] != 0x2E)
+            { 
                 if(a[0x00] != 0xE5 && a[0x0B] != 0x0F)
                 {
                     dem++;
@@ -113,6 +113,10 @@ namespace FileExplorer
                 }    
                 else fs.Read(a, 0, 32);
             }
+            foreach (var i in rs.ListOfFiles)
+            {
+                i.Value.Info.SizeOnDisk = rs.getSizeOnDisk(i.Value.Info.ID);
+            }
             fs.Close();
             return rs;
         }
@@ -124,39 +128,67 @@ namespace FileExplorer
             {
                 for (int i = 0; i < node.Children.Count; i++)
                 {
-                    GetAllFiles(ReadFile(node.Children[i], node.Info.ID, level++), Files, level++);
+                    int a = level + 1;
+                    GetAllFiles(ReadFile(node.Children[i], node.Info.ID, a), Files, a);
                 }
             }
         }
         public string subEntryName(byte[] arr)
         {
             string s = "";
+            byte[] a = new byte[32];
+            int index = 0;
             for (int i = 0x01; i < 0x01 + 10; i++)
             {
                 if (arr[i] == 0xFF) break;
-                s += (char)arr[i];
+                a[index] = arr[i];
+                index++;
             }
+            
             for (int i = 0x0E; i < 0x0E + 12; i++)
             {
                 if (arr[i] == 0xFF) break;
-                s += (char)arr[i];
+                a[index] = arr[i];
+                index++;
             }
+          
+
             for (int i = 0x1C; i < 0x1C + 4; i++)
             {
                 if (arr[i] == 0xFF) break;
-                s += (char)arr[i];
+                a[index] = arr[i];
+                index++;
             }
+            
+            s = Encoding.Unicode.GetString(a);
             return s;
         }
-
         public string mainEntryName(byte[] arr)
         {
             string s = "";
-            for (int i = 0x00; i < 0x00 + 11; i++)
+            
+            string s1 = "";
+            for (int i = 0x00; i < 0x00 + 8; i++)
             {
                 if (arr[i] == 0xFF) break;
                 s += (char)arr[i];
             }
+            while(true)
+            {
+                if (s[s.Length - 1] == 0x20)
+                {
+                    s = s.Substring(0, s.Length - 1);
+                }
+                else break;
+            }
+
+            for (int i = 0x08; i < 0x08 + 3; i++)
+            {
+                if (arr[i] == 0xFF) break;
+                s1 += (char)arr[i];
+            }
+            if(arr[0x0B] == 0x10) s = s + s1.ToLower();
+            else s = s + "." + s1.ToLower();
             return s;
         }
 
@@ -267,8 +299,8 @@ namespace FileExplorer
             long realPOS = 0;
             long soDu = 0;
             long sectorPOS = 0;
-          
-            if (a[0x06] == 0x7E)
+            int check = 0;  
+            if (a[0x06] == 0x7E || a[0x0E] == 0x0F)
             {
                 realPOS = pos1;
                 soDu = realPOS / 512;
@@ -279,6 +311,7 @@ namespace FileExplorer
                 fs.Read(a, 0, 32);
                 while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
                 {
+                    check = 1;
                     pos1 -= 32;
                     realPOS = pos1;
                     soDu = realPOS / 512;
@@ -288,9 +321,10 @@ namespace FileExplorer
                     fs.Seek(pos1 , SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
                 }
-
+                
                 for (long i = pos2 - 32; i > pos1; i -= 32)
                 {
+                    check = 1;
                     realPOS = i;
                     soDu = realPOS / 512;
                     sectorPOS = soDu * 512;
@@ -299,6 +333,17 @@ namespace FileExplorer
                     fs.Seek(i, SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
                     name += subEntryName(a);
+                }
+                if(check == 0)
+                {
+                    realPOS = offset;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
+                    fs.Seek(offset, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    name += mainEntryName(a);
                 }
             }
             else
@@ -342,7 +387,14 @@ namespace FileExplorer
             FileTemp.CreatedTime = time;
             FileTemp.Size = s;
 
-            if (FileTemp.IsArchive == true) FileTemp.Type = 0;
+            long bytesPerCluster = bytesPerSector * sectorsPerCluster;
+            if (FileTemp.IsArchive == true)
+            {
+                FileTemp.Type = 0;
+                if(FileTemp.Size % bytesPerCluster != 0)
+                    FileTemp.SizeOnDisk = (FileTemp.Size / bytesPerCluster + 1) * bytesPerCluster;
+                else FileTemp.SizeOnDisk = (FileTemp.Size / bytesPerCluster) * bytesPerCluster;
+            }
             else FileTemp.Type = 1;
             //Children-------------------------
             List<long> Children = new List<long>();
@@ -354,6 +406,7 @@ namespace FileExplorer
                 offset = (FirstSectorInRDET + (cluster - 2) * sectorsPerCluster) * bytesPerSector + firstSectorOfPartition;
                 x = offset / bytesPerSector;
                 y = x * bytesPerSector;
+
 
                 fs.Seek(y, SeekOrigin.Begin);
                 fs.Read(a, 0, 64);
@@ -379,6 +432,7 @@ namespace FileExplorer
             fs.Close();
             return res;
         }
+       
     }
-    
+   
 }
