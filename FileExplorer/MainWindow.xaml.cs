@@ -240,6 +240,7 @@ namespace FileExplorer
                 hd.Model = wmi_HD["Model"].ToString();
                 hd.Type = wmi_HD["InterfaceType"].ToString();
                 hdCollection.Insert(0, hd);
+                //Console.WriteLine(hd.Type.ToString());
             }
             searcher = new
             ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
