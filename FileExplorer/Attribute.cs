@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -177,14 +178,12 @@ namespace FileExplorer
             private long sizeOnDisk = 0;
             public DataAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)
             {
-
-                if (isZoneIdentifier(firstByte,info) == true)
+                if (isZoneIdentifier(firstByte, info) == true)
                     return;
                 if (resident == 0) //is resident
                 {
                     dataSize = Function.littleEndian(info, firstByte + 16, 4);
                     sizeOnDisk = 0;
-
                 }
                 else
                 {
@@ -196,18 +195,10 @@ namespace FileExplorer
             bool isZoneIdentifier(long firstByte, byte[] info)
             {
                 int nameLength = info[firstByte + 0x09];
-
-                long nameOffset = Function.littleEndian(info, firstByte + 10, 2);
+                Console.WriteLine("length: " + nameLength);
                 if (nameLength != 0)
                 {
-                    if(nameLength == 15)
-                        return true;
-
-                    /*string fileName = Encoding.Unicode.GetString(info, (int)nameOffset, nameLength * 2).TrimEnd();
-                    if (fileName.Contains("dentifi") == true)
-                        return true;*/
-                    else 
-                        return false;
+                    return true;
                 }
                 else
                     return false;
@@ -225,8 +216,11 @@ namespace FileExplorer
                 }
                 else
                 {
-                    x.Size = dataSize;
-                    x.SizeOnDisk = sizeOnDisk;
+                    if (dataSize != 0)
+                        x.Size = dataSize;
+
+                    if (sizeOnDisk != 0)
+                        x.SizeOnDisk = sizeOnDisk;
                 }
 
             }

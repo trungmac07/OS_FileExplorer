@@ -96,11 +96,12 @@ namespace FileExplorer
                 stream.Seek(FirstByte, SeekOrigin.Begin);
                 stream.Read(Info, 0, (int)bytesPerEntry);
        
-           
-
                 Sign = "";
                 for (int i = 0; i < 4; ++i)
                     Sign += (char)Info[(int)OffsetMFTEntryHeader.SIGN + i];
+
+                if (Sign != "FILE")
+                    return;
 
                 BeginFirstAttribute =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.BEGIN_FIRST_ATTRIBUTE, (int) LengthMFTEntryHeader.BEGIN_FIRST_ATTRIBUTE);
                 Type                =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.TYPE,                  (int) LengthMFTEntryHeader.TYPE);
@@ -108,7 +109,7 @@ namespace FileExplorer
                 NumberOfBytes       =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.NUMBER_OF_BYTES,       (int) LengthMFTEntryHeader.NUMBER_OF_BYTES);
                 ID                  =   Function.littleEndian(Info,  (int) OffsetMFTEntryHeader.ID,                    (int) LengthMFTEntryHeader.ID);
 
-               //create list of attributes
+                //create list of attributes
                 readAttributes();
             }
 
@@ -120,18 +121,22 @@ namespace FileExplorer
      
                 while((tmp = readAttributeHeader(ref firstByte)) != null)
                 {
+                    if (firstByte + FirstByte >= 4296277792)
+                        Console.WriteLine("");
                     ListOfAttributes.Add(tmp);
+                 
                 }
                 
             }
             public Attribute readAttributeHeader(ref long firstByte)
             {
-                
+                Console.WriteLine("FB " + (long)(firstByte + FirstByte));   
                 Attribute res = null;
                 int position = (int) firstByte;
                 
                 byte attributeType = Info[position + (int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
 
+                Console.WriteLine("TYPE:" + attributeType);
                 if (attributeType == (int)AttributeType.END || attributeType == (int)AttributeType.EMPTY)
                     return null;
 
@@ -140,6 +145,7 @@ namespace FileExplorer
                 long sizeOfContent      =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
                 long positionOfContent  =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
 
+                
 
                 if (attributeType == (int) AttributeType.STANDARD_INFO)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, Info);
@@ -152,6 +158,9 @@ namespace FileExplorer
                 else 
                     res = new OtherAttribute(0,0,0,Info);
                 firstByte += sizeOfAttribute;
+
+                
+
                 return res;
 
             }

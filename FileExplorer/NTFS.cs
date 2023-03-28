@@ -103,6 +103,15 @@ namespace FileExplorer
             return (tmp.SizeOnDisk / 1024);
         }
 
+        public long sizeOfMFTAndVBR()
+        {
+            long beginByte = (FirstByte + BeginCluster1 * SectorsPerCluster * BytesPerSector);
+            MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);
+
+            FileInfomation tmp = new FileInfomation(mFTEntry);
+            return (tmp.SizeOnDisk) + 8192;
+        }
+
 
         //read entries and add into entries list
         public void readAttribute()
@@ -133,11 +142,11 @@ namespace FileExplorer
 
 
             long numberOfEntries = readNumberOfEntries();
-
+            Console.WriteLine("NUMBEROFENTRIES: " + numberOfEntries);
             for (long i = 0; i < numberOfEntries; ++i)
             {
                 MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);
-               
+                
                 if (mFTEntry.Sign == "FILE" && mFTEntry.Type % 2 == 1) 
                     folderTree.addToTree(new FileInfomation(mFTEntry));
 

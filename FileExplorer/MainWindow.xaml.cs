@@ -112,14 +112,15 @@ namespace FileExplorer
                     IsReadOnly.IsChecked = true;
                 }
 
+                //render tree and chart for used/total size
                 if (partitionType == "FAT32")
                 {
                     clearFolderTree();
                     FAT32 fat32 = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
                     string s = fat32.NameDisk();
                     FolderTree = fat32.readMainFileFromRDET();
-                    renderRoots();
-
+                    FolderTree.IsNTFS = 0;
+                  
                 }
                 else if (partitionType == "NTFS")
                 {
@@ -127,17 +128,16 @@ namespace FileExplorer
                     NTFS ntfs = new NTFS(mBR.getFirstSectorLBA(currentPartition), mBR.getSectorInPartition(currentPartition), currentDisk);
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
-
-                    //PieChart.Series = null;
-                    long partitionSize = mBR.getSectorInPartition(currentPartition) * 512;
-
-                    UsedTotal.Text = Function.toFileSize((double)FolderTree.sizeOnDiskOfTree()) + " / " + Function.toFileSize((double)partitionSize);
-
-                    chart(partitionSize);
-                    PieChart.Series = ChartData;
-
-                    renderRoots();
+                    FolderTree.IsNTFS = ntfs.sizeOfMFTAndVBR();
+                   
                 }
+
+                long partitionSize = mBR.getSectorInPartition(currentPartition) * 512;
+                UsedTotal.Text = Function.toFileSize((double)FolderTree.sizeOnDiskOfTree()) + " / " + Function.toFileSize((double)partitionSize);
+                chart(partitionSize);
+                PieChart.Series = ChartData;
+                renderRoots();
+                TreeView.ScrollToTop();
 
             };
             PartitionArea.Children.Add(button);
@@ -152,7 +152,11 @@ namespace FileExplorer
                     this.UnregisterName("n" + file.Key);
                 }
             }
+
+            //clear all old folder
             FolderTreeContain.Children.Clear();
+
+            //show "PLEASE CHOOSE A DISK AND A PARTITION TO VIEW" in empty treeview area
             TextBlock pleaseChoose = new TextBlock();
             pleaseChoose.Text = "PLEASE CHOOSE A DISK AND A PARTITION TO VIEW";
             pleaseChoose.Style = (Style)FindResource("UbuntuFont");
@@ -213,11 +217,7 @@ namespace FileExplorer
         public void getDrive()
         {
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
-            int count = 0;
-            foreach (ManagementObject wmi_HD in searcher.Get()) 
-                count++;
-            /*if (count > 0) 
-                count--;*/
+            
             foreach (ManagementObject wmi_HD in searcher.Get())
             {
                 HardDrive hd = new HardDrive();
@@ -226,9 +226,9 @@ namespace FileExplorer
                 Console.WriteLine(hd.Type);
                 if (hd.Type == "USB")
                 {
-                    createDiskButton(count, hd.Model, 1);
+                    string x = wmi_HD["DeviceId"].ToString();
+                    createDiskButton((int)x[x.Length - 1] - 48, hd.Model, 1);
                 }
-                count--;
             }
         }
 
@@ -287,7 +287,7 @@ namespace FileExplorer
         void resetFileInfoArea()
         {
             FileName.Text = "";
-            FileImage.Source = new BitmapImage(new Uri("/resources/file.png", UriKind.RelativeOrAbsolute));
+            FileImage.Source = null;
             FileSize.Text = "";
             DateCreated.Text = "";
             TimeCreated.Text = "";
@@ -341,7 +341,7 @@ namespace FileExplorer
             button.Height = 42;
             button.HorizontalAlignment = HorizontalAlignment.Left;
             button.BorderThickness = new Thickness(0);
-            button.Margin = new Thickness(15 * node.Level, 5, 0, 5);
+            button.Margin = new Thickness(20 * node.Level, 5, 0, 5);
             button.Tag = node.Info.ID;
             button.Click += infoButtonClick;
 
@@ -360,8 +360,8 @@ namespace FileExplorer
 
             expand.Style = (Style)this.FindResource("TreeExpandButton");
             expand.Tag = node.Info.ID;
-            expand.Click += (s, e) => expandButtonClick(s, e, image);
-            expand.MouseDoubleClick += (s, e) => expandButtonClick(s, e, image);
+            
+           
             expand.BorderThickness = new Thickness(0);
             expand.Background = Brushes.Transparent;
             expand.FontSize = 12;
@@ -391,9 +391,11 @@ namespace FileExplorer
                 else
                     image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
 
-
+                
+                
                 expand.Background = Brushes.Transparent;
                 expand.BorderThickness = new Thickness(0);
+                
             }
             else
             {
@@ -402,6 +404,8 @@ namespace FileExplorer
                 modeImage.Width = 12;
                 modeImage.Source = new BitmapImage(new Uri(@"/resources/colapse.png", UriKind.RelativeOrAbsolute));
                 expand.Content = modeImage;
+                expand.Click += (s, e) => expandButtonClick(s, e, image);
+                expand.MouseDoubleClick += (s, e) => expandButtonClick(s, e, image);
             }
 
 
@@ -587,7 +591,7 @@ namespace FileExplorer
             {"mp4",new Uri("/resources/icons/mp4.png",UriKind.RelativeOrAbsolute) },
             {"pdf",new Uri("/resources/icons/pdf.png",UriKind.RelativeOrAbsolute) },
             {"ppt",new Uri("/resources/icons/ppt.png",UriKind.RelativeOrAbsolute) },
-            {"pptx",new Uri("/resources/icons/pptx.png",UriKind.RelativeOrAbsolute) },
+            {"pptx",new Uri("/resources/icons/ppt.png",UriKind.RelativeOrAbsolute) },
             {"txt",new Uri("/resources/icons/txt.png",UriKind.RelativeOrAbsolute) },
             {"xml",new Uri("/resources/icons/xml.png",UriKind.RelativeOrAbsolute) },
 

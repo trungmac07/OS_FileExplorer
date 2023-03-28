@@ -90,14 +90,20 @@ namespace FileExplorer
             int level = 0;
             long pos = 0;
             int dem = 0;
+            
+
             while (a[0] != 0 && a[0] != 0x2E)
             { 
                 if(a[0x00] != 0xE5 && a[0x0B] != 0x0F)
                 {
                     dem++;
                     pos = fs.Position - 32;
+                    Console.WriteLine("POS:" + pos);
+             /*       if (pos == 541133952)
+                        Console.WriteLine("AAA");*/
                     fs.Close();
                     FolderTreeNode temp = ReadFile(pos, 0, level);
+                    
                     rs.ListOfRoots.Add(temp.Info.ID, temp);
                     GetAllFiles(temp, rs.ListOfFiles, level);
                     fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -300,7 +306,7 @@ namespace FileExplorer
             long soDu = 0;
             long sectorPOS = 0;
             int check = 0;  
-            if (a[0x06] == 0x7E || a[0x0E] == 0x0F)
+            if (a[0x06] == 0x7E || a[0x0E] == 0x0F)//dasdasdasdasda
             {
                 realPOS = pos1;
                 soDu = realPOS / 512;

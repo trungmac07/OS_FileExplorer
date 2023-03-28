@@ -8,9 +8,10 @@ namespace FileExplorer
 {
     public class Tree
     {
+        public long IsNTFS { get; set; } = 0;
         public Dictionary<long, FolderTreeNode> ListOfRoots { get; set; }
         public Dictionary<long, FolderTreeNode> ListOfFiles { get; set; }
-        
+
         public Tree()
         {
             ListOfRoots = new Dictionary<long, FolderTreeNode>();
@@ -22,14 +23,14 @@ namespace FileExplorer
         //If a folder -> return it owns files
         public long getSize(long id)
         {
-            if(ListOfFiles.ContainsKey(id))
+            if (ListOfFiles.ContainsKey(id))
             {
-                if(ListOfFiles[id].Info.IsDirectory == true)
+                if (ListOfFiles[id].Info.IsDirectory == true)
                 {
                     long sum = 0;
-                    foreach(var child in ListOfFiles[id].Children)
+                    foreach (var child in ListOfFiles[id].Children)
                         sum += getSize(child);
-                    
+
                     return sum;
                 }
                 else
@@ -64,13 +65,18 @@ namespace FileExplorer
         public long sizeOnDiskOfTree()
         {
             long sum = 0;
-            foreach (var root in ListOfRoots)
-            {
-                if (root.Key != 8)
+            //sum += IsNTFS;
+            if (IsNTFS != 0)
+                foreach (var root in ListOfRoots)
+                {
+                    if (root.Key!=8)
+                        sum += getSizeOnDisk(root.Key);
+                }
+            else
+                foreach (var root in ListOfRoots)
+                {
                     sum += getSizeOnDisk(root.Key);
-                Console.WriteLine("SUM: " + getSizeOnDisk(root.Key));
-                Console.WriteLine("FILE: " + root.Value.Info.FileName);
-            }
+                }
             return sum;
         }
 
@@ -129,15 +135,15 @@ namespace FileExplorer
 
 
         //Sorted Dictionary for building a tree ordered by filename
-        public SortedDictionary<FileIdentifier,FolderTreeNode> getRootsSortedByName()
+        public SortedDictionary<FileIdentifier, FolderTreeNode> getRootsSortedByName()
         {
-            SortedDictionary<FileIdentifier,FolderTreeNode> rootsSortedByName = new SortedDictionary<FileIdentifier, FolderTreeNode>();
-            
+            SortedDictionary<FileIdentifier, FolderTreeNode> rootsSortedByName = new SortedDictionary<FileIdentifier, FolderTreeNode>();
+
             foreach (var root in ListOfRoots)
             {
-                rootsSortedByName.Add(new FileIdentifier(root.Value.Info.ID, root.Value.Info.FileName, root.Value.Info.IsSystem),root.Value);
+                rootsSortedByName.Add(new FileIdentifier(root.Value.Info.ID, root.Value.Info.FileName, root.Value.Info.IsSystem), root.Value);
             }
-            
+
             return rootsSortedByName;
         }
 
