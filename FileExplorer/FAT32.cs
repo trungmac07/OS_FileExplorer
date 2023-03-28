@@ -197,7 +197,7 @@ namespace FileExplorer
             return temp;
 
         }
-        public string createDate(byte a, byte b)
+        public DateTime createDate(byte a, byte b,byte c, byte d)
         {
 
             string s1 = Convert.ToString(a, 2);
@@ -214,17 +214,34 @@ namespace FileExplorer
 
             string s = s1 + s2;
 
+            
+            int gio = 0,phut,giay;
+           
+            gio = Convert.ToInt32(s.Substring(0, 5), 2);
+            phut = Convert.ToInt32(s.Substring(5, 6), 2);
+            giay = Convert.ToInt32(s.Substring(11, 5), 2) * 2;
+
+            string s4 = Convert.ToString(c, 2);
+            string s5 = Convert.ToString(d, 2);
+
+            while (s4.Length < 8)
+            {
+                s4 = "0" + s4;
+            }
+            while (s5.Length < 8)
+            {
+                s5 = "0" + s5;
+            }
+
+            s = s4 + s5;
+
             int nam, thang, ngay;
             nam = Convert.ToInt32(s.Substring(0, 7), 2) + 1980;
             thang = Convert.ToInt32(s.Substring(7, 4), 2);
             ngay = Convert.ToInt32(s.Substring(11, 5), 2);
-            s1 = Convert.ToString(thang);
-            s2 = Convert.ToString(ngay);
-            if (s1.Length < 2) s1 = "0" + s1;
-            if (s2.Length < 2) s2 = "0" + s2;
-
-            s = Convert.ToString(nam) + "/" + s1 + "/" + s2;
-            return s;
+            DateTime DATE = new DateTime(nam, thang, ngay, gio, phut, giay);
+            return DATE;
+  
         }
         public long size(byte a, byte b, byte c, byte d)
         {
@@ -320,6 +337,7 @@ namespace FileExplorer
             fs.Seek(FirstByte, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
             DateTime time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10],FirstByte);
+            DateTime time2 = createDate(a[0x17], a[0x16], a[0x19], a[0x18]);
             long s = size(a[0x1C], a[0x1D], a[0x1E], a[0x1F]);
             long cluster = Function.littleEndian(a, 0x1A, 2);
 
@@ -338,6 +356,7 @@ namespace FileExplorer
             else FileTemp.IsArchive = false;
 
             FileTemp.CreatedTime = time;
+            FileTemp.LastModifiedTime = time2;
             FileTemp.Size = s;
 
             if (FileTemp.IsArchive == true)
