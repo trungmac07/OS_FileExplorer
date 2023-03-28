@@ -422,11 +422,13 @@ namespace FileExplorer
             fs.Seek(pos1, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
             int check = 0;
+            int check1 = 0;
             if (a[0] != 0 || a[0x0B] == 0x0F) check = 1;
+            else if (a[0x0B] == 0x10 || a[0x0B] == 0x20 || a[0x0B] == 0x30) check = 0;
             if (check == 0) return mainEntryName(a);
             else
             {
-                check = 0;
+                check1 = 0;
                 pos1 = FirstByte - 32;
                 long pos2 = FirstByte;
                 realPOS = pos1;
@@ -439,7 +441,7 @@ namespace FileExplorer
                 int checkEnough = 0;
                 while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
                 {
-                    check = 1;
+                    check1 = 1;
                     pos1 -= 32;
                     realPOS = pos1;
                     soDu = realPOS / 512;
@@ -455,7 +457,7 @@ namespace FileExplorer
                 }
                 for (long i = pos2 - 32; i > pos1; i -= 32)
                 {
-                    check = 1;
+                    check1 = 1;
                     realPOS = i;
                     soDu = realPOS / 512;
                     sectorPOS = soDu * 512;
@@ -465,47 +467,7 @@ namespace FileExplorer
                     fs.Read(a, 0, 32);
                     name += subEntryName(a);
                 }
-                if(clusterBefore > 0 && checkEnough == 0)
-                {
-                    pos1 = getFirstByteOfCluster(clusterBefore) + bytesPerCluster - 32;
-                    pos2 = getFirstByteOfCluster(clusterBefore) + bytesPerCluster;
-                    realPOS = pos1;
-                    soDu = realPOS / 512;
-                    sectorPOS = soDu * 512;
-                    fs.Seek(sectorPOS, SeekOrigin.Begin);
-                    fs.Read(a, 0, 512);
-                    fs.Seek(pos1, SeekOrigin.Begin);
-                    fs.Read(a, 0, 32);
-                    while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
-                    {
-                        check = 1;
-                        pos1 -= 32;
-                        realPOS = pos1;
-                        soDu = realPOS / 512;
-                        sectorPOS = soDu * 512;
-                        fs.Seek(sectorPOS, SeekOrigin.Begin);
-                        fs.Read(a, 0, 512);
-                        fs.Seek(pos1, SeekOrigin.Begin);
-                        fs.Read(a, 0, 32);
-                        if (a[0x0B] == 0x10 || a[0x0B] == 0x20)
-                        {
-                            checkEnough = 1;
-                        }
-                    }
-                    for (long i = pos2 - 32; i > pos1; i -= 32)
-                    {
-                        check = 1;
-                        realPOS = i;
-                        soDu = realPOS / 512;
-                        sectorPOS = soDu * 512;
-                        fs.Seek(sectorPOS, SeekOrigin.Begin);
-                        fs.Read(a, 0, 512);
-                        fs.Seek(i, SeekOrigin.Begin);
-                        fs.Read(a, 0, 32);
-                        name += subEntryName(a);
-                    }
-                }
-                if (check == 0)
+                if (check1 == 0)
                 {
                     realPOS = FirstByte;
                     soDu = realPOS / 512;
@@ -515,6 +477,47 @@ namespace FileExplorer
                     fs.Seek(FirstByte, SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
                     name += mainEntryName(a);
+                }
+                else
+                {
+                    if (clusterBefore > 0 && checkEnough == 0)
+                    {
+                        pos1 = getFirstByteOfCluster(clusterBefore) + bytesPerCluster - 32;
+                        pos2 = getFirstByteOfCluster(clusterBefore) + bytesPerCluster;
+                        realPOS = pos1;
+                        soDu = realPOS / 512;
+                        sectorPOS = soDu * 512;
+                        fs.Seek(sectorPOS, SeekOrigin.Begin);
+                        fs.Read(a, 0, 512);
+                        fs.Seek(pos1, SeekOrigin.Begin);
+                        fs.Read(a, 0, 32);
+                        while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
+                        {
+                            pos1 -= 32;
+                            realPOS = pos1;
+                            soDu = realPOS / 512;
+                            sectorPOS = soDu * 512;
+                            fs.Seek(sectorPOS, SeekOrigin.Begin);
+                            fs.Read(a, 0, 512);
+                            fs.Seek(pos1, SeekOrigin.Begin);
+                            fs.Read(a, 0, 32);
+                            if (a[0x0B] == 0x10 || a[0x0B] == 0x20)
+                            {
+                                checkEnough = 1;
+                            }
+                        }
+                        for (long i = pos2 - 32; i > pos1; i -= 32)
+                        {
+                            realPOS = i;
+                            soDu = realPOS / 512;
+                            sectorPOS = soDu * 512;
+                            fs.Seek(sectorPOS, SeekOrigin.Begin);
+                            fs.Read(a, 0, 512);
+                            fs.Seek(i, SeekOrigin.Begin);
+                            fs.Read(a, 0, 32);
+                            name += subEntryName(a);
+                        }
+                    }
                 }
             }
             return name;
