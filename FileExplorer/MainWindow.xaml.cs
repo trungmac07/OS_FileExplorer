@@ -114,10 +114,10 @@ namespace FileExplorer
 
                 if (partitionType == "FAT32")
                 {
-                    clearFolderTree();
-                    FAT32 fat32 = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
-                    string s = fat32.NameDisk();
-                    FolderTree = fat32.readMainFileFromRDET();
+                     clearFolderTree();
+                    FAT32 a = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
+                    FolderTree = a.readRoot();
+                    Console.WriteLine(FolderTree.ListOfRoots.Count);
                     renderRoots();
 
                 }
