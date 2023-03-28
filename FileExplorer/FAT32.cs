@@ -38,7 +38,8 @@ namespace FileExplorer
         public long sectorsPerFAT { get; set; }
         public long begginCluster { get; set; }
         public string diskPath { get; set; }
-        public FAT32(long firstSector,int CurrentDisk)
+        public Dictionary<long ,long > FAT {get; set;}
+        public FAT32(long firstSector, int CurrentDisk)
         {
             diskPath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
             firstSectorOfPartition = firstSector * 512;
@@ -53,8 +54,10 @@ namespace FileExplorer
             volume = Function.littleEndian(BST, (int)OffsetBST.VOLUME, (int)LengthBST.VOLUME);
             sectorsPerFAT = Function.littleEndian(BST, (int)OffsetBST.SECTORS_PER_FAT, (int)LengthBST.SECTORS_PER_FAT);
             begginCluster = Function.littleEndian(BST, (int)OffsetBST.BEGGIN_CLUSTER, (int)LengthBST.BEGGIN_CLUSTER);
+            FAT = new Dictionary<long, long>();
             fs.Close();
         }
+        
         public string NameDisk()
         {
             FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -74,53 +77,7 @@ namespace FileExplorer
             fs.Close();
             return s;
         }
-        public Tree readMainFileFromRDET()
-        {
-            FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            Tree rs = new Tree();
-
-            long FirstSectorInRDET = 0;
-            FirstSectorInRDET += this.sectorsBeforeFAT;
-            FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
-            byte[] a = new byte[this.bytesPerSector];
-            fs.Seek(FirstSectorInRDET * this.bytesPerSector + firstSectorOfPartition, SeekOrigin.Begin);
-            fs.Read(a, 0, 160);
-            fs.Seek(FirstSectorInRDET * this.bytesPerSector + 128 + firstSectorOfPartition, SeekOrigin.Begin);
-            fs.Read(a, 0, 32);
-            int level = 0;
-            long pos = 0;
-            int dem = 0;
-            while (a[0] != 0 && a[0] != 0x2E)
-            { 
-                if(a[0x00] != 0xE5 && a[0x0B] != 0x0F)
-                {
-                    dem++;
-                    pos = fs.Position - 32;
-                    fs.Close();
-                    FolderTreeNode temp = ReadFile(pos, 0, level);
-                    rs.ListOfRoots.Add(temp.Info.ID, temp);
-                    GetAllFiles(temp, rs.ListOfFiles, level);
-                    fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    fs.Seek(pos + 32, SeekOrigin.Begin);
-                    long offset = pos + 32;
-                    long x = offset / bytesPerSector;
-                    long y = x * bytesPerSector;
-                    int z = (int)(offset - y);
-                    fs.Seek(y, SeekOrigin.Begin);
-                    fs.Read(a, 0, z);
-                    fs.Seek(offset, SeekOrigin.Begin);
-                    fs.Read(a, 0, 32);
-                }    
-                else fs.Read(a, 0, 32);
-            }
-            foreach (var i in rs.ListOfFiles)
-            {
-                i.Value.Info.SizeOnDisk = rs.getSizeOnDisk(i.Value.Info.ID);
-            }
-            fs.Close();
-            return rs;
-        }
-        public void GetAllFiles(FolderTreeNode node, Dictionary<long, FolderTreeNode> Files , int level)
+        public void GetAllFiles(FolderTreeNode node, Dictionary<long, FolderTreeNode> Files, int level)
         {
             Files.Add(node.Info.ID, node);
             if (node.Children.Count == 0) return;
@@ -144,14 +101,14 @@ namespace FileExplorer
                 a[index] = arr[i];
                 index++;
             }
-            
+
             for (int i = 0x0E; i < 0x0E + 12; i++)
             {
                 if (arr[i] == 0xFF) break;
                 a[index] = arr[i];
                 index++;
             }
-          
+
 
             for (int i = 0x1C; i < 0x1C + 4; i++)
             {
@@ -159,21 +116,21 @@ namespace FileExplorer
                 a[index] = arr[i];
                 index++;
             }
-            
+
             s = Encoding.Unicode.GetString(a);
             return s;
         }
         public string mainEntryName(byte[] arr)
         {
             string s = "";
-            
+
             string s1 = "";
             for (int i = 0x00; i < 0x00 + 8; i++)
             {
                 if (arr[i] == 0xFF) break;
                 s += (char)arr[i];
             }
-            while(true)
+            while (true)
             {
                 if (s[s.Length - 1] == 0x20)
                 {
@@ -187,12 +144,12 @@ namespace FileExplorer
                 if (arr[i] == 0xFF) break;
                 s1 += (char)arr[i];
             }
-            if(arr[0x0B] == 0x10) s = s + s1.ToLower();
+            if (arr[0x0B] == 0x10) s = s + s1.ToLower();
             else s = s + "." + s1.ToLower();
             return s;
         }
 
-        public DateTime createTime(byte a, byte b, byte c, byte d, byte e)
+        public DateTime createTime(byte a, byte b, byte c, byte d, byte e,long pos)
         {
 
             string s1 = Convert.ToString(a, 2);
@@ -236,9 +193,9 @@ namespace FileExplorer
             nam = Convert.ToInt32(s.Substring(0, 7), 2) + 1980;
             thang = Convert.ToInt32(s.Substring(7, 4), 2);
             ngay = Convert.ToInt32(s.Substring(11, 5), 2);
-            DateTime temp = new DateTime(nam,thang,ngay,gio,phut,giay);
+            DateTime temp = new DateTime(nam, thang, ngay, gio, phut, giay);
             return temp;
-            
+
         }
         public string createDate(byte a, byte b)
         {
@@ -275,102 +232,98 @@ namespace FileExplorer
             long s = Function.littleEndian(arr, 0, 4);
             return s;
         }
-        public FolderTreeNode ReadFile(long FirstByte, long Parent,int level)
+        public Tree readRoot()
         {
             FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            //get the sector--------------------------------
-            byte[] a = new byte[512];
-            long offset = FirstByte;
-            long x = offset / (long)512;
-            long y = x * 512;
-            int z = (int)(offset - y);
-            fs.Seek(y, SeekOrigin.Begin);
-            fs.Read(a, 0, z);
-            fs.Seek(offset, SeekOrigin.Begin);
-            fs.Read(a, 0, 32);
-            //information------------------------------------
-            long pos1 = offset - 32;
-            long pos2 = offset;
-            string name = "";
-            DateTime time = new DateTime();
-            long s = 0;
-            long cluster = 0;
-
+            Tree rs = new Tree();
+            //Get list of cluster need to use
+            long[] clusterArr = new long[10000];
+            long dem = 0;
+            long clusterData = 2;
+            byte[] a = new byte[this.bytesPerSector];
+            while (clusterData > 0)
+            {
+                //2 - 473 - 875
+                clusterArr[dem] = clusterData;
+                dem++;
+                clusterData = nextClusterFromFAT(clusterData);
+            }
+            for(int i = 1; i < dem; i++)
+            {
+                FAT.Add(clusterArr[i], clusterArr[i - 1]);
+            }
+            //
+            int level = 0;
+            long pos = 0;
+            for(long i = 0; i < dem; i++)
+            {
+                fs.Seek(getFirstByteOfCluster(clusterArr[i]), SeekOrigin.Begin);
+                fs.Read(a, 0, 512);
+                long count = bytesPerSector * sectorsPerCluster;
+                fs.Seek(getFirstByteOfCluster(clusterArr[i]), SeekOrigin.Begin);
+                if (i == 0)
+                {
+                    fs.Seek(getFirstByteOfCluster(clusterArr[i]) + 128, SeekOrigin.Begin);
+                    count -= 128;
+                }
+                fs.Read(a, 0, 32);
+                //count -= 32;
+                while (a[0] != 0 && a[0] != 0x2E && count > 0)
+                {
+                    if (a[0x00] != 0xE5 && a[0x0B] != 0x0F)
+                    {
+                        pos = fs.Position - 32;
+                        fs.Close();
+                        FolderTreeNode temp = ReadFile(pos, 0, level);
+                        rs.ListOfRoots.Add(temp.Info.ID, temp);
+                        GetAllFiles(temp, rs.ListOfFiles, level);
+                        fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        fs.Seek(pos + 32, SeekOrigin.Begin);
+                        long offset = pos + 32;
+                        long x = offset / bytesPerSector;
+                        long y = x * bytesPerSector;
+                        int z = (int)(offset - y);
+                        fs.Seek(y, SeekOrigin.Begin);
+                        fs.Read(a, 0, z);
+                        fs.Seek(offset, SeekOrigin.Begin);
+                        fs.Read(a, 0, 32);
+                    }
+                    else
+                    {
+                        fs.Read(a, 0, 32);
+                    }
+                    count -= 32;
+                }
+            }
+            return rs;
+        }
+        public FolderTreeNode ReadFile(long FirstByte, long Parent, int level)
+        {
+            FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             long realPOS = 0;
             long soDu = 0;
             long sectorPOS = 0;
-            int check = 0;  
-            if (a[0x06] == 0x7E || a[0x0E] == 0x0F)
-            {
-                realPOS = pos1;
-                soDu = realPOS / 512;
-                sectorPOS = soDu * 512;
-                fs.Seek(sectorPOS, SeekOrigin.Begin);
-                fs.Read(a, 0, 512);
-                fs.Seek(pos1, SeekOrigin.Begin);
-                fs.Read(a, 0, 32);
-                while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
-                {
-                    check = 1;
-                    pos1 -= 32;
-                    realPOS = pos1;
-                    soDu = realPOS / 512;
-                    sectorPOS = soDu * 512;
-                    fs.Seek(sectorPOS, SeekOrigin.Begin);
-                    fs.Read(a, 0, 512);
-                    fs.Seek(pos1 , SeekOrigin.Begin);
-                    fs.Read(a, 0, 32);
-                }
-                
-                for (long i = pos2 - 32; i > pos1; i -= 32)
-                {
-                    check = 1;
-                    realPOS = i;
-                    soDu = realPOS / 512;
-                    sectorPOS = soDu * 512;
-                    fs.Seek(sectorPOS, SeekOrigin.Begin);
-                    fs.Read(a, 0, 512);
-                    fs.Seek(i, SeekOrigin.Begin);
-                    fs.Read(a, 0, 32);
-                    name += subEntryName(a);
-                }
-                if(check == 0)
-                {
-                    realPOS = offset;
-                    soDu = realPOS / 512;
-                    sectorPOS = soDu * 512;
-                    fs.Seek(sectorPOS, SeekOrigin.Begin);
-                    fs.Read(a, 0, 512);
-                    fs.Seek(offset, SeekOrigin.Begin);
-                    fs.Read(a, 0, 32);
-                    name += mainEntryName(a);
-                }
-            }
-            else
-            {
-                realPOS = offset;
-                soDu = realPOS / 512;
-                sectorPOS = soDu * 512;
-                fs.Seek(sectorPOS, SeekOrigin.Begin);
-                fs.Read(a, 0, 512);
-                fs.Seek(offset, SeekOrigin.Begin);
-                fs.Read(a, 0, 32);
-                name += mainEntryName(a);
-            }
-            realPOS = offset;
+            long bytesPerCluster = bytesPerSector * sectorsPerCluster;
+            byte[] a = new byte[bytesPerCluster];
+            FileInfomation FileTemp = new FileInfomation(FirstByte);
+            //get the sector--------------------------------
+
+            realPOS = FirstByte;
             soDu = realPOS / 512;
             sectorPOS = soDu * 512;
             fs.Seek(sectorPOS, SeekOrigin.Begin);
             fs.Read(a, 0, 512);
-            fs.Seek(offset, SeekOrigin.Begin);
+            fs.Seek(realPOS, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
-            time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10]);
-            s = size(a[0x1C], a[0x1D], a[0x1E], a[0x1F]);
-            cluster = Function.littleEndian(a, 0x1A, 2);
 
-            FileInfomation FileTemp = new FileInfomation(fs.Position - 32);
-            FileTemp.FileName = name;
-            if(Parent == 0) FileTemp.IsRoot = true;
+
+            fs.Seek(FirstByte, SeekOrigin.Begin);
+            fs.Read(a, 0, 32);
+            DateTime time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10],FirstByte);
+            long s = size(a[0x1C], a[0x1D], a[0x1E], a[0x1F]);
+            long cluster = Function.littleEndian(a, 0x1A, 2);
+
+            if (Parent == 0) FileTemp.IsRoot = true;
             else FileTemp.IsRoot = false;
             FileTemp.IDParentFolder = Parent;
             if (a[0x0B] == 0x01) FileTemp.IsReadOnly = true;
@@ -387,42 +340,53 @@ namespace FileExplorer
             FileTemp.CreatedTime = time;
             FileTemp.Size = s;
 
-            long bytesPerCluster = bytesPerSector * sectorsPerCluster;
             if (FileTemp.IsArchive == true)
             {
                 FileTemp.Type = 0;
-                if(FileTemp.Size % bytesPerCluster != 0)
+                if (FileTemp.Size % bytesPerCluster != 0)
                     FileTemp.SizeOnDisk = (FileTemp.Size / bytesPerCluster + 1) * bytesPerCluster;
                 else FileTemp.SizeOnDisk = (FileTemp.Size / bytesPerCluster) * bytesPerCluster;
             }
             else FileTemp.Type = 1;
+            fs.Close();
+            //Tim cach doc ten
+            fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            FileTemp.FileName = readName(FirstByte);
+            fs.Close();
             //Children-------------------------
+            fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             List<long> Children = new List<long>();
             if (FileTemp.IsDirectory == true)
             {
-                long FirstSectorInRDET = 0;
-                FirstSectorInRDET += this.sectorsBeforeFAT;
-                FirstSectorInRDET += this.sectorsPerFAT * this.numberOfFATs;
-                offset = (FirstSectorInRDET + (cluster - 2) * sectorsPerCluster) * bytesPerSector + firstSectorOfPartition;
-                x = offset / bytesPerSector;
-                y = x * bytesPerSector;
-
-
-                fs.Seek(y, SeekOrigin.Begin);
-                fs.Read(a, 0, 64);
-                //fs.Read(a, 0, 32);
-
-                while (a[0x00] != 0x00)
+                long[] clusterArr = new long[10000];
+                long dem = 0;
+                long clusterData = cluster; //cluster;
+                while (clusterData > 0)
                 {
-                    offset = fs.Position + 32;
-                    x = offset / bytesPerSector;
-                    y = x * bytesPerSector;
-                    z = (int)(offset - y);
-                    fs.Seek(y, SeekOrigin.Begin);
-                    fs.Read(a, 0, z);
-                    fs.Seek(offset - 32, SeekOrigin.Begin);
-                    fs.Read(a, 0, 32);
-                    if (a[0x00] != 0xE5 && a[0x0B] != 0x0F && a[0x00] != 0x00) Children.Add(fs.Position - 32);
+                    clusterArr[dem] = clusterData;
+                    dem++;
+                    clusterData = nextClusterFromFAT(clusterData);
+                }
+                for (int i = 1; i < dem; i++)
+                {
+                    FAT.Add(clusterArr[i], clusterArr[i - 1]);
+                }
+                for (long i = 0; i < dem; i++)
+                {
+                    fs.Seek(getFirstByteOfCluster(clusterArr[i]), SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
+                    if (i == 0)
+                    {
+                        fs.Seek(getFirstByteOfCluster(clusterArr[i]) + 64, SeekOrigin.Begin);
+                    }
+                    long count = bytesPerCluster;
+                    while(count > 0)
+                    {
+                        fs.Read(a, 0, 32);
+                        if (a[0] == 0x00) break;
+                        if (a[0x00] != 0xE5 && a[0x0B] != 0x0F && a[0x00] != 0x00) Children.Add(fs.Position - 32);
+                        count -= 32;
+                    }
                 }
             }
             //return
@@ -432,7 +396,153 @@ namespace FileExplorer
             fs.Close();
             return res;
         }
-       
+        public string readName(long FirstByte)
+        {
+            FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            long bytesPerCluster = bytesPerSector * sectorsPerCluster;
+            long firstByteOfDATA = (sectorsBeforeFAT + sectorsPerFAT * numberOfFATs) * bytesPerSector + firstSectorOfPartition;
+            long currentCluster = (FirstByte - firstByteOfDATA) / bytesPerCluster + 2;
+            long clusterBefore = -1;
+            if(FAT.ContainsKey(currentCluster))
+            {
+                clusterBefore = FAT[currentCluster];
+            }
+            string name = "";
+            long realPOS = 0;
+            long soDu = 0;
+            long sectorPOS = 0;
+            byte[] a = new byte[512];
+            //Agorithm
+            long pos1 = FirstByte - 32;
+            realPOS = pos1;
+            soDu = realPOS / 512;
+            sectorPOS = soDu * 512;
+            fs.Seek(sectorPOS, SeekOrigin.Begin);
+            fs.Read(a, 0, 512);
+            fs.Seek(pos1, SeekOrigin.Begin);
+            fs.Read(a, 0, 32);
+            int check = 0;
+            if (a[0] != 0 || a[0x0B] == 0x0F) check = 1;
+            if (check == 0) return mainEntryName(a);
+            else
+            {
+                check = 0;
+                pos1 = FirstByte - 32;
+                long pos2 = FirstByte;
+                realPOS = pos1;
+                soDu = realPOS / 512;
+                sectorPOS = soDu * 512;
+                fs.Seek(sectorPOS, SeekOrigin.Begin);
+                fs.Read(a, 0, 512);
+                fs.Seek(pos1, SeekOrigin.Begin);
+                fs.Read(a, 0, 32);
+                int checkEnough = 0;
+                while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
+                {
+                    check = 1;
+                    pos1 -= 32;
+                    realPOS = pos1;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
+                    fs.Seek(pos1, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    if(a[0x0B] == 0x10 || a[0x0B] == 0x20)
+                    {
+                        checkEnough = 1; 
+                    }
+                }
+                for (long i = pos2 - 32; i > pos1; i -= 32)
+                {
+                    check = 1;
+                    realPOS = i;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
+                    fs.Seek(i, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    name += subEntryName(a);
+                }
+                if(clusterBefore > 0 && checkEnough == 0)
+                {
+                    pos1 = getFirstByteOfCluster(clusterBefore) + bytesPerCluster - 32;
+                    pos2 = getFirstByteOfCluster(clusterBefore) + bytesPerCluster;
+                    realPOS = pos1;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
+                    fs.Seek(pos1, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    while (a[0x0B] == 0x0F && a[0x00] != 0xE5 && a[0x00] != 0x00)
+                    {
+                        check = 1;
+                        pos1 -= 32;
+                        realPOS = pos1;
+                        soDu = realPOS / 512;
+                        sectorPOS = soDu * 512;
+                        fs.Seek(sectorPOS, SeekOrigin.Begin);
+                        fs.Read(a, 0, 512);
+                        fs.Seek(pos1, SeekOrigin.Begin);
+                        fs.Read(a, 0, 32);
+                        if (a[0x0B] == 0x10 || a[0x0B] == 0x20)
+                        {
+                            checkEnough = 1;
+                        }
+                    }
+                    for (long i = pos2 - 32; i > pos1; i -= 32)
+                    {
+                        check = 1;
+                        realPOS = i;
+                        soDu = realPOS / 512;
+                        sectorPOS = soDu * 512;
+                        fs.Seek(sectorPOS, SeekOrigin.Begin);
+                        fs.Read(a, 0, 512);
+                        fs.Seek(i, SeekOrigin.Begin);
+                        fs.Read(a, 0, 32);
+                        name += subEntryName(a);
+                    }
+                }
+                if (check == 0)
+                {
+                    realPOS = FirstByte;
+                    soDu = realPOS / 512;
+                    sectorPOS = soDu * 512;
+                    fs.Seek(sectorPOS, SeekOrigin.Begin);
+                    fs.Read(a, 0, 512);
+                    fs.Seek(FirstByte, SeekOrigin.Begin);
+                    fs.Read(a, 0, 32);
+                    name += mainEntryName(a);
+                }
+            }
+            return name;
+        }
+        public long nextClusterFromFAT(long cluster)
+        {
+            long firstByteOfFAT = sectorsBeforeFAT * bytesPerSector + firstSectorOfPartition;
+            long currentCluster = firstByteOfFAT + cluster * 4;
+            FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            long realPOS = 0;
+            long soDu = 0;
+            long sectorPOS = 0;
+            byte[] arr = new byte[512];
+            realPOS = currentCluster;
+            soDu = realPOS / 512;
+            sectorPOS = soDu * 512;
+            fs.Seek(sectorPOS, SeekOrigin.Begin);
+            fs.Read(arr, 0, 512);
+            fs.Seek(currentCluster, SeekOrigin.Begin);
+            fs.Read(arr, 0, 4);
+            if (arr[0] == 0xFF || arr[0] == 0xF8) return -1;
+            return Function.littleEndian(arr, 0, 4);
+        }
+        public long getFirstByteOfCluster(long cluster)
+        {
+            long firstByteOfDATA = (sectorsBeforeFAT + sectorsPerFAT * numberOfFATs) * bytesPerSector + firstSectorOfPartition;
+            return firstByteOfDATA + (cluster - begginCluster) * sectorsPerCluster * bytesPerSector;
+        }
     }
-   
+
 }
