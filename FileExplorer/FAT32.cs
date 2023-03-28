@@ -284,8 +284,8 @@ namespace FileExplorer
                     count -= 128;
                 }
                 fs.Read(a, 0, 32);
-                //count -= 32;
-                while (a[0] != 0 && a[0] != 0x2E && count > 0)
+                count -= 32;
+                while (a[0] != 0 && a[0] != 0x2E && count + 32 > 0)
                 {
                     if (a[0x00] != 0xE5 && a[0x0B] != 0x0F)
                     {
@@ -394,11 +394,12 @@ namespace FileExplorer
                 {
                     fs.Seek(getFirstByteOfCluster(clusterArr[i]), SeekOrigin.Begin);
                     fs.Read(a, 0, 512);
+                    long count = bytesPerCluster;
                     if (i == 0)
                     {
                         fs.Seek(getFirstByteOfCluster(clusterArr[i]) + 64, SeekOrigin.Begin);
+                        count -= 64;
                     }
-                    long count = bytesPerCluster;
                     while(count > 0)
                     {
                         fs.Read(a, 0, 32);
