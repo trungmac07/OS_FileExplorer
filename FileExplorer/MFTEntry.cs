@@ -145,6 +145,8 @@ namespace FileExplorer
                 long sizeOfContent      =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.SIZE_OF_CONTENT,     (int) LengthAttributeHeader.SIZE_OF_CONTENT);
                 long positionOfContent  =   Function.littleEndian(Info,  position + (int)OffsetAttributeHeader.POSITION_OF_CONTENT, (int) LengthAttributeHeader.POSITION_OF_CONTENT) + firstByte;
 
+                if(sizeOfAttribute >= 1024)
+                    sizeOfAttribute = Function.littleEndian(Info, position + (int)OffsetAttributeHeader.SIZE_OF_ATTRIBUTE, 2);
                 
 
                 if (attributeType == (int) AttributeType.STANDARD_INFO)

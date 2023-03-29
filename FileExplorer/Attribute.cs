@@ -109,8 +109,6 @@ namespace FileExplorer
                 String create = CreateTime().ToLocalTime().ToString("dd/MM/yyyy - HH:mm:ss");
                 String modify = ModifiedTime().ToLocalTime().ToString("dd/MM/yyyy - HH:mm:ss");
 
-                Console.WriteLine("Created: " + create);
-                Console.WriteLine("Modified: " + modify);
             }
         }
 
@@ -195,7 +193,7 @@ namespace FileExplorer
             bool isZoneIdentifier(long firstByte, byte[] info)
             {
                 int nameLength = info[firstByte + 0x09];
-                Console.WriteLine("length: " + nameLength);
+   
                 if (nameLength != 0)
                 {
                     return true;

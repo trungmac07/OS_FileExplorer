@@ -142,7 +142,7 @@ namespace FileExplorer
 
 
             long numberOfEntries = readNumberOfEntries();
-            Console.WriteLine("NUMBEROFENTRIES: " + numberOfEntries);
+            //Console.WriteLine("NUMBEROFENTRIES: " + numberOfEntries);
             for (long i = 0; i < numberOfEntries; ++i)
             {
                 MFTEntry mFTEntry = new MFTEntry(beginByte, BytesPerEntry, CurrentDisk);

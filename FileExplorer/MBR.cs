@@ -32,7 +32,7 @@ namespace FileExplorer
             string st = "";
             for (int i = offset * 2; i < offset * 2 + numberOfByte * 2; i++)
                 st = st + byteString[i];
-            Console.WriteLine(st);
+           Console.WriteLine(st);
             for (int i = 0; i <  numberOfByte ; i ++)
             {
                 s = byteString[(offset + i) * 2 + 1] + s;

@@ -98,7 +98,7 @@ namespace FileExplorer
                     clearFolderTree();
                     FAT32 a = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
                     FolderTree = a.readRoot();
-                    Console.WriteLine(FolderTree.ListOfRoots.Count);
+                  
                
                 }
                 else if (partitionType == "NTFS")
@@ -228,7 +228,7 @@ namespace FileExplorer
                 HardDrive hd = new HardDrive();
                 hd.Model = wmi_HD["Model"].ToString();
                 hd.Type = wmi_HD["InterfaceType"].ToString();
-                Console.WriteLine(hd.Type);
+       
                 if (hd.Type == "USB")
                 {
                     string x = wmi_HD["DeviceId"].ToString();
@@ -671,8 +671,6 @@ namespace FileExplorer
                 ex.Remove(ex.Length - 1, 1);
 
            
-            Console.WriteLine(fileName + " -> " + ex + " -> " + ex.TrimEnd().Length);
-            Console.WriteLine("______________________________");
 
 
 
