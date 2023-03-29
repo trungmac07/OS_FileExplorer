@@ -11,7 +11,29 @@ namespace FileExplorer
     {
         public class MFTEntry
         {
+            //Entry byte array
+            private byte[] Info { get; set; }
+            //First byte of entry
+            private long FirstByte { get; set; }    
+      
+            
+
+            //In MFT Entry header
+            public string Sign { get; }
+            public long BeginFirstAttribute { get; }
+            public long Type { get; }
+            public long BytesUsed { get; }
+            public long NumberOfBytes { get; }
+            public long ID { get; }
+
+
+            //List of attributes 
+            List<Attribute> ListOfAttributes { get; } = new List<Attribute>();
            
+
+
+
+
             //Offset and length for reading MFTEntry header
            
             public enum OffsetMFTEntryHeader
@@ -65,25 +87,6 @@ namespace FileExplorer
             }
 
 
-            //Entry byte array
-            private byte[] Info { get; set; }
-            //First byte of entry
-            private long FirstByte { get; set; }    
-      
-            
-
-            //In MFT Entry header
-            public string Sign { get; }
-            public long BeginFirstAttribute { get; }
-            public long Type { get; }
-            public long BytesUsed { get; }
-            public long NumberOfBytes { get; }
-            public long ID { get; }
-
-            //List of attributes 
-            List<Attribute> ListOfAttributes { get; } = new List<Attribute>();
-
-
             //Constructor MFTEntry 
             public MFTEntry(long firstByte, long bytesPerEntry, int currentDisk) 
             {
@@ -121,22 +124,18 @@ namespace FileExplorer
      
                 while((tmp = readAttributeHeader(ref firstByte)) != null)
                 {
-                    if (firstByte + FirstByte >= 4296277792)
-                        Console.WriteLine("");
                     ListOfAttributes.Add(tmp);
-                 
                 }
-                
             }
+
+
             public Attribute readAttributeHeader(ref long firstByte)
             {
-                Console.WriteLine("FB " + (long)(firstByte + FirstByte));   
                 Attribute res = null;
                 int position = (int) firstByte;
                 
                 byte attributeType = Info[position + (int) OffsetAttributeHeader.ATTRIBUTE_TYPE];
 
-                Console.WriteLine("TYPE:" + attributeType);
                 if (attributeType == (int)AttributeType.END || attributeType == (int)AttributeType.EMPTY)
                     return null;
 
@@ -149,19 +148,18 @@ namespace FileExplorer
                     sizeOfAttribute = Function.littleEndian(Info, position + (int)OffsetAttributeHeader.SIZE_OF_ATTRIBUTE, 2);
                 
 
-                if (attributeType == (int) AttributeType.STANDARD_INFO)
+                if (attributeType       ==  (int) AttributeType.STANDARD_INFO)
                     res = new StandardInfoAttribute(positionOfContent, sizeOfAttribute, resident, Info);
-                else if (attributeType == (int) AttributeType.FILE_NAME)
+                else if (attributeType  ==  (int) AttributeType.FILE_NAME)
                     res = new FileNameAttribute(positionOfContent, sizeOfAttribute, resident, Info);
-                else if (attributeType == (int) AttributeType.DATA)
+                else if (attributeType  ==  (int) AttributeType.DATA)
                     res = new DataAttribute(firstByte, sizeOfAttribute, resident, Info);
-                else if (attributeType == (int) AttributeType.END || attributeType == (int)AttributeType.EMPTY)
+                else if (attributeType  ==  (int) AttributeType.END     ||  attributeType == (int)AttributeType.EMPTY)
                     res = null;
                 else 
                     res = new OtherAttribute(0,0,0,Info);
-                firstByte += sizeOfAttribute;
 
-                
+                firstByte += sizeOfAttribute;
 
                 return res;
 

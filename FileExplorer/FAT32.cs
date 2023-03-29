@@ -260,14 +260,14 @@ namespace FileExplorer
             FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             Tree rs = new Tree();
             //Get list of cluster need to use
-            long[] clusterArr = new long[4200000];
+            int[] clusterArr = new int[4200000];
             long dem = 0;
             long clusterData = 2;
             byte[] a = new byte[this.bytesPerSector];
             while (clusterData > 0)
             {
                 //2 - 473 - 875
-                clusterArr[dem] = clusterData;
+                clusterArr[dem] = (int)clusterData;
                 dem++;
                 clusterData = nextClusterFromFAT(clusterData);
             }
@@ -389,12 +389,12 @@ namespace FileExplorer
             List<long> Children = new List<long>();
             if (FileTemp.IsDirectory == true)
             {
-                long[] clusterArr = new long[4200000];
+                int[] clusterArr = new int[4200000];
                 long dem = 0;
                 long clusterData = cluster; //cluster;
                 while (clusterData > 0)
                 {
-                    clusterArr[dem] = clusterData;
+                    clusterArr[dem] = (int)clusterData;
                     dem++;
                     clusterData = nextClusterFromFAT(clusterData);
                 }

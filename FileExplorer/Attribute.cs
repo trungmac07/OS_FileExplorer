@@ -11,6 +11,7 @@ namespace FileExplorer
 
     public partial class NTFS
     {
+        //abstract
         public abstract class Attribute
         {
             public long CurrentDisk { get; }
@@ -30,7 +31,7 @@ namespace FileExplorer
 
         }
 
-
+        //derived
         public class StandardInfoAttribute : Attribute
         {
             private long createdTime;
@@ -111,8 +112,6 @@ namespace FileExplorer
 
             }
         }
-
-
         public class FileNameAttribute : Attribute
         {
             private long IDParentFolder;
@@ -228,7 +227,6 @@ namespace FileExplorer
                 //Console.WriteLine("Size: " + sizeOnDisk);
             }
         }
-
         public class OtherAttribute : Attribute
         {
             public OtherAttribute(long firstByte, long size, long resident, byte[] info) : base(firstByte, size, resident, info)

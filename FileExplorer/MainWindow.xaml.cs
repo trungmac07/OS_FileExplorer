@@ -375,7 +375,6 @@ namespace FileExplorer
                 button.MouseDoubleClick += (sender, e) => expandButtonClick(expand, e, image);
 
 
-
             TextBlock textBlock = new TextBlock();
             textBlock.Text = node.Info.FileName;
             textBlock.Margin = new Thickness(12, 0, 0, 0);

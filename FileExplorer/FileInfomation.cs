@@ -21,7 +21,7 @@ namespace FileExplorer
         public DateTime LastModifiedTime { get; set;}
         public long Size { get; set;}
         public long SizeOnDisk { get; set;}
-        public int Type { get; set;} //0-file/ 1-folder
+        public int Type { get; set;} 
 
         public FileInfomation(NTFS.MFTEntry e)
         {

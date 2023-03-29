@@ -47,8 +47,9 @@ namespace FileExplorer
 
 
     }
-    public class FolderTreeNode : IComparable<FolderTreeNode>
+    public class FolderTreeNode
     {
+        
         public List<long> Children { get; set; } = null;
         public FileInfomation Info { get; set; } = null;
         public int Level { get; set; } = 0;
@@ -76,30 +77,7 @@ namespace FileExplorer
             Console.WriteLine();
         }
 
-        public int CompareTo(FolderTreeNode other)
-        {
-            if (this.Info.IsSystem ^ other.Info.IsSystem == true)
-            {
-                if (this.Info.IsSystem == true)
-                    return (int)2e9;
-                else
-                    return (int)-2e9;
-            }
-            else
-            {
-                if (this.Info.FileName == other.Info.FileName)
-                    return this.Info.ID.CompareTo(other.Info.ID);
-                else
-                    return this.Info.FileName.CompareTo(other.Info.FileName);
-
-            }
-
-        }
-
-        public int Compare(FolderTreeNode node2)
-        {
-            return this.CompareTo(node2);
-        }
+       
 
     }
 }

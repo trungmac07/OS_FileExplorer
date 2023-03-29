@@ -88,7 +88,6 @@ namespace FileExplorer
                 return;
             FolderTreeNode newNode = new FolderTreeNode(src);
 
-
             //is root
             if (src.IsRoot == true)
             {
@@ -124,7 +123,7 @@ namespace FileExplorer
             if (src.IDParentFolder != 5)
                 ListOfFiles[src.ID].Level = ListOfFiles[src.IDParentFolder].Level + 1;
 
-            //update level
+            //update level of children
             foreach (var child in ListOfFiles[src.ID].Children)
             {
                 ListOfFiles[child].Level = ListOfFiles[src.ID].Level + 1;
