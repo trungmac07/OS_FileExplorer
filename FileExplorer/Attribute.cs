@@ -83,13 +83,13 @@ namespace FileExplorer
 
             public DateTime CreateTime()
             {
-                DateTime time = new DateTime(createdTime + baseTime.Ticks);
+                DateTime time = new DateTime(createdTime + baseTime.Ticks).ToLocalTime();
                 return time;
             }
 
             public DateTime ModifiedTime()
             {
-                DateTime time = new DateTime(modifiedTime + baseTime.Ticks);
+                DateTime time = new DateTime(modifiedTime + baseTime.Ticks).ToLocalTime();
                 return time;
                 /* String test = time.ToLocalTime().ToString("dd/MM/yyyy - HH:mm:ss");
                  return test;*/

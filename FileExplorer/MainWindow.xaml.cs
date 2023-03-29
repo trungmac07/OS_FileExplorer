@@ -485,8 +485,8 @@ namespace FileExplorer
             MoreInfoButton.Tag = id;
             Attribute.Text = "Attributes";
 
-            DateCreated.Text = "Created Date: " + file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
-            TimeCreated.Text = "Created Time: " + file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
+            DateCreated.Text = "Created Date: " + file.CreatedTime.ToString("dd/MM/yyyy");
+            TimeCreated.Text = "Created Time: " + file.CreatedTime.ToString("HH:mm:ss");
 
             IsHidden.Content = "Is Hidden";
             IsReadOnly.Content = "Is ReadOnly";

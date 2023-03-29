@@ -102,11 +102,11 @@ namespace FileExplorer
             FileName.Text = file.FileName;
 
 
-            DateCreated.Text = file.CreatedTime.ToLocalTime().ToString("dd/MM/yyyy");
-            TimeCreated.Text = file.CreatedTime.ToLocalTime().ToString("HH:mm:ss");
+            DateCreated.Text = file.CreatedTime.ToString("dd/MM/yyyy");
+            TimeCreated.Text = file.CreatedTime.ToString("HH:mm:ss");
 
-            LastModifyDate.Text = file.LastModifiedTime.ToLocalTime().ToString("dd/MM/yyyy");
-            LastModifyTime.Text = file.LastModifiedTime.ToLocalTime().ToString("HH:mm:ss");
+            LastModifyDate.Text = file.LastModifiedTime.ToString("dd/MM/yyyy");
+            LastModifyTime.Text = file.LastModifiedTime.ToString("HH:mm:ss");
 
 
             IsHidden.IsChecked = file.IsHidden;
