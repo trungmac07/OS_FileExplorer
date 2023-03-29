@@ -97,14 +97,14 @@ namespace FileExplorer
             int index = 0;
             for (int i = 0x01; i < 0x01 + 10; i++)
             {
-                if (arr[i] == 0xFF) break;
+                if (arr[i] == 0xFF) goto end;
                 a[index] = arr[i];
                 index++;
             }
 
             for (int i = 0x0E; i < 0x0E + 12; i++)
             {
-                if (arr[i] == 0xFF) break;
+                if (arr[i] == 0xFF) goto end;
                 a[index] = arr[i];
                 index++;
             }
@@ -112,12 +112,16 @@ namespace FileExplorer
 
             for (int i = 0x1C; i < 0x1C + 4; i++)
             {
-                if (arr[i] == 0xFF) break;
+                if (arr[i] == 0xFF) goto end;
                 a[index] = arr[i];
                 index++;
             }
 
-            s = Encoding.Unicode.GetString(a,0,index);
+            s = Encoding.Unicode.GetString(a, 0, index);
+            return s;
+
+            end:
+            s = Encoding.Unicode.GetString(a, 0, index-2);
             return s;
         }
         public string mainEntryName(byte[] arr)

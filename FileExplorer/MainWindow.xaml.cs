@@ -602,7 +602,6 @@ namespace FileExplorer
             {"pptx",new Uri("/resources/icons/ppt.png",UriKind.RelativeOrAbsolute) },
             {"txt",new Uri("/resources/icons/txt.png",UriKind.RelativeOrAbsolute) },
             {"xml",new Uri("/resources/icons/xml.png",UriKind.RelativeOrAbsolute) },
-
         };
 
         public static FileStream stream = null;
@@ -667,8 +666,17 @@ namespace FileExplorer
             {
                 ex += fileName[i];
             }
-            Console.WriteLine(fileName + " -> "+ex + " -> "+ex.TrimEnd().Length);
-            return ex;
+            
+            if(ex[ex.Length - 1] < '\u0031' || ex[ex.Length - 1] > '\u007a')
+                ex.Remove(ex.Length - 1, 1);
+
+           
+            Console.WriteLine(fileName + " -> " + ex + " -> " + ex.TrimEnd().Length);
+            Console.WriteLine("______________________________");
+
+
+
+            return ex.TrimEnd();
         }
 
     }
