@@ -99,8 +99,7 @@ namespace FileExplorer
                     FAT32 a = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
                     FolderTree = a.readRoot();
                     Console.WriteLine(FolderTree.ListOfRoots.Count);
-                    renderRoots();
-
+               
                 }
                 else if (partitionType == "NTFS")
                 {
@@ -392,6 +391,7 @@ namespace FileExplorer
             {
                 string ex = Function.getFilenameExtension(node.Info.FileName);
 
+
                 if (Function.extension.ContainsKey(ex))
                     image.Source = new BitmapImage(Function.extension[ex]);
                 else
@@ -426,6 +426,7 @@ namespace FileExplorer
             stackPanel.Name = "n" + node.Info.ID;
             stackPanel.Children.Add(button);
 
+            
             this.RegisterName(stackPanel.Name, stackPanel);
 
             area.Children.Add(stackPanel);
@@ -435,7 +436,8 @@ namespace FileExplorer
         private void renderRoots()
         {
             FolderTreeContain.Children.Clear();
-            foreach (var root in FolderTree.getRootsSortedByName())
+            var rootList = FolderTree.getRootsSortedByName();
+            foreach (var root in rootList)
             {
                 renderANode(root.Value, FolderTreeContain);
             }
@@ -665,7 +667,7 @@ namespace FileExplorer
             {
                 ex += fileName[i];
             }
-            Console.WriteLine(ex);
+            Console.WriteLine(fileName + " -> "+ex + " -> "+ex.TrimEnd().Length);
             return ex;
         }
 

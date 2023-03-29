@@ -38,7 +38,7 @@ namespace FileExplorer
         public long sectorsPerFAT { get; set; }
         public long begginCluster { get; set; }
         public string diskPath { get; set; }
-        public Dictionary<long ,long > FAT {get; set;}
+        public Dictionary<long, long> FAT { get; set; }
         public FAT32(long firstSector, int CurrentDisk)
         {
             diskPath = @"\\.\PhysicalDrive" + CurrentDisk.ToString();
@@ -57,7 +57,7 @@ namespace FileExplorer
             FAT = new Dictionary<long, long>();
             fs.Close();
         }
-        
+
         public string NameDisk()
         {
             FileStream fs = new FileStream(this.diskPath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -117,7 +117,7 @@ namespace FileExplorer
                 index++;
             }
 
-            s = Encoding.Unicode.GetString(a);
+            s = Encoding.Unicode.GetString(a,0,index);
             return s;
         }
         public string mainEntryName(byte[] arr)
@@ -149,7 +149,7 @@ namespace FileExplorer
             return s;
         }
 
-        public DateTime createTime(byte a, byte b, byte c, byte d, byte e,long pos)
+        public DateTime createTime(byte a, byte b, byte c, byte d, byte e, long pos)
         {
 
             string s1 = Convert.ToString(a, 2);
@@ -197,7 +197,7 @@ namespace FileExplorer
             return temp;
 
         }
-        public DateTime createDate(byte a, byte b,byte c, byte d)
+        public DateTime createDate(byte a, byte b, byte c, byte d)
         {
 
             string s1 = Convert.ToString(a, 2);
@@ -214,9 +214,9 @@ namespace FileExplorer
 
             string s = s1 + s2;
 
-            
-            int gio = 0,phut,giay;
-           
+
+            int gio = 0, phut, giay;
+
             gio = Convert.ToInt32(s.Substring(0, 5), 2);
             phut = Convert.ToInt32(s.Substring(5, 6), 2);
             giay = Convert.ToInt32(s.Substring(11, 5), 2) * 2;
@@ -241,7 +241,7 @@ namespace FileExplorer
             ngay = Convert.ToInt32(s.Substring(11, 5), 2);
             DateTime DATE = new DateTime(nam, thang, ngay, gio, phut, giay);
             return DATE;
-  
+
         }
         public long size(byte a, byte b, byte c, byte d)
         {
@@ -265,14 +265,14 @@ namespace FileExplorer
                 dem++;
                 clusterData = nextClusterFromFAT(clusterData);
             }
-            for(int i = 1; i < dem; i++)
+            for (int i = 1; i < dem; i++)
             {
                 FAT.Add(clusterArr[i], clusterArr[i - 1]);
             }
             //
             int level = 0;
             long pos = 0;
-            for(long i = 0; i < dem; i++)
+            for (long i = 0; i < dem; i++)
             {
                 fs.Seek(getFirstByteOfCluster(clusterArr[i]), SeekOrigin.Begin);
                 fs.Read(a, 0, 512);
@@ -326,8 +326,8 @@ namespace FileExplorer
             //get the sector--------------------------------
 
             realPOS = FirstByte;
-            soDu = realPOS / 512;
-            sectorPOS = soDu * 512;
+            soDu = realPOS / bytesPerSector;
+            sectorPOS = soDu * bytesPerSector;
             fs.Seek(sectorPOS, SeekOrigin.Begin);
             fs.Read(a, 0, 512);
             fs.Seek(realPOS, SeekOrigin.Begin);
@@ -336,7 +336,7 @@ namespace FileExplorer
 
             fs.Seek(FirstByte, SeekOrigin.Begin);
             fs.Read(a, 0, 32);
-            DateTime time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10],FirstByte);
+            DateTime time = createTime(a[0x0F], a[0x0E], a[0x0D], a[0x11], a[0x10], FirstByte);
             DateTime time2 = createDate(a[0x17], a[0x16], a[0x19], a[0x18]);
             long s = size(a[0x1C], a[0x1D], a[0x1E], a[0x1F]);
             long cluster = Function.littleEndian(a, 0x1A, 2);
@@ -377,7 +377,7 @@ namespace FileExplorer
             List<long> Children = new List<long>();
             if (FileTemp.IsDirectory == true)
             {
-                long[] clusterArr = new long[10000];
+                long[] clusterArr = new long[1000000];
                 long dem = 0;
                 long clusterData = cluster; //cluster;
                 while (clusterData > 0)
@@ -400,7 +400,9 @@ namespace FileExplorer
                         fs.Seek(getFirstByteOfCluster(clusterArr[i]) + 64, SeekOrigin.Begin);
                         count -= 64;
                     }
-                    while(count > 0)
+                    else
+                        fs.Seek(getFirstByteOfCluster(clusterArr[i]), SeekOrigin.Begin);
+                    while (count > 32)
                     {
                         fs.Read(a, 0, 32);
                         if (a[0] == 0x00) break;
@@ -423,7 +425,7 @@ namespace FileExplorer
             long firstByteOfDATA = (sectorsBeforeFAT + sectorsPerFAT * numberOfFATs) * bytesPerSector + firstSectorOfPartition;
             long currentCluster = (FirstByte - firstByteOfDATA) / bytesPerCluster + 2;
             long clusterBefore = -1;
-            if(FAT.ContainsKey(currentCluster))
+            if (FAT.ContainsKey(currentCluster))
             {
                 clusterBefore = FAT[currentCluster];
             }
@@ -470,9 +472,9 @@ namespace FileExplorer
                     fs.Read(a, 0, 512);
                     fs.Seek(pos1, SeekOrigin.Begin);
                     fs.Read(a, 0, 32);
-                    if(a[0x0B] == 0x10 || a[0x0B] == 0x20)
+                    if (a[0x0B] == 0x10 || a[0x0B] == 0x20)
                     {
-                        checkEnough = 1; 
+                        checkEnough = 1;
                     }
                 }
                 for (long i = pos2 - 32; i > pos1; i -= 32)

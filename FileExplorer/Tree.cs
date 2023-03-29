@@ -11,7 +11,7 @@ namespace FileExplorer
         public long IsNTFS { get; set; } = 0;
         public Dictionary<long, FolderTreeNode> ListOfRoots { get; set; }
         public Dictionary<long, FolderTreeNode> ListOfFiles { get; set; }
-
+      
         public Tree()
         {
             ListOfRoots = new Dictionary<long, FolderTreeNode>();
