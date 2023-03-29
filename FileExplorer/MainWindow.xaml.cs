@@ -89,33 +89,13 @@ namespace FileExplorer
                 isPartitionClicked = true;
                 currentPartition = index;
                 string partitionType = mBR.getPartitionType(index);
-                long head = 0, sector = 0, cylinder = 0;
-                FileImage.Source = new BitmapImage(new Uri(@"/resources/compact-disk.png", UriKind.RelativeOrAbsolute));
-                PartitionType.Text = partitionType;
-                FileName.Text = "PARTITION " + index.ToString();
-                FileSize.Text = "First Sector(LBA): " + mBR.getFirstSectorLBA(index);
-                mBR.getStartSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
-                DateCreated.Text = "Begin address(CHS): (" + head + "," + sector + "," + cylinder + ")";
-                mBR.getLastSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
-                TimeCreated.Text = "End address(CHS): (" + head + "," + sector + "," + cylinder + ")";
-                Attribute.Text = "Status";
-                IsHidden.Content = "Bootable";
-                IsReadOnly.Content = "Unbootable";
-                if (mBR.getPartitionStatus(index) == "bootable")
-                {
-                    IsHidden.IsChecked = true;
-                    IsReadOnly.IsChecked = false;
-                }
-                else if (mBR.getPartitionStatus(index) == "unbootable")
-                {
-                    IsHidden.IsChecked = false;
-                    IsReadOnly.IsChecked = true;
-                }
+
+                printMBRInfo(index);
 
                 //render tree and chart for used/total size
                 if (partitionType == "FAT32")
                 {
-                     clearFolderTree();
+                    clearFolderTree();
                     FAT32 a = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
                     FolderTree = a.readRoot();
                     Console.WriteLine(FolderTree.ListOfRoots.Count);
@@ -141,6 +121,32 @@ namespace FileExplorer
 
             };
             PartitionArea.Children.Add(button);
+        }
+
+        void printMBRInfo(int index)
+        {
+            long head = 0, sector = 0, cylinder = 0;
+            FileImage.Source = new BitmapImage(new Uri(@"/resources/compact-disk.png", UriKind.RelativeOrAbsolute));
+            PartitionType.Text = mBR.getPartitionType(index);
+            FileName.Text = "PARTITION " + index.ToString();
+            FileSize.Text = "First Sector(LBA): " + mBR.getFirstSectorLBA(index);
+            mBR.getStartSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
+            DateCreated.Text = "Begin address(CHS): (" + head + "," + sector + "," + cylinder + ")";
+            mBR.getLastSectorInPartitionCHS(index, ref head, ref sector, ref cylinder);
+            TimeCreated.Text = "End address(CHS): (" + head + "," + sector + "," + cylinder + ")";
+            Attribute.Text = "Status";
+            IsHidden.Content = "Bootable";
+            IsReadOnly.Content = "Unbootable";
+            if (mBR.getPartitionStatus(index) == "bootable")
+            {
+                IsHidden.IsChecked = true;
+                IsReadOnly.IsChecked = false;
+            }
+            else if (mBR.getPartitionStatus(index) == "unbootable")
+            {
+                IsHidden.IsChecked = false;
+                IsReadOnly.IsChecked = true;
+            }
         }
 
         public void clearFolderTree()
