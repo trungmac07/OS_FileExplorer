@@ -31,7 +31,7 @@ namespace FileExplorer
             InitializeComponent();
             this.Title = "Partition: " + curPartition;
             this.Width = 550;
-            FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+            FileImage.Source = new BitmapImage(new Uri(@"/resources/compact-disk.png", UriKind.RelativeOrAbsolute));
 
             long head = 0, sector = 0, cylinder = 0;
 
