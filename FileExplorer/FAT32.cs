@@ -262,7 +262,7 @@ namespace FileExplorer
             //Get list of cluster need to use
             int[] clusterArr = new int[4200000];
             long dem = 0;
-            long clusterData = 2;
+            long clusterData = begginCluster;
             byte[] a = new byte[this.bytesPerSector];
             while (clusterData > 0)
             {
