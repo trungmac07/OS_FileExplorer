@@ -80,10 +80,9 @@ namespace FileExplorer
             {
                 string ex = Function.getFilenameExtension(file.FileName);
 
-                if (Function.extension.ContainsKey(ex))
-                    FileImage.Source = new BitmapImage(Function.extension[ex]);
-                else
-                    FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+
+                FileImage.Source = Function.extensionImage(ex);
+                
 
             }
 

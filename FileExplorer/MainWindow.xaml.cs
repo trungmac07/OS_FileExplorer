@@ -98,8 +98,8 @@ namespace FileExplorer
                     clearFolderTree();
                     FAT32 a = new FAT32(mBR.getFirstSectorLBA(currentPartition), currentDisk);
                     FolderTree = a.readRoot();
-                  
-               
+
+
                 }
                 else if (partitionType == "NTFS")
                 {
@@ -108,7 +108,7 @@ namespace FileExplorer
                     ntfs.printVBRInfo();
                     FolderTree = ntfs.buildTree();
                     FolderTree.IsNTFS = ntfs.sizeOfMFTAndVBR();
-                   
+
                 }
 
                 long partitionSize = mBR.getSectorInPartition(currentPartition) * 512;
@@ -222,13 +222,13 @@ namespace FileExplorer
         public void getDrive()
         {
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
-            
+
             foreach (ManagementObject wmi_HD in searcher.Get())
             {
                 HardDrive hd = new HardDrive();
                 hd.Model = wmi_HD["Model"].ToString();
                 hd.Type = wmi_HD["InterfaceType"].ToString();
-       
+
                 if (hd.Type == "USB")
                 {
                     string x = wmi_HD["DeviceId"].ToString();
@@ -365,8 +365,8 @@ namespace FileExplorer
 
             expand.Style = (Style)this.FindResource("TreeExpandButton");
             expand.Tag = node.Info.ID;
-            
-           
+
+
             expand.BorderThickness = new Thickness(0);
             expand.Background = Brushes.Transparent;
             expand.FontSize = 12;
@@ -390,17 +390,12 @@ namespace FileExplorer
             {
                 string ex = Function.getFilenameExtension(node.Info.FileName);
 
+                image.Source = Function.extensionImage(ex);
 
-                if (Function.extension.ContainsKey(ex))
-                    image.Source = new BitmapImage(Function.extension[ex]);
-                else
-                    image.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
 
-                
-                
                 expand.Background = Brushes.Transparent;
                 expand.BorderThickness = new Thickness(0);
-                
+
             }
             else
             {
@@ -425,7 +420,7 @@ namespace FileExplorer
             stackPanel.Name = "n" + node.Info.ID;
             stackPanel.Children.Add(button);
 
-            
+
             this.RegisterName(stackPanel.Name, stackPanel);
 
             area.Children.Add(stackPanel);
@@ -455,14 +450,8 @@ namespace FileExplorer
             }
             else if (file.IsDirectory == false)
             {
-
                 string ex = Function.getFilenameExtension(file.FileName);
-
-                if (Function.extension.ContainsKey(ex))
-                    FileImage.Source = new BitmapImage(Function.extension[ex]);
-                else
-                    FileImage.Source = new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
-
+                FileImage.Source = Function.extensionImage(ex);
             }
             else
                 FileImage.Source = new BitmapImage(new Uri(@"/resources/folder.png", UriKind.RelativeOrAbsolute));
@@ -604,6 +593,16 @@ namespace FileExplorer
         };
 
         public static FileStream stream = null;
+
+        static public BitmapImage extensionImage(string fileExtension)
+        {
+            if (extension.ContainsKey(fileExtension))
+                return new BitmapImage(extension[fileExtension]);
+            else
+                return new BitmapImage(new Uri(@"/resources/file.png", UriKind.RelativeOrAbsolute));
+
+        }
+
         static public long littleEndian(byte[] src, int offset, int length)
         {
             long res = 0;
@@ -665,11 +664,11 @@ namespace FileExplorer
             {
                 ex += fileName[i];
             }
-            
-            if(ex[ex.Length - 1] < '\u0031' || ex[ex.Length - 1] > '\u007a')
+
+            if (ex[ex.Length - 1] < '\u0031' || ex[ex.Length - 1] > '\u007a')
                 ex.Remove(ex.Length - 1, 1);
 
-           
+
 
 
 
